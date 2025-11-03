@@ -1,0 +1,38 @@
+.root-bg { background: #ffffff; min-height: 100vh; }
+.container { max-width: 1280px; margin: 0 auto; padding: 28px 24px; }
+/* page header (title + subtitle) placed under navbar */
+.page-header { max-width: 1280px; margin: 36px auto 20px; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+.page-header h1 { font-size: 36px; margin: 0; font-weight: 800; color: #111827; line-height: 1.1; }
+.page-header .muted { color: #6b7280; margin-top: 8px; font-size: 15px; font-weight: 400; }
+.page-header .left { display: flex; flex-direction: column; }
+.page-header .controls { display:flex; align-items:center; gap:18px; }
+.page-header .controls .muted { font-size: 14px; }
+.page-header .sort-wrapper { display:flex; align-items:center; gap:8px; }
+.page-header .sort-label { color:#374151; font-size:14px; }
+.page-header .controls select { padding:6px 10px; border-radius:8px; border:1px solid #e6edf2; background:#fff; }
+.content { display: flex; gap: 28px; align-items: flex-start; }
+.filters-card { width: 280px; border: 1px solid #e8eef2; border-radius: 12px; padding: 20px; background: #fff; }
+.filters-card h3 { font-size: 18px; margin-bottom: 12px; }
+.filter-section { margin-bottom: 18px; }
+.filter-title { font-weight: 600; color: #374151; margin-bottom: 8px; }
+.filter-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: #374151; cursor: pointer; }
+.filter-row { position: relative; padding-left: 26px; }
+.filter-row input { position: absolute; left: 0; opacity: 0; width: 0; height: 0; }
+.filter-row::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; border-radius: 50%; background: transparent; border: 2px solid #10b981; }
+.price-range { width: 100%; }
+.price-legend { display:flex; justify-content:space-between; font-size: 13px; color: #6b7280; margin-top: 6px; }
+.clear-btn { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e6edf2; background: #fff; margin-top: 8px; cursor: pointer; }
+
+.products { flex: 1; }
+.products-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 18px; }
+.products-header h1 { font-size: 32px; margin: 0; }
+.muted { color: #6b7280; }
+.controls { display:flex; gap: 12px; align-items:center; }
+.controls select { padding: 8px 10px; border-radius: 8px; border: 1px solid #e6edf2; }
+
+.grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+@media (max-width: 980px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .filters-card { display: none; }
+}

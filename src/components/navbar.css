@@ -1,0 +1,36 @@
+.nav {
+  border-bottom: 1px solid #eef2f6;
+  background: #fff;
+}
+.nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-logo { height: 36px; }
+.brand-title { font-weight: 700; color: #059669; }
+.nav-search { flex: 1; }
+.nav-search { flex: 1; }
+.search-wrap { position: relative; }
+.search-wrap .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.search-wrap input { width: 100%; padding: 10px 14px 10px 40px; border-radius: 999px; border: 1px solid #e6edf2; background: #eef7fb; color: #0f172a; }
+.search-wrap input::placeholder { color: #9aa4ad; }
+.nav-links { display: flex; align-items: center; gap: 18px; }
+.nav-links a { color: #374151; text-decoration: none; font-weight: 500; }
+.nav-controls select { padding: 6px 8px; border-radius: 8px; }
+.nav-controls .cart { margin-left: 8px; }
+
+/* subheader spacing when page header moved into page */
+.page-header { max-width: 1280px; margin: 28px auto 20px; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+.page-header h1 { font-size: 36px; margin: 0; font-weight: 800; color: #111827; line-height: 1.1; }
+.page-header .muted { color: #6b7280; margin-top: 8px; font-size: 15px; font-weight: 400; }
+.page-header .left { display: flex; flex-direction: column; }
+.page-header .controls select { padding: 8px 10px; border-radius: 8px; border: 1px solid #e6edf2; }

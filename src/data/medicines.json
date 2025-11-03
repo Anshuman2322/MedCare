@@ -1,0 +1,82 @@
+[
+  {
+    "id": "m1",
+    "name": "Pain Relief Extra Strength",
+    "category": "Pain Relief",
+    "brand": "HealthCare Plus",
+    "form": "Tablet",
+    "price": 12.99,
+    "image": "/src/assets/ivermectin.png",
+    "description": "Fast-acting pain relief tablets for everyday aches."
+  },
+  {
+    "id": "m2",
+    "name": "Daily Multivitamin Complex",
+    "category": "Vitamins",
+    "brand": "VitaBoost",
+    "form": "Capsule",
+    "price": 24.99,
+    "image": "/src/assets/soma.png",
+    "description": "Complete multivitamin for daily health support."
+  },
+  {
+    "id": "m3",
+    "name": "Antibiotic Treatment Pack",
+    "category": "Antibiotics",
+    "brand": "MediPro",
+    "form": "Tablet",
+    "price": 18.5,
+    "image": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80",
+    "description": "Short course antibiotic pack for common infections."
+  },
+  {
+    "id": "m4",
+    "name": "Omega Vitality",
+    "category": "Vitamins",
+    "brand": "VitaBoost",
+    "form": "Liquid",
+    "price": 19.99,
+    "image": "https://images.unsplash.com/photo-1588774069510-3b5b6a5d2e0f?auto=format&fit=crop&w=800&q=80",
+    "description": "Omega-rich liquid supplement for heart and brain."
+  },
+  {
+    "id": "m5",
+    "name": "Cough Relief Syrup",
+    "category": "Skincare",
+    "brand": "CureWell",
+    "form": "Liquid",
+    "price": 9.5,
+    "image": "https://images.unsplash.com/photo-1582719478170-1f6c5d0c7f63?auto=format&fit=crop&w=800&q=80",
+    "description": "Soothing syrup for cough and throat irritation."
+  },
+  {
+    "id": "m6",
+    "name": "Vitamin C 1000mg",
+    "category": "Vitamins",
+    "brand": "HealthCare Plus",
+    "form": "Tablet",
+    "price": 8.99,
+    "image": "https://images.unsplash.com/photo-1582719478170-1f6c5d0c7f63?auto=format&fit=crop&w=800&q=80",
+    "description": "Immune support vitamin C tablets."
+  },
+  {
+    "id": "m7",
+    "name": "JointCare Capsules",
+    "category": "Pain Relief",
+    "brand": "CureWell",
+    "form": "Capsule",
+    "price": 29.99,
+    "image": "https://images.unsplash.com/photo-1556228720-7bdc8b3e7c8f?auto=format&fit=crop&w=800&q=80",
+    "description": "Capsules to support joint mobility."
+  },
+  {
+    "id": "m8",
+    "name": "Skin Repair Cream",
+    "category": "Skincare",
+    "brand": "MediPro",
+    "form": "Cream",
+    "price": 14.5,
+    "image": "https://images.unsplash.com/photo-1580281657523-6f71d0b3c3a9?auto=format&fit=crop&w=800&q=80",
+    "description": "Gentle cream for dry and irritated skin."
+  }
+]
