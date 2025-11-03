@@ -150,6 +150,10 @@ Why
 
 • “Why didn’t my updated README show on GitHub?” – The repository homepage shows the README from the default branch (usually `main`). If you pushed changes to a feature branch, open a PR and merge it into `main` to update the homepage.
 
+## Author
+• Anshuman Singh
+• Hardik Ajmeriya
+
 ## License
 
 No license has been declared yet. If you plan to open‑source this project, add a license (e.g., MIT) at the repository root.
