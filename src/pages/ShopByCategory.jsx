@@ -1,10 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import medicinesData from '../data/medicines.json';
+import { productImages } from '../utils/images';
 import MedicineCard from '../components/MedicineCard';
 import Navbar from '../components/Navbar';
 import './ShopByCategory.css';
-
-const unique = (arr, key) => Array.from(new Set(arr.map(i => i[key]))).filter(Boolean);
 
 export default function ShopByCategory() {
   // Filter states
@@ -22,6 +21,8 @@ export default function ShopByCategory() {
 
   const filtered = useMemo(() => {
     let list = medicinesData.slice();
+    // attach resolved image URL from imageKey for consistent rendering
+    list = list.map(m => ({ ...m, image: productImages[m.imageKey] || m.image }));
     if (selectedCategory) list = list.filter(m => m.category === selectedCategory);
     if (selectedBrand) list = list.filter(m => m.brand === selectedBrand);
     if (selectedForm) list = list.filter(m => m.form === selectedForm);
@@ -32,6 +33,7 @@ export default function ShopByCategory() {
     }
     if (sort === 'Price: Low to High') list.sort((a, b) => a.price - b.price);
     if (sort === 'Price: High to Low') list.sort((a, b) => b.price - a.price);
+    if (sort === 'Name: A-Z') list.sort((a, b) => a.name.localeCompare(b.name));
     return list;
   }, [selectedCategory, selectedBrand, selectedForm, maxPrice, search, sort]);
 
@@ -46,8 +48,6 @@ export default function ShopByCategory() {
 
   return (
     <div className="shop-page root-bg">
-
-
       <div className="container">
         {/* page header moved above the content so it appears under the logo/nav */}
         <div className="page-header">
@@ -113,12 +113,31 @@ export default function ShopByCategory() {
           </aside>
 
           <main className="products">
-
-            <div className="grid">
-              {filtered.map(med => (
-                <MedicineCard key={med.id} product={med} />
-              ))}
-            </div>
+            {(!selectedCategory && !selectedBrand && !selectedForm && Number(maxPrice) === 100 && !search && sort === 'Featured') ? (
+              <div className="space-y-10">
+                {categories.map((cat) => {
+                  const items = medicinesData
+                    .filter((m) => m.category === cat)
+                    .map((m) => ({ ...m, image: productImages[m.imageKey] || m.image }))
+                    .slice(0, 3);
+                  return (
+                    <section key={cat}>
+                      <div className="grid">
+                        {items.map((med) => (
+                          <MedicineCard key={med.id} product={med} />
+                        ))}
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="grid">
+                {filtered.map((med) => (
+                  <MedicineCard key={med.id} product={med} />
+                ))}
+              </div>
+            )}
           </main>
         </div>
       </div>

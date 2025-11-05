@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import imgPain from '../assets/product-pain-relief.jpg';
 import imgVitamins from '../assets/product-vitamins.jpg';
 import imgAntibiotics from '../assets/product-antibiotics.jpg';
@@ -48,9 +49,9 @@ const FeaturedCard = ({ product }) => {
         <h3 className="mt-1 text-base md:text-lg font-semibold text-gray-800">{product.title}</h3>
         <p className="mt-2 text-emerald-600 font-semibold">{formatPrice(product.price)}</p>
         <div className="mt-auto pt-4">
-          <button className="w-full h-11 rounded-xl border border-emerald-200 text-emerald-700 text-sm font-medium bg-white transition-colors hover:bg-emerald-50 hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+          <Link to={`/products/${product.id}`} className="w-full inline-flex items-center justify-center h-11 rounded-xl border border-emerald-200 text-emerald-700 text-sm font-medium bg-white transition-colors hover:bg-emerald-50 hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
             View Details
-          </button>
+          </Link>
         </div>
       </div>
     </div>
