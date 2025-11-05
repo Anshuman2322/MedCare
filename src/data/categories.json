@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Pain Relief",
+    "description": "Treat headache, muscle aches, and minor pains. Includes acetaminophen-based and NSAID options. Use as directed and avoid exceeding daily limits."
+  },
+  {
+    "name": "Antibiotics",
+    "description": "Prescription medications used to treat bacterial infections. Always complete the full course as directed by your healthcare provider."
+  },
+  {
+    "name": "Vitamins",
+    "description": "Daily supplements supporting overall wellness, immunity, and energy. Best taken with food for improved absorption."
+  },
+  {
+    "name": "Skincare",
+    "description": "Creams and topicals for hydration, repair, and protection. For external use only; avoid contact with eyes."
+  }
+]
