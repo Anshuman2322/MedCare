@@ -10,6 +10,7 @@ import MedicineDetails from "./pages/MedicineDetails";
 import About from "./pages/About";
 import "./App.css";
 
+{/*Temporary comment*/}
 function App() {
   return (
     <div className="h-full w-full bg-white">
