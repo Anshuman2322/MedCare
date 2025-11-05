@@ -46,7 +46,7 @@ export default function ShopByCategory() {
 
   return (
     <div className="shop-page root-bg">
-      <Navbar search={search} setSearch={setSearch} />
+
 
       <div className="container">
         {/* page header moved above the content so it appears under the logo/nav */}
