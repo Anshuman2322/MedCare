@@ -7,10 +7,11 @@ import FeaturedMedicines from "./components/FeaturedMedicines";
 import Footer from "./components/Footer";
 import ShopByCategory from "./pages/ShopByCategory";
 import MedicineDetails from "./pages/MedicineDetails";
+
 import About from "./pages/About";
+import Contact from "./pages/Contact";
 import "./App.css";
 
-{/Temporary comment/}
 function App() {
   return (
     <div className="h-full w-full bg-white">
@@ -30,6 +31,7 @@ function App() {
         <Route path="/shop" element={<ShopByCategory />} />
         <Route path="/products/:id" element={<MedicineDetails />} />
         <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
     </div>
   );
