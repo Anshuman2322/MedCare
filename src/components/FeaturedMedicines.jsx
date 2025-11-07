@@ -4,6 +4,7 @@ import imgPain from '../assets/product-pain-relief.jpg';
 import imgVitamins from '../assets/product-vitamins.jpg';
 import imgAntibiotics from '../assets/product-antibiotics.jpg';
 import imgSkincare from '../assets/product-skincare.jpg';
+import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
 
 const products = [
   {
@@ -38,9 +39,12 @@ const products = [
 
 const formatPrice = (n) => `$${n.toFixed(2)}`;
 
-const FeaturedCard = ({ product }) => {
+const FeaturedCard = ({ product, index }) => {
   return (
-    <div className="group h-full flex flex-col rounded-2xl border border-emerald-100 bg-white ring-1 ring-emerald-100/60 shadow-sm overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:ring-emerald-300/70">
+    <AnimatedCard 
+      index={index}
+      className="group h-full flex flex-col rounded-2xl border border-emerald-100 bg-white ring-1 ring-emerald-100/60 shadow-sm overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:ring-emerald-300/70"
+    >
       <div className="relative w-full h-56 md:h-60 lg:h-64">
         <img src={product.image} alt={product.title} className="absolute inset-0 w-full h-full object-cover" />
       </div>
@@ -54,15 +58,21 @@ const FeaturedCard = ({ product }) => {
           </Link>
         </div>
       </div>
-    </div>
+    </AnimatedCard>
   );
 };
 
 const FeaturedMedicines = () => {
+  const [headerRef, headerVisible] = useScrollAnimation(0.1);
+  const [buttonRef, buttonVisible] = useScrollAnimation(0.1, 200);
+
   return (
     <section className="w-full bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-12 sm:py-16">
-        <div className="flex items-start justify-between mb-8 md:mb-10">
+        <div 
+          ref={headerRef}
+          className={`flex items-start justify-between mb-8 md:mb-10 ${animationClasses.fadeUp(headerVisible)}`}
+        >
           <div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Featured Medicines</h2>
             <p className="mt-2 text-gray-600">Popular and trusted products</p>
@@ -73,12 +83,15 @@ const FeaturedMedicines = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {products.map((p) => (
-            <FeaturedCard key={p.id} product={p} />
+          {products.map((p, index) => (
+            <FeaturedCard key={p.id} product={p} index={index} />
           ))}
         </div>
 
-        <div className="sm:hidden mt-8 flex justify-center">
+        <div 
+          ref={buttonRef}
+          className={`sm:hidden mt-8 flex justify-center ${animationClasses.fadeUp(buttonVisible)}`}
+        >
           <button className="h-10 rounded-lg border border-gray-300 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-emerald-400 transition-colors">View All</button>
         </div>
       </div>

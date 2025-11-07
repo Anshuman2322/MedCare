@@ -3,6 +3,7 @@ import medicinesData from '../data/medicines.json';
 import { productImages } from '../utils/images';
 import MedicineCard from '../components/MedicineCard';
 import Navbar from '../components/Navbar';
+import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
 import './ShopByCategory.css';
 
 export default function ShopByCategory() {
@@ -13,6 +14,11 @@ export default function ShopByCategory() {
   const [maxPrice, setMaxPrice] = useState(100);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('Featured');
+
+  // Animation refs
+  const [headerRef, headerVisible] = useScrollAnimation(0.1);
+  const [filtersRef, filtersVisible] = useScrollAnimation(0.1, 200);
+  const [productsRef, productsVisible] = useScrollAnimation(0.1, 400);
 
   // Use fixed lists to match the screenshot order and exact labels
   const categories = ['Pain Relief', 'Antibiotics', 'Vitamins', 'Skincare'];
@@ -50,7 +56,10 @@ export default function ShopByCategory() {
     <div className="shop-page root-bg">
       <div className="container">
         {/* page header moved above the content so it appears under the logo/nav */}
-        <div className="page-header">
+        <div 
+          ref={headerRef}
+          className={`page-header ${animationClasses.fadeUp(headerVisible)}`}
+        >
           <div className="left">
             <h1>Shop Medicines</h1>
             <p className="muted">Browse our complete range of healthcare products</p>
@@ -71,7 +80,10 @@ export default function ShopByCategory() {
         </div>
 
         <div className="content">
-          <aside className="filters-card">
+          <aside 
+            ref={filtersRef}
+            className={`filters-card ${animationClasses.fadeLeft(filtersVisible)}`}
+          >
             <h3>Filters</h3>
             <div className="filter-section">
               <div className="filter-title">Category</div>
@@ -112,10 +124,13 @@ export default function ShopByCategory() {
             <button className="clear-btn" onClick={clearFilters}>Clear Filters</button>
           </aside>
 
-          <main className="products">
+          <main 
+            ref={productsRef}
+            className={`products ${animationClasses.fadeRight(productsVisible)}`}
+          >
             {(!selectedCategory && !selectedBrand && !selectedForm && Number(maxPrice) === 100 && !search && sort === 'Featured') ? (
               <div className="space-y-10">
-                {categories.map((cat) => {
+                {categories.map((cat, catIndex) => {
                   const items = medicinesData
                     .filter((m) => m.category === cat)
                     .map((m) => ({ ...m, image: productImages[m.imageKey] || m.image }))
@@ -123,8 +138,10 @@ export default function ShopByCategory() {
                   return (
                     <section key={cat}>
                       <div className="grid">
-                        {items.map((med) => (
-                          <MedicineCard key={med.id} product={med} />
+                        {items.map((med, index) => (
+                          <AnimatedCard key={med.id} index={index + (catIndex * 3)} delay={200}>
+                            <MedicineCard product={med} />
+                          </AnimatedCard>
                         ))}
                       </div>
                     </section>
@@ -133,8 +150,10 @@ export default function ShopByCategory() {
               </div>
             ) : (
               <div className="grid">
-                {filtered.map((med) => (
-                  <MedicineCard key={med.id} product={med} />
+                {filtered.map((med, index) => (
+                  <AnimatedCard key={med.id} index={index} delay={200}>
+                    <MedicineCard product={med} />
+                  </AnimatedCard>
                 ))}
               </div>
             )}

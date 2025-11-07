@@ -4,6 +4,7 @@ import data from '../data/medicines.json';
 import categories from '../data/categories.json';
 import { getProductImage } from '../utils/images';
 import MedicineCard from '../components/MedicineCard';
+import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
 
 const formatPrice = (n) => `$${Number(n).toFixed(2)}`;
 
@@ -13,6 +14,14 @@ export default function MedicineDetails() {
   const catMeta = useMemo(() => categories.find((c) => c.name === product?.category), [product]);
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState('Dosage');
+
+  // Animation refs
+  const [categoryRef, categoryVisible] = useScrollAnimation(0.1);
+  const [breadcrumbRef, breadcrumbVisible] = useScrollAnimation(0.1, 100);
+  const [imageRef, imageVisible] = useScrollAnimation(0.1, 200);
+  const [contentRef, contentVisible] = useScrollAnimation(0.1, 300);
+  const [tabsRef, tabsVisible] = useScrollAnimation(0.1, 400);
+  const [relatedRef, relatedVisible] = useScrollAnimation(0.1, 500);
 
   if (!product) {
     return (
@@ -30,7 +39,10 @@ export default function MedicineDetails() {
     <div className="bg-white">
       {/* Category intro just below the Navbar */}
       {catMeta && (
-        <section className="bg-sky-50/40 border-b border-gray-100">
+        <section 
+          ref={categoryRef}
+          className={`bg-sky-50/40 border-b border-gray-100 ${animationClasses.fadeUp(categoryVisible)}`}
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-5">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{catMeta.name}</h2>
             <p className="mt-1 text-sm sm:text-base text-gray-600 max-w-3xl">{catMeta.description}</p>
@@ -40,7 +52,10 @@ export default function MedicineDetails() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-6">
         {/* Breadcrumb */}
-        <nav className="text-sm text-gray-500 mb-6">
+        <nav 
+          ref={breadcrumbRef}
+          className={`text-sm text-gray-500 mb-6 ${animationClasses.fadeUp(breadcrumbVisible)}`}
+        >
           <Link to="/" className="hover:underline">Home</Link>
           <span className="mx-2">/</span>
           <span>Products</span>
@@ -50,14 +65,20 @@ export default function MedicineDetails() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Image */}
-          <div className="border border-gray-200 rounded-2xl p-4 bg-white">
+          <div 
+            ref={imageRef}
+            className={`border border-gray-200 rounded-2xl p-4 bg-white ${animationClasses.fadeLeft(imageVisible)}`}
+          >
             <div className="aspect-square rounded-xl overflow-hidden bg-gray-50">
               <img src={img} alt={product.name} className="w-full h-full object-cover" />
             </div>
           </div>
 
           {/* Content */}
-          <div>
+          <div 
+            ref={contentRef}
+            className={animationClasses.fadeRight(contentVisible)}
+          >
             <div className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2.5 py-1">{product.category}</div>
             <h1 className="mt-3 text-3xl sm:text-4xl font-extrabold text-gray-900">{product.name}</h1>
             <p className="mt-3 text-gray-600 max-w-2xl">{product.description}</p>
@@ -138,7 +159,10 @@ export default function MedicineDetails() {
         </div>
 
         {/* Tabs */}
-        <div className="mt-10">
+        <div 
+          ref={tabsRef}
+          className={`mt-10 ${animationClasses.fadeUp(tabsVisible)}`}
+        >
           <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden">
             {['Dosage', 'Usage', 'Details'].map((t) => (
               <button key={t} onClick={() => setTab(t)} className={`px-6 py-2 text-sm font-medium ${tab === t ? 'bg-white text-gray-900 shadow-inner' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}>
@@ -155,14 +179,19 @@ export default function MedicineDetails() {
 
         {/* Related products */}
         {data.filter((m) => m.category === product.category && m.id !== product.id).length > 0 && (
-          <section className="mt-12">
+          <section 
+            ref={relatedRef}
+            className={`mt-12 ${animationClasses.fadeUp(relatedVisible)}`}
+          >
             <h3 className="text-xl font-bold text-gray-900">You may also like in {product.category}</h3>
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {data
                 .filter((m) => m.category === product.category && m.id !== product.id)
                 .slice(0, 3)
-                .map((m) => (
-                  <MedicineCard key={m.id} product={{ ...m, image: getProductImage(m.imageKey) }} />
+                .map((m, index) => (
+                  <AnimatedCard key={m.id} index={index} delay={200}>
+                    <MedicineCard product={{ ...m, image: getProductImage(m.imageKey) }} />
+                  </AnimatedCard>
                 ))}
             </div>
           </section>

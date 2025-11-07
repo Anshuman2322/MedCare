@@ -10,7 +10,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="shrink-0 flex items-center">
+            <Link to="/" className="shrink-0 flex items-center hover:opacity-80 transition-opacity duration-200">
               <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center mr-2">
                 <svg
                   className="w-5 h-5 text-white"
@@ -25,7 +25,7 @@ const Navbar = () => {
                 </svg>
               </div>
               <span className="text-xl font-bold text-gray-800">MedCare</span>
-            </div>
+            </Link>
           </div>
 
           {/* Search Bar */}
@@ -58,27 +58,33 @@ const Navbar = () => {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               <Link
+                to="/"
+                className="text-gray-600 hover:text-emerald-600 decoration-2 decoration-emerald-500 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 hover:bg-emerald-50/60 cursor-pointer"
+              >
+                Home
+              </Link>
+              <Link
                 to="/shop"
-                className="text-gray-600 hover:text-emerald-600  decoration-2 decoration-emerald-500 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 hover:bg-emerald-50/60 cursor-pointer"
+                className="text-gray-600 hover:text-emerald-600 decoration-2 decoration-emerald-500 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 hover:bg-emerald-50/60 cursor-pointer"
               >
                 Shop by Category
               </Link>
               <Link
                 to="/about"
-                className="text-gray-600 hover:text-emerald-600  decoration-2 decoration-emerald-500 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 hover:bg-emerald-50/60 cursor-pointer"
+                className="text-gray-600 hover:text-emerald-600 decoration-2 decoration-emerald-500 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 hover:bg-emerald-50/60 cursor-pointer"
               >
                 About Us
               </Link>
               <a
                 href="#"
-                className="text-gray-600 hover:text-emerald-600  decoration-2 decoration-emerald-500 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 hover:bg-emerald-50/60 cursor-pointer"
+                className="text-gray-600 hover:text-emerald-600 decoration-2 decoration-emerald-500 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 hover:bg-emerald-50/60 cursor-pointer"
               >
                 Contact
               </a>
             </div>
           </div>
 
-          {/* Currency and Cart */}
+          {/* Currency, Home Button and Cart */}
           <div className="hidden md:flex items-center space-x-4">
             <button className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900">
               <span>USD</span>
@@ -96,6 +102,23 @@ const Navbar = () => {
                 />
               </svg>
             </button>
+            <Link 
+              to="/" 
+              className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
+              title="Go to Home"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </Link>
             <button className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-gray-900 text-white hover:bg-black transition-colors">
               <svg
                 className="w-5 h-5"
@@ -170,20 +193,30 @@ const Navbar = () => {
               </div>
             </div>
             <Link
+              to="/"
+              className="text-gray-600 hover:text-emerald-600 hover:underline underline-offset-4 decoration-2 decoration-emerald-500 block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
               to="/shop"
               className="text-gray-600 hover:text-emerald-600 hover:underline underline-offset-4 decoration-2 decoration-emerald-500 block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
             >
               Shop by Category
             </Link>
             <Link
               to="/about"
               className="text-gray-600 hover:text-emerald-600 hover:underline underline-offset-4 decoration-2 decoration-emerald-500 block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
             >
               About Us
             </Link>
             <a
               href="#"
               className="text-gray-600 hover:text-emerald-600 hover:underline underline-offset-4 decoration-2 decoration-emerald-500 block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
             >
               Contact
             </a>

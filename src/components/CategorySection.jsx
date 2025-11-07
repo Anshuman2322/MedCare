@@ -1,4 +1,5 @@
 import React from 'react';
+import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
 
 const categories = [
   {
@@ -60,32 +61,39 @@ const categories = [
   },
 ];
 
-const CategoryCard = ({ name, count, icon }) => (
-  <a
-    href="#"
+const CategoryCard = ({ name, count, icon, index }) => (
+  <AnimatedCard 
+    index={index} 
     className="group block rounded-2xl border border-gray-200 bg-white p-6 shadow-sm ring-1 ring-transparent transition-all duration-200 will-change-transform transform-gpu hover:-translate-y-1 hover:scale-[1.01] hover:shadow-lg hover:ring-emerald-300/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2"
   >
-    <div className="flex flex-col items-center text-center">
-      <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 transition-colors duration-200 group-hover:bg-emerald-100">
-        {icon}
+    <a href="#" className="block">
+      <div className="flex flex-col items-center text-center">
+        <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 transition-colors duration-200 group-hover:bg-emerald-100">
+          {icon}
+        </div>
+        <h3 className="text-lg font-semibold text-gray-800 transition-colors duration-200 group-hover:text-emerald-700">{name}</h3>
+        <p className="mt-1 text-sm text-gray-500">{count} products</p>
       </div>
-      <h3 className="text-lg font-semibold text-gray-800 transition-colors duration-200 group-hover:text-emerald-700">{name}</h3>
-      <p className="mt-1 text-sm text-gray-500">{count} products</p>
-    </div>
-  </a>
+    </a>
+  </AnimatedCard>
 );
 
 const CategorySection = () => {
+  const [headerRef, headerVisible] = useScrollAnimation(0.1);
+
   return (
     <section className="w-full bg-sky-50/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-12 sm:py-16">
-        <div className="text-center mb-10 sm:mb-12">
+        <div 
+          ref={headerRef}
+          className={`text-center mb-10 sm:mb-12 ${animationClasses.fadeUp(headerVisible)}`}
+        >
           <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Shop by Category</h2>
           <p className="mt-2 text-gray-600">Find the healthcare products you need</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-          {categories.map((c) => (
-            <CategoryCard key={c.name} {...c} />
+          {categories.map((c, index) => (
+            <CategoryCard key={c.name} {...c} index={index} />
           ))}
         </div>
       </div>

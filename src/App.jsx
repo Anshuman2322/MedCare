@@ -5,6 +5,7 @@ import Hero from "./components/Hero";
 import CategorySection from "./components/CategorySection";
 import FeaturedMedicines from "./components/FeaturedMedicines";
 import Footer from "./components/Footer";
+import FloatingHomeButton from "./components/FloatingHomeButton";
 import ShopByCategory from "./pages/ShopByCategory";
 import MedicineDetails from "./pages/MedicineDetails";
 import About from "./pages/About";
@@ -31,6 +32,7 @@ function App() {
         <Route path="/products/:id" element={<MedicineDetails />} />
         <Route path="/about" element={<About />} />
       </Routes>
+      <FloatingHomeButton />
     </div>
   );
 }
