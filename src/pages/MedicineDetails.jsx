@@ -113,47 +113,55 @@ export default function MedicineDetails() {
               </span>
             </div>
 
-            <div className="mt-4 flex items-center gap-3">
-              {/* Quantity stepper */}
-              <div className="inline-flex items-stretch overflow-hidden rounded-lg border border-gray-200">
-                <button
-                  aria-label="Decrease quantity"
-                  className={`h-11 w-10 text-gray-700 hover:bg-gray-50 ${qty === 1 ? 'text-gray-300 cursor-not-allowed' : ''}`}
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  disabled={qty === 1}
-                >
-                  −
-                </button>
-                <div className="h-11 min-w-11 px-3 inline-flex items-center justify-center text-gray-900 font-medium select-none">
-                  {qty}
+            <div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="flex items-center gap-3">
+                {/* Quantity stepper */}
+                <div className="inline-flex items-stretch overflow-hidden rounded-lg border border-gray-200">
+                  <button
+                    aria-label="Decrease quantity"
+                    className={`h-11 w-10 text-gray-700 hover:bg-gray-50 ${qty === 1 ? 'text-gray-300 cursor-not-allowed' : ''}`}
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                    disabled={qty === 1}
+                  >
+                    −
+                  </button>
+                  <div className="h-11 min-w-11 px-3 inline-flex items-center justify-center text-gray-900 font-medium select-none">
+                    {qty}
+                  </div>
+                  <button
+                    aria-label="Increase quantity"
+                    className="h-11 w-10 text-gray-700 hover:bg-gray-50"
+                    onClick={() => setQty((q) => q + 1)}
+                  >
+                    +
+                  </button>
                 </div>
-                <button
-                  aria-label="Increase quantity"
-                  className="h-11 w-10 text-gray-700 hover:bg-gray-50"
-                  onClick={() => setQty((q) => q + 1)}
-                >
-                  +
+
+                {/* Wishlist */}
+                <button className="h-11 w-11 rounded-lg border border-gray-200 text-gray-600 hover:text-rose-500 hover:border-rose-200 flex items-center justify-center">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 10-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg>
+                </button>
+
+                {/* Share */}
+                <button className="h-11 w-11 rounded-lg border border-gray-200 text-gray-600 hover:text-gray-900 flex items-center justify-center">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v7a2 2 0 002 2h12a2 2 0 002-2v-7"/><path d="M16 6l-4-4-4 4"/></svg>
                 </button>
               </div>
 
-              {/* Add to Cart */}
-              <button className="inline-flex items-center justify-center h-11 min-w-[150px] gap-2 px-5 rounded-lg bg-emerald-500 text-white font-semibold hover:bg-emerald-600 active:bg-emerald-700 transition-colors whitespace-nowrap">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5h13M7 13h13"/></svg>
-                Add to Cart
-              </button>
+              <div className="flex gap-3 flex-1 sm:flex-initial">
+                {/* Add to Cart */}
+                <button className="flex-1 sm:flex-initial inline-flex items-center justify-center h-11 min-w-[120px] gap-2 px-4 sm:px-5 rounded-lg bg-emerald-500 text-white font-semibold hover:bg-emerald-600 active:bg-emerald-700 transition-colors">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5h13M7 13h13"/></svg>
+                  <span className="hidden xs:inline">Add to Cart</span>
+                  <span className="xs:hidden">Add</span>
+                </button>
 
-              {/* Buy Now */}
-              <button className="h-11 px-5 rounded-lg bg-sky-100 text-sky-900 font-semibold hover:bg-sky-200 transition-colors whitespace-nowrap">Buy Now</button>
-
-              {/* Wishlist */}
-              <button className="h-11 w-11 rounded-lg border border-gray-200 text-gray-600 hover:text-rose-500 hover:border-rose-200 flex items-center justify-center">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 10-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg>
-              </button>
-
-              {/* Share */}
-              <button className="h-11 w-11 rounded-lg border border-gray-200 text-gray-600 hover:text-gray-900 flex items-center justify-center">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v7a2 2 0 002 2h12a2 2 0 002-2v-7"/><path d="M16 6l-4-4-4 4"/></svg>
-              </button>
+                {/* Buy Now */}
+                <button className="flex-1 sm:flex-initial h-11 px-4 sm:px-5 rounded-lg bg-sky-100 text-sky-900 font-semibold hover:bg-sky-200 transition-colors">
+                  <span className="hidden xs:inline">Buy Now</span>
+                  <span className="xs:hidden">Buy</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

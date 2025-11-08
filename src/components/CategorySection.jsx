@@ -91,7 +91,7 @@ const CategorySection = () => {
           <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Shop by Category</h2>
           <p className="mt-2 text-gray-600">Find the healthcare products you need</p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-6">
           {categories.map((c, index) => (
             <CategoryCard key={c.name} {...c} index={index} />
           ))}

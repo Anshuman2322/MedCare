@@ -11,9 +11,9 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="shrink-0 flex items-center hover:opacity-80 transition-opacity duration-200">
-              <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center mr-2">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-emerald-500 rounded-lg flex items-center justify-center mr-2">
                 <svg
-                  className="w-5 h-5 text-white"
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-white"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -24,7 +24,7 @@ const Navbar = () => {
                   />
                 </svg>
               </div>
-              <span className="text-xl font-bold text-gray-800">MedCare</span>
+              <span className="text-lg sm:text-xl font-bold text-gray-800">MedCare</span>
             </Link>
           </div>
 
@@ -77,9 +77,6 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/contact"
-                className="text-gray-600 hover:text-emerald-600  decoration-2 decoration-emerald-500 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 hover:bg-emerald-50/60 cursor-pointer"
-              <a
-                href="#"
                 className="text-gray-600 hover:text-emerald-600 decoration-2 decoration-emerald-500 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 hover:bg-emerald-50/60 cursor-pointer"
               >
                 Contact
@@ -87,9 +84,9 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Currency, Home Button and Cart */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900">
+          {/* Currency, Home Button and Cart - Desktop */}
+          <div className="hidden md:flex items-center space-x-3">
+            <button className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900 px-2 py-1 rounded-md transition-colors">
               <span>USD</span>
               <svg
                 className="w-4 h-4"
@@ -107,11 +104,11 @@ const Navbar = () => {
             </button>
             <Link 
               to="/" 
-              className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
+              className="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
               title="Go to Home"
             >
               <svg
-                className="w-5 h-5"
+                className="w-4 h-4"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -122,7 +119,29 @@ const Navbar = () => {
                 />
               </svg>
             </Link>
-            <button className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-gray-900 text-white hover:bg-black transition-colors">
+            <button className="relative inline-flex items-center justify-center h-9 w-9 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4m1.6 8L5 3H3m4 10a1 1 0 100 2 1 1 0 000-2zm10 0a1 1 0 100 2 1 1 0 000-2z"
+                />
+              </svg>
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-xs text-white">
+                3
+              </span>
+            </button>
+          </div>
+
+          {/* Mobile Cart and Menu Button */}
+          <div className="flex md:hidden items-center space-x-2">
+            <button className="relative inline-flex items-center justify-center h-10 w-10 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -133,17 +152,16 @@ const Navbar = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5h13M7 13h13"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4m1.6 8L5 3H3m4 10a1 1 0 100 2 1 1 0 000-2zm10 0a1 1 0 100 2 1 1 0 000-2z"
                 />
               </svg>
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-xs text-white">
+                3
+              </span>
             </button>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="bg-gray-50 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500"
+              className="inline-flex items-center justify-center h-10 w-10 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
             >
               <svg
                 className="h-6 w-6"
@@ -216,13 +234,33 @@ const Navbar = () => {
             >
               About Us
             </Link>
-            <a
-              href="#"
+            <Link
+              to="/contact"
               className="text-gray-600 hover:text-emerald-600 hover:underline underline-offset-4 decoration-2 decoration-emerald-500 block px-3 py-2 rounded-md text-base font-medium"
               onClick={() => setIsMenuOpen(false)}
             >
               Contact
-            </a>
+            </Link>
+            
+            {/* Mobile Currency Selector */}
+            <div className="border-t border-gray-200 pt-3 mt-3">
+              <button className="flex items-center justify-between w-full px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+                <span>Currency: USD</span>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -14,6 +14,7 @@ export default function ShopByCategory() {
   const [maxPrice, setMaxPrice] = useState(100);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('Featured');
+  const [showFilters, setShowFilters] = useState(false);
 
   // Animation refs
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
@@ -66,7 +67,18 @@ export default function ShopByCategory() {
           </div>
 
           <div className="controls">
-            <div className="muted">Showing {filtered.length} products</div>
+            <div className="controls-left">
+              <div className="muted">Showing {filtered.length} products</div>
+              <button 
+                className="filter-toggle-btn"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"/>
+                </svg>
+                Filters
+              </button>
+            </div>
             <div className="sort-wrapper">
               <label className="sort-label">Sort by:</label>
               <select value={sort} onChange={e => setSort(e.target.value)}>
@@ -82,46 +94,85 @@ export default function ShopByCategory() {
         <div className="content">
           <aside 
             ref={filtersRef}
-            className={`filters-card ${animationClasses.fadeLeft(filtersVisible)}`}
+            className={`filters-card ${showFilters ? 'filters-card-mobile-open' : ''} ${animationClasses.fadeLeft(filtersVisible)}`}
+            onClick={(e) => {
+              // Close when clicking backdrop on mobile
+              if (e.target === e.currentTarget && window.innerWidth <= 768) {
+                setShowFilters(false);
+              }
+            }}
           >
-            <h3>Filters</h3>
-            <div className="filter-section">
-              <div className="filter-title">Category</div>
-              {categories.map(cat => (
-                <label className="filter-row" key={cat}>
-                  <input type="radio" name="category" checked={selectedCategory === cat} onChange={() => setSelectedCategory(cat)} />
-                  <span>{cat}</span>
-                </label>
-              ))}
-            </div>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h3 style={{ margin: 0 }}>Filters</h3>
+                <button 
+                  className="close-filters-btn"
+                  onClick={() => setShowFilters(false)}
+                  style={{ 
+                    display: 'none',
+                    background: 'none', 
+                    border: 'none', 
+                    fontSize: '24px', 
+                    cursor: 'pointer',
+                    color: '#6b7280',
+                    padding: '0',
+                    lineHeight: '1'
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="filter-section">
+                <div className="filter-title">Category</div>
+                {categories.map(cat => (
+                  <label className="filter-row" key={cat}>
+                    <input type="radio" name="category" checked={selectedCategory === cat} onChange={() => {
+                      setSelectedCategory(cat);
+                      if (window.innerWidth <= 768) setTimeout(() => setShowFilters(false), 300);
+                    }} />
+                    <span>{cat}</span>
+                  </label>
+                ))}
+              </div>
 
-            <div className="filter-section">
-              <div className="filter-title">Brand</div>
-              {brands.map(b => (
-                <label className="filter-row" key={b}>
-                  <input type="radio" name="brand" checked={selectedBrand === b} onChange={() => setSelectedBrand(b)} />
-                  <span>{b}</span>
-                </label>
-              ))}
-            </div>
+              <div className="filter-section">
+                <div className="filter-title">Brand</div>
+                {brands.map(b => (
+                  <label className="filter-row" key={b}>
+                    <input type="radio" name="brand" checked={selectedBrand === b} onChange={() => {
+                      setSelectedBrand(b);
+                      if (window.innerWidth <= 768) setTimeout(() => setShowFilters(false), 300);
+                    }} />
+                    <span>{b}</span>
+                  </label>
+                ))}
+              </div>
 
-            <div className="filter-section">
-              <div className="filter-title">Form</div>
-              {forms.map(f => (
-                <label className="filter-row" key={f}>
-                  <input type="radio" name="form" checked={selectedForm === f} onChange={() => setSelectedForm(f)} />
-                  <span>{f}</span>
-                </label>
-              ))}
-            </div>
+              <div className="filter-section">
+                <div className="filter-title">Form</div>
+                {forms.map(f => (
+                  <label className="filter-row" key={f}>
+                    <input type="radio" name="form" checked={selectedForm === f} onChange={() => {
+                      setSelectedForm(f);
+                      if (window.innerWidth <= 768) setTimeout(() => setShowFilters(false), 300);
+                    }} />
+                    <span>{f}</span>
+                  </label>
+                ))}
+              </div>
 
-            <div className="filter-section">
-              <div className="filter-title">Price Range</div>
-              <input className="price-range" type="range" min="0" max="100" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
-              <div className="price-legend"><span>$0</span><span>${maxPrice}</span></div>
-            </div>
+              <div className="filter-section">
+                <div className="filter-title">Price Range</div>
+                <input className="price-range" type="range" min="0" max="100" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
+                <div className="price-legend"><span>$0</span><span>${maxPrice}</span></div>
+              </div>
 
-            <button className="clear-btn" onClick={clearFilters}>Clear Filters</button>
+              <button className="clear-btn" onClick={() => {
+                clearFilters();
+                if (window.innerWidth <= 768) setTimeout(() => setShowFilters(false), 300);
+              }}>Clear Filters</button>
+            </div>
           </aside>
 
           <main 

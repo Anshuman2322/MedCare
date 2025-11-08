@@ -22,35 +22,35 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-10">
           <div 
             ref={footerRef}
-            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 ${animationClasses.fadeUp(footerVisible)}`}
+            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 ${animationClasses.fadeUp(footerVisible)}`}
           >
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900">About MedCare</h4>
+            <div className="sm:col-span-2 lg:col-span-1">
+              <h4 className="text-base sm:text-lg font-semibold text-gray-900">About MedCare</h4>
               <p className="mt-3 text-gray-600 text-sm leading-6">
                 Your trusted online pharmacy delivering quality healthcare products across the USA.
               </p>
             </div>
             <div>
-              <h4 className="text-lg font-semibold text-gray-900">Quick Links</h4>
+              <h4 className="text-base sm:text-lg font-semibold text-gray-900">Quick Links</h4>
               <ul className="mt-3 space-y-2 text-sm">
-                <li><a className="text-gray-600 hover:text-emerald-600" href="#">Shop</a></li>
-                <li><a className="text-gray-600 hover:text-emerald-600" href="#">About Us</a></li>
-                <li><a className="text-gray-600 hover:text-emerald-600" href="#">Contact</a></li>
+                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">Shop</a></li>
+                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">About Us</a></li>
+                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">Contact</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-lg font-semibold text-gray-900">Policies</h4>
+              <h4 className="text-base sm:text-lg font-semibold text-gray-900">Policies</h4>
               <ul className="mt-3 space-y-2 text-sm">
-                <li><a className="text-gray-600 hover:text-emerald-600" href="#">Privacy Policy</a></li>
-                <li><a className="text-gray-600 hover:text-emerald-600" href="#">Terms of Service</a></li>
-                <li><a className="text-gray-600 hover:text-emerald-600" href="#">Shipping Policy</a></li>
+                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">Privacy Policy</a></li>
+                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">Terms of Service</a></li>
+                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">Shipping Policy</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-lg font-semibold text-gray-900">Contact</h4>
+              <h4 className="text-base sm:text-lg font-semibold text-gray-900">Contact</h4>
               <ul className="mt-3 space-y-2 text-sm text-gray-600">
-                <li>Email: <a className="hover:text-emerald-600" href="mailto:support@medcare.com">support@medcare.com</a></li>
-                <li>Phone: 1-800-MED-CARE</li>
+                <li>Email: <a className="hover:text-emerald-600 transition-colors break-all" href="mailto:support@medcare.com">support@medcare.com</a></li>
+                <li>Phone: <a className="hover:text-emerald-600 transition-colors" href="tel:1-800-MED-CARE">1-800-MED-CARE</a></li>
                 <li>Hours: Mon-Fri 9AM-6PM EST</li>
               </ul>
             </div>
