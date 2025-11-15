@@ -187,6 +187,90 @@ const TrustSection = () => {
   return (
     <section className="py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
+        {/* Premium IndiaMART Certification Section - Moved to Top */}
+        <div className="relative bg-gradient-to-br from-emerald-50 via-emerald-100 to-emerald-200 rounded-3xl p-8 sm:p-12 border-2 border-emerald-300 shadow-2xl mb-16">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-white/30 rounded-3xl backdrop-blur-sm"></div>
+          
+          {/* Content */}
+          <div className="relative z-10">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-full text-sm font-semibold mb-4 shadow-lg">
+                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                </svg>
+                IndiaMART Certified Partner
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                Official IndiaMART Certifications
+              </h3>
+              <p className="text-gray-700 text-lg max-w-2xl mx-auto">
+                Verified business credentials and trusted supplier status on India's largest B2B marketplace
+              </p>
+            </div>
+
+            <div className="w-full flex justify-center">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center max-w-lg mx-auto">
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 sm:p-5 shadow-lg border border-white/50 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-64">
+                  <div className="mb-4">
+                    <img 
+                      src="/indiamart_two.png" 
+                      alt="IndiaMART Trust Seal Verified" 
+                      className="h-12 sm:h-16 w-auto mx-auto object-contain hover:scale-110 transition-transform duration-300"
+                      style={{ imageRendering: 'crisp-edges' }}
+                    />
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Trust Seal Verified</h4>
+                  <p className="text-gray-700 text-sm leading-relaxed">Verified and trusted supplier with authenticated business credentials on IndiaMART marketplace</p>
+                  <div className="mt-3 inline-flex items-center text-emerald-600 font-semibold text-sm">
+                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                    </svg>
+                    Verified ✓
+                  </div>
+                </div>
+
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 sm:p-5 shadow-lg border border-white/50 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-64">
+                  <div className="mb-4">
+                    <img 
+                      src="/indiamart_one.png" 
+                      alt="IndiaMART Verified Exporter" 
+                      className="h-12 sm:h-16 w-auto mx-auto object-contain hover:scale-110 transition-transform duration-300"
+                      style={{ imageRendering: 'crisp-edges' }}
+                    />
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Verified Exporter</h4>
+                  <p className="text-gray-700 text-sm leading-relaxed">Certified exporter with verified export capabilities and international business credentials</p>
+                  <div className="mt-3 inline-flex items-center text-emerald-600 font-semibold text-sm">
+                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                    </svg>
+                    Certified ✓
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="mt-8 text-center">
+              <div className="inline-flex items-center space-x-6 text-sm text-gray-600 bg-white/60 backdrop-blur-sm rounded-full px-6 py-3">
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                  Business Verified
+                </div>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-emerald-600 rounded-full mr-2"></div>
+                  Export Ready
+                </div>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-emerald-700 rounded-full mr-2"></div>
+                  Trusted Partner
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div 
           ref={headerRef}
           className={`text-center mb-16 transition-all duration-1000 ease-out ${
@@ -196,10 +280,11 @@ const TrustSection = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Trust MedCare</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">We maintain the highest standards in healthcare product delivery</p>
         </div>
-        <div className="flex flex-wrap justify-center gap-8 sm:flex-nowrap">
+        {/* Standard Trust Cards */}
+        <div className="flex flex-wrap justify-center gap-6 mb-16">
           <div 
             ref={card1Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center flex-1 max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card1Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
@@ -211,7 +296,7 @@ const TrustSection = () => {
           </div>
           <div 
             ref={card2Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center flex-1 max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card2Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
@@ -223,7 +308,7 @@ const TrustSection = () => {
           </div>
           <div 
             ref={card3Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center flex-1 max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card3Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
@@ -235,7 +320,7 @@ const TrustSection = () => {
           </div>
           <div 
             ref={card4Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center flex-1 max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card4Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >

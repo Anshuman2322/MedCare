@@ -1,48 +1,107 @@
-# MedCare – Modern Pharmacy Landing (React + Vite)
+# MedCare – Advanced Healthcare E-Commerce Platform
 
-MedCare is a responsive, single‑page pharmacy storefront built with React 19, Vite, and Tailwind CSS. It showcases a clean, accessible UI with a hero banner, category browsing, featured products, and a polished footer — ideal as a starting point for an online pharmacy or healthcare e‑commerce experience.
+[![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-7.9.5-646CFF?logo=vite)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.1.16-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-> This README documents the actual implementation in this repo. It replaces the default Vite template docs.
+MedCare is a comprehensive, responsive healthcare e-commerce platform built with cutting-edge technologies. Featuring real-time currency conversion, advanced search functionality, IndiaMART certifications, and a polished user experience optimized for pharmaceutical and medical product sales.
 
-## Features
+## Key Features
 
-- Responsive layout optimized for mobile → desktop
-- Navbar with search, category links, currency toggle, and cart icon
-- Hero section with branded background image and gradient overlay for legibility
-- “Shop by Category” grid with interactive cards
-- Featured Medicines grid with product cards and clear CTAs
-- Informational footer with feature highlights and quick links
-- Modern styling via Tailwind CSS v4 (using the official Vite plugin)
-- Strict ESLint config and React Fast Refresh for a smooth DX
+### **E-Commerce Functionality**
+- **Product Catalog**: 61+ medicines with detailed information and images
+- **Category Browsing**: Organized shop-by-category with product counts
+- **Advanced Search**: Real-time search with dropdown suggestions and navigation
+- **Product Details**: Comprehensive medicine details with pricing and availability
 
-## Tech stack
+### **Multi-Currency Support**
+- **7 Currencies**: USD, EUR, GBP, INR, CAD, AUD, JPY
+- **Live Exchange Rates**: Real-time conversion with current market rates
+- **Persistent Selection**: Currency preference saved locally
+- **Global Context**: Seamless currency switching across all pages
 
-- React 19
-- Vite 7
-- Tailwind CSS 4 (via `@tailwindcss/vite` plugin)
-- ESLint 9
+### **Trust & Certifications**
+- **IndiaMART Verified**: Official Trust Seal and Verified Exporter badges
+- **FDA Approved**: Healthcare compliance certifications
+- **WHO Compliant**: International quality standards
+- **Professional Credibility**: Dedicated certification showcase section
 
-Minimum Node.js version: 18+ (LTS recommended)
+### **Modern User Experience**
+- **Responsive Design**: Mobile-first approach with breakpoint optimization
+- **Smooth Animations**: Scroll-triggered animations and hover effects
+- **Fast Performance**: Vite-powered with React 19 optimizations
+- **Accessibility**: WCAG compliant with proper focus management
 
-## Getting started
+## Tech Stack
 
-From a terminal in the project root:
+### **Core Technologies**
+- ![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react) **React 19.1.1** - Latest React with Concurrent Features
+- ![Vite](https://img.shields.io/badge/Vite-7.9.5-646CFF?logo=vite) **Vite 7.9.5** - Lightning-fast build tool and dev server
+- ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-4.1.16-06B6D4?logo=tailwindcss) **Tailwind CSS 4.1.16** - Utility-first CSS framework
+- ![React Router](https://img.shields.io/badge/React%20Router-7.9.5-CA4245?logo=reactrouter) **React Router 7.9.5** - Client-side routing
 
-```powershell
-# install deps
+### **Development Tools**
+- ![ESLint](https://img.shields.io/badge/ESLint-9.x-4B32C3?logo=eslint) **ESLint 9** - Code linting and quality
+- ![JavaScript](https://img.shields.io/badge/JavaScript-ES2024-F7DF1E?logo=javascript) **Modern JavaScript** - ES2024 features
+- ![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=nodedotjs) **Node.js 18+** - Runtime environment
+
+### **Architecture Patterns**
+- **Context API** - Global state management for currency
+- **Custom Hooks** - Reusable logic for animations and state
+- **Component Composition** - Modular and maintainable code structure
+- **Responsive Design** - Mobile-first with progressive enhancement
+
+**System Requirements**: Node.js 18+ (LTS recommended), Windows/macOS/Linux
+
+## Quick Start
+
+### **Prerequisites**
+```bash
+node --version  # Should be 18.0.0 or higher
+npm --version   # Should be 9.0.0 or higher
+```
+
+### **Installation**
+```bash
+# Clone the repository
+git clone https://github.com/hardik-ajmeriya/MedCare.git
+cd MedCare
+
+# Install dependencies
 npm install
 
-# start dev server on http://localhost:5173/
+# Start development server
 npm run dev
+# → Opens http://localhost:5173/
+```
 
-# build for production (outputs to dist/)
-npm run build
+### **Available Scripts**
+```bash
+# Development
+npm run dev          # Start dev server with HMR
+npm run dev:host     # Start dev server accessible on network
 
-# locally preview the production build
-npm run preview
+# Production
+npm run build        # Build for production → dist/
+npm run preview      # Preview production build locally
 
-# lint the project
-npm run lint
+# Code Quality
+npm run lint         # Run ESLint
+npm run lint:fix     # Fix auto-fixable ESLint issues
+npm run format       # Format code with Prettier
+
+# Testing
+npm run test         # Run test suite
+npm run test:coverage # Run tests with coverage report
+```
+
+### **Environment Setup**
+Create a `.env.local` file for local development:
+```env
+VITE_API_BASE_URL=http://localhost:3001
+VITE_CURRENCY_API_KEY=your_api_key_here
+VITE_ANALYTICS_ID=your_analytics_id
 ```
 
 ## Project structure

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useState, useEffect, useRef } from 'react';
 
 // Custom hook for scroll animations
@@ -77,9 +78,9 @@ export const AnimatedSection = ({ children, className = '', delay = 0, animation
   );
 };
 
-export const AnimatedCard = ({ children, className = '', delay = 0, index = 0 }) => {
-  const [ref, isVisible] = useScrollAnimation(0.1, delay + (index * 100));
-  
+export const AnimatedCard = ({ children, className = '', delay = 0, index = 0, stagger = true }) => {
+  const computedDelay = stagger ? delay + (index * 60) : delay; // shorter stagger; can be disabled
+  const [ref, isVisible] = useScrollAnimation(0.05, computedDelay);
   return (
     <div ref={ref} className={`${animationClasses.fadeUpFast(isVisible)} ${className}`}>
       {children}

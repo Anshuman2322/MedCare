@@ -1,0 +1,38 @@
+<svg width="280" height="60" viewBox="0 0 280 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="blueOuter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#1E90FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0066CC;stop-opacity:1" />
+    </radialGradient>
+    <radialGradient id="yellowCenter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Blue outer circle -->
+  <circle cx="30" cy="30" r="28" fill="url(#blueOuter)" stroke="#0066CC" stroke-width="2"/>
+  
+  <!-- Yellow inner circle -->
+  <circle cx="30" cy="30" r="20" fill="url(#yellowCenter)"/>
+  
+  <!-- Green checkmark -->
+  <path d="M20 29 L27 36 L42 21" stroke="#228B22" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Text around the edge -->
+  <path id="topArc" d="M 8,30 A 22,22 0 0,1 52,30" fill="none"/>
+  <text font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white">
+    <textPath href="#topArc" startOffset="25%">VERIFIED</textPath>
+  </text>
+  
+  <!-- Center text -->
+  <text x="30" y="48" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="6" font-weight="bold">TRUST SEAL</text>
+  
+  <!-- Bottom indiamart text -->
+  <rect x="15" y="50" width="30" height="8" fill="#0066CC" rx="2"/>
+  <text x="30" y="56" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="6" font-weight="bold">indiamart</text>
+  
+  <!-- Right side text -->
+  <text x="70" y="22" fill="#666" font-family="Arial, sans-serif" font-size="14" font-weight="normal">IndiaMART Certification</text>
+  <text x="70" y="38" fill="#333" font-family="Arial, sans-serif" font-size="16" font-weight="bold">Trust Seal Verified</text>
+</svg>

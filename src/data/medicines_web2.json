@@ -1,0 +1,1168 @@
+[
+  {
+    "id": "egaten-triclabendazole-250mg-tablet",
+    "name": "Egaten Triclabendazole 250 mg",
+    "category": "Antibiotics",
+    "price": 16.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/egaten-triclabendazole-250mg-tablet/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/egaten-triclabendazole-250mg-tablet/1unnamed.jpg",
+      "/medicines_web2/egaten-triclabendazole-250mg-tablet/2unnamed.jpg",
+      "/medicines_web2/egaten-triclabendazole-250mg-tablet/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Egaten Triclabendazole 250 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "ivecop-6mg-12mg-ivermectin-tablets",
+    "name": "Ivecop Ivermectin Tablets 6 mg",
+    "category": "Antibiotics",
+    "price": 16.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/ivecop-6mg-12mg-ivermectin-tablets/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/ivecop-6mg-12mg-ivermectin-tablets/1unnamed.jpg",
+      "/medicines_web2/ivecop-6mg-12mg-ivermectin-tablets/2unnamed.jpg",
+      "/medicines_web2/ivecop-6mg-12mg-ivermectin-tablets/3unnamed.jpg",
+      "/medicines_web2/ivecop-6mg-12mg-ivermectin-tablets/4unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Ivecop Ivermectin Tablets 6 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "ivejuv-ivermectin-12-m-g",
+    "name": "Ivejuv Ivermectin 12 M G",
+    "category": "Antibiotics",
+    "price": 16.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/ivejuv-ivermectin-12-m-g/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/ivejuv-ivermectin-12-m-g/1unnamed.jpg",
+      "/medicines_web2/ivejuv-ivermectin-12-m-g/2unnamed.jpg",
+      "/medicines_web2/ivejuv-ivermectin-12-m-g/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Ivejuv Ivermectin 12 M G - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "iverheal-ivermectin-12mg-tablets",
+    "name": "Iverheal Ivermectin Tablets 12 mg",
+    "category": "Antibiotics",
+    "price": 16.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/iverheal-ivermectin-12mg-tablets/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/iverheal-ivermectin-12mg-tablets/1unnamed.jpg",
+      "/medicines_web2/iverheal-ivermectin-12mg-tablets/2unnamed.jpg",
+      "/medicines_web2/iverheal-ivermectin-12mg-tablets/3unnamed.jpg",
+      "/medicines_web2/iverheal-ivermectin-12mg-tablets/4unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Iverheal Ivermectin Tablets 12 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "ivermectin-3-mg",
+    "name": "Ivermectin",
+    "category": "Antibiotics",
+    "price": 16.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/ivermectin-3-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/ivermectin-3-mg/1unnamed.jpg",
+      "/medicines_web2/ivermectin-3-mg/2unnamed.jpg",
+      "/medicines_web2/ivermectin-3-mg/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Ivermectin - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "ivrea-ivermectin-cream-1-0",
+    "name": "Ivrea Ivermectin 1 0",
+    "category": "Antibiotics",
+    "price": 16.0,
+    "form": "Cream",
+    "image": "/medicines_web2/ivrea-ivermectin-cream-1-0/10unnamed.jpg",
+    "images": [
+      "/medicines_web2/ivrea-ivermectin-cream-1-0/10unnamed.jpg",
+      "/medicines_web2/ivrea-ivermectin-cream-1-0/11unnamed.jpg",
+      "/medicines_web2/ivrea-ivermectin-cream-1-0/1unnamed.jpg",
+      "/medicines_web2/ivrea-ivermectin-cream-1-0/2unnamed.jpg",
+      "/medicines_web2/ivrea-ivermectin-cream-1-0/3unnamed.jpg",
+      "/medicines_web2/ivrea-ivermectin-cream-1-0/4unnamed.jpg",
+      "/medicines_web2/ivrea-ivermectin-cream-1-0/5unnamed.jpg",
+      "/medicines_web2/ivrea-ivermectin-cream-1-0/6unnamed.jpg",
+      "/medicines_web2/ivrea-ivermectin-cream-1-0/7unnamed.jpg",
+      "/medicines_web2/ivrea-ivermectin-cream-1-0/8unnamed.jpg",
+      "/medicines_web2/ivrea-ivermectin-cream-1-0/9unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Ivrea Ivermectin 1 0 - Cream",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "mebemole",
+    "name": "Mebemole",
+    "category": "Antibiotics",
+    "price": 16.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/mebemole/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/mebemole/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Mebemole - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "mebentel-100-mg-mebendazole-tablet",
+    "name": "Mebentel Mebendazole",
+    "category": "Antibiotics",
+    "price": 16.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/mebentel-100-mg-mebendazole-tablet/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/mebentel-100-mg-mebendazole-tablet/1unnamed.jpg",
+      "/medicines_web2/mebentel-100-mg-mebendazole-tablet/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Mebentel Mebendazole - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "vermox-500-mg",
+    "name": "Vermox 500 mg",
+    "category": "Antibiotics",
+    "price": 16.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/vermox-500-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/vermox-500-mg/1unnamed.jpg",
+      "/medicines_web2/vermox-500-mg/2unnamed.jpg",
+      "/medicines_web2/vermox-500-mg/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Vermox 500 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "ocrevus-ocrelizumab-300mg",
+    "name": "Ocrevus Ocrelizumab 300 mg",
+    "category": "Anti Cancer",
+    "price": 45.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/ocrevus-ocrelizumab-300mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/ocrevus-ocrelizumab-300mg/1unnamed.jpg",
+      "/medicines_web2/ocrevus-ocrelizumab-300mg/2unnamed.jpg",
+      "/medicines_web2/ocrevus-ocrelizumab-300mg/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Ocrevus Ocrelizumab 300 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "hydroxychloroquine-sulphate-200mg-tablets",
+    "name": "Hydroxychloroquine Sulphate Tablets 200 mg",
+    "category": "Anti Malarial",
+    "price": 28.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/hydroxychloroquine-sulphate-200mg-tablets/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/hydroxychloroquine-sulphate-200mg-tablets/1unnamed.jpg",
+      "/medicines_web2/hydroxychloroquine-sulphate-200mg-tablets/2unnamed.jpg",
+      "/medicines_web2/hydroxychloroquine-sulphate-200mg-tablets/3unnamed.jpg",
+      "/medicines_web2/hydroxychloroquine-sulphate-200mg-tablets/4unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Hydroxychloroquine Sulphate Tablets 200 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "hcqs-400-mg",
+    "name": "Hcqs 400 mg",
+    "category": "Anti Malarial",
+    "price": 28.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/hcqs-400-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/hcqs-400-mg/1unnamed.jpg",
+      "/medicines_web2/hcqs-400-mg/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Hcqs 400 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "paxista-nirmatrelvir-150mg-and-ritonavir-100mg",
+    "name": "Paxista Nirmatrelvir And Ritonavir 100 mg",
+    "category": "Anti Viral",
+    "price": 30.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/paxista-nirmatrelvir-150mg-and-ritonavir-100mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/paxista-nirmatrelvir-150mg-and-ritonavir-100mg/1unnamed.jpg",
+      "/medicines_web2/paxista-nirmatrelvir-150mg-and-ritonavir-100mg/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Paxista Nirmatrelvir And Ritonavir 100 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "paxista-tab-mg",
+    "name": "Paxista Tab Mg",
+    "category": "Anti Viral",
+    "price": 30.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/paxista-tab-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/paxista-tab-mg/1unnamed.jpg",
+      "/medicines_web2/paxista-tab-mg/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Paxista Tab Mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "antidepressant-anti-anxiety-75-mg",
+    "name": "Antidepressant Anti Anxiety 7.5 mg",
+    "category": "Antidepressant / Anti-Anxiety",
+    "price": 15.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/antidepressant-anti-anxiety-75-mg/unnamed.jpg",
+    "images": [
+      "/medicines_web2/antidepressant-anti-anxiety-75-mg/unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Antidepressant Anti Anxiety 7.5 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "antidepressant-anti-anxiety-medicine-10-mg",
+    "name": "Antidepressant Anti Anxiety Medicine 10 mg",
+    "category": "Antidepressant / Anti-Anxiety",
+    "price": 15.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/antidepressant-anti-anxiety-medicine-10-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/antidepressant-anti-anxiety-medicine-10-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Antidepressant Anti Anxiety Medicine 10 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "antidepressant-anti-anxiety-medicines-375-mg",
+    "name": "Antidepressant Anti Anxiety Medicines 3.75 mg",
+    "category": "Antidepressant / Anti-Anxiety",
+    "price": 15.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/antidepressant-anti-anxiety-medicines-375-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/antidepressant-anti-anxiety-medicines-375-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Antidepressant Anti Anxiety Medicines 3.75 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "antidepressant-anti-anxiety-medicines-20-mg",
+    "name": "Antidepressant Anti Anxiety Medicines 20 mg",
+    "category": "Antidepressant / Anti-Anxiety",
+    "price": 15.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/antidepressant-anti-anxiety-medicines-20-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/antidepressant-anti-anxiety-medicines-20-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Antidepressant Anti Anxiety Medicines 20 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "lexaheal-escitalopram-10-mg-tablets",
+    "name": "Lexaheal Escitalopram Tablets 10 mg",
+    "category": "Antidepressant / Anti-Anxiety",
+    "price": 15.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/lexaheal-escitalopram-10-mg-tablets/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/lexaheal-escitalopram-10-mg-tablets/1unnamed.jpg",
+      "/medicines_web2/lexaheal-escitalopram-10-mg-tablets/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Lexaheal Escitalopram Tablets 10 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "lexaheal-escitalopram-20-mg-tablets",
+    "name": "Lexaheal Escitalopram Tablets 20 mg",
+    "category": "Antidepressant / Anti-Anxiety",
+    "price": 15.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/lexaheal-escitalopram-20-mg-tablets/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/lexaheal-escitalopram-20-mg-tablets/1unnamed.jpg",
+      "/medicines_web2/lexaheal-escitalopram-20-mg-tablets/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Lexaheal Escitalopram Tablets 20 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "metaformin-hydrochloride-1000-mg",
+    "name": "Metaformin Hydrochloride 1000 mg",
+    "category": "Chronic / Cardiac",
+    "price": 25.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/metaformin-hydrochloride-1000-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/metaformin-hydrochloride-1000-mg/1unnamed.jpg",
+      "/medicines_web2/metaformin-hydrochloride-1000-mg/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Metaformin Hydrochloride 1000 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "silodosin-capsules-8-mg",
+    "name": "Silodosin 8 mg",
+    "category": "Chronic / Cardiac",
+    "price": 25.0,
+    "form": "Capsule",
+    "image": "/medicines_web2/silodosin-capsules-8-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/silodosin-capsules-8-mg/1unnamed.jpg",
+      "/medicines_web2/silodosin-capsules-8-mg/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Silodosin 8 mg - Capsule",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "super-kamagra-sildenafil-and-dapoxetine-tablets-160mg",
+    "name": "Super Kamagra Sildenafil And Dapoxetine Tablets 160 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/super-kamagra-sildenafil-and-dapoxetine-tablets-160mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/super-kamagra-sildenafil-and-dapoxetine-tablets-160mg/1unnamed.jpg",
+      "/medicines_web2/super-kamagra-sildenafil-and-dapoxetine-tablets-160mg/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Super Kamagra Sildenafil And Dapoxetine Tablets 160 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "kamagra-oral-jelly",
+    "name": "Kamagra Oral",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Jelly",
+    "image": "/medicines_web2/kamagra-oral-jelly/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/kamagra-oral-jelly/1unnamed.jpg",
+      "/medicines_web2/kamagra-oral-jelly/2unnamed.jpg",
+      "/medicines_web2/kamagra-oral-jelly/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Kamagra Oral - Jelly",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "malegra-sildenafil-25mg-tablet",
+    "name": "Malegra Sildenafil 25 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/malegra-sildenafil-25mg-tablet/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/malegra-sildenafil-25mg-tablet/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Malegra Sildenafil 25 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "extra-super-p-force-tablets",
+    "name": "Extra Super P Force Tablets",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/extra-super-p-force-tablets/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/extra-super-p-force-tablets/1unnamed.jpg",
+      "/medicines_web2/extra-super-p-force-tablets/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Extra Super P Force Tablets - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "kamagra-100-mg",
+    "name": "Kamagra",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/kamagra-100-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/kamagra-100-mg/1unnamed.jpg",
+      "/medicines_web2/kamagra-100-mg/2unnamed.jpg",
+      "/medicines_web2/kamagra-100-mg/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Kamagra - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "lovegra-100-mg",
+    "name": "Lovegra 100 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/lovegra-100-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/lovegra-100-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Lovegra 100 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "lovegra-100mg-tablet",
+    "name": "Lovegra 100 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/lovegra-100mg-tablet/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/lovegra-100mg-tablet/1unnamed.jpg",
+      "/medicines_web2/lovegra-100mg-tablet/2unnamed.jpg",
+      "/medicines_web2/lovegra-100mg-tablet/3unnamed.jpg",
+      "/medicines_web2/lovegra-100mg-tablet/4unnamed.jpg",
+      "/medicines_web2/lovegra-100mg-tablet/5unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Lovegra 100 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "malegra-200-mg",
+    "name": "Malegra 200 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/malegra-200-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/malegra-200-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Malegra 200 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "poxet-30-tablets-dapoxetine-30mg",
+    "name": "Poxet 30 Tablets Dapoxetine 30 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/poxet-30-tablets-dapoxetine-30mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/poxet-30-tablets-dapoxetine-30mg/1unnamed.jpg",
+      "/medicines_web2/poxet-30-tablets-dapoxetine-30mg/2unnamed.jpg",
+      "/medicines_web2/poxet-30-tablets-dapoxetine-30mg/3unnamed.jpg",
+      "/medicines_web2/poxet-30-tablets-dapoxetine-30mg/4unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Poxet 30 Tablets Dapoxetine 30 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "poxet-60-mg-tablets",
+    "name": "Poxet Tablets",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/poxet-60-mg-tablets/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/poxet-60-mg-tablets/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Poxet Tablets - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "poxet-90-mg-dapoxetine-tablets",
+    "name": "Poxet Dapoxetine Tablets",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/poxet-90-mg-dapoxetine-tablets/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/poxet-90-mg-dapoxetine-tablets/1unnamed.jpg",
+      "/medicines_web2/poxet-90-mg-dapoxetine-tablets/2unnamed.jpg",
+      "/medicines_web2/poxet-90-mg-dapoxetine-tablets/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Poxet Dapoxetine Tablets - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "super-vidalista",
+    "name": "Super Vidalista",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/super-vidalista/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/super-vidalista/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Super Vidalista - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "super-vilitra",
+    "name": "Super Vilitra",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/super-vilitra/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/super-vilitra/1unnamed.jpg",
+      "/medicines_web2/super-vilitra/2unnamed.jpg",
+      "/medicines_web2/super-vilitra/3unnamed.jpg",
+      "/medicines_web2/super-vilitra/4unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Super Vilitra - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadalafil-60-mg",
+    "name": "Tadalafil 60 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadalafil-60-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadalafil-60-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadalafil 60 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadalafil-80-mg",
+    "name": "Tadalafil 80 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadalafil-80-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadalafil-80-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadalafil 80 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadalafil-dapoxetine-hcl-tablet",
+    "name": "Tadalafil Dapoxetine HCL",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadalafil-dapoxetine-hcl-tablet/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadalafil-dapoxetine-hcl-tablet/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadalafil Dapoxetine HCL - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadalista-10-mg",
+    "name": "Tadalista 10 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadalista-10-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadalista-10-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadalista 10 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadalista-20-mg",
+    "name": "Tadalista 20 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadalista-20-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadalista-20-mg/1unnamed.jpg",
+      "/medicines_web2/tadalista-20-mg/2unnamed.jpg",
+      "/medicines_web2/tadalista-20-mg/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadalista 20 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadalista-40-mg",
+    "name": "Tadalista 40 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadalista-40-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadalista-40-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadalista 40 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadalista-5-mg",
+    "name": "Tadalista 5 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadalista-5-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadalista-5-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadalista 5 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadalista-professional-20-mg",
+    "name": "Tadalista Professional 20 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadalista-professional-20-mg/11unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadalista-professional-20-mg/11unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadalista Professional 20 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadalista-super-active",
+    "name": "Tadalista Super Active",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadalista-super-active/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadalista-super-active/1unnamed.jpg",
+      "/medicines_web2/tadalista-super-active/2unnamed.jpg",
+      "/medicines_web2/tadalista-super-active/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadalista Super Active - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadapox",
+    "name": "Tadapox",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadapox/IMG-20231208-WA0074.jpg",
+    "images": [
+      "/medicines_web2/tadapox/IMG-20231208-WA0074.jpg",
+      "/medicines_web2/tadapox/IMG_20231213_175822_820.jpg",
+      "/medicines_web2/tadapox/tadapox-tadalafil-and-dapoxetine-tablets-1000x1000.jpeg",
+      "/medicines_web2/tadapox/tadapox-tadalafil-and-dapoxetine-tablets-1000x1000.webp"
+    ],
+    "inStock": true,
+    "description": "Tadapox - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadarise-10-mg",
+    "name": "Tadarise 10 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadarise-10-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadarise-10-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadarise 10 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadarise-20-mg",
+    "name": "Tadarise 20 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadarise-20-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadarise-20-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadarise 20 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadarise-5-mg",
+    "name": "Tadarise 5 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadarise-5-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadarise-5-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadarise 5 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "tadarise-pro-40-mg",
+    "name": "Tadarise Pro 40 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/tadarise-pro-40-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/tadarise-pro-40-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Tadarise Pro 40 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "valif-20-mg",
+    "name": "Valif 20 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/valif-20-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/valif-20-mg/1unnamed.jpg",
+      "/medicines_web2/valif-20-mg/2unnamed.jpg",
+      "/medicines_web2/valif-20-mg/3unnamed.jpg",
+      "/medicines_web2/valif-20-mg/4unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Valif 20 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "vidalista-40-mg",
+    "name": "Vidalista 40 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/vidalista-40-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/vidalista-40-mg/1unnamed.jpg",
+      "/medicines_web2/vidalista-40-mg/2unnamed.jpg",
+      "/medicines_web2/vidalista-40-mg/3unnamed.jpg",
+      "/medicines_web2/vidalista-40-mg/4unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Vidalista 40 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "vidalista-60-mg",
+    "name": "Vidalista 60 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/vidalista-60-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/vidalista-60-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Vidalista 60 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "vidalista-80-mg",
+    "name": "Vidalista 80 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/vidalista-80-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/vidalista-80-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Vidalista 80 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "vidalista-professional",
+    "name": "Vidalista Professional",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/vidalista-professional/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/vidalista-professional/1unnamed.jpg",
+      "/medicines_web2/vidalista-professional/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Vidalista Professional - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "vidalista-10mg-tablets",
+    "name": "Vidalista Tablets 10 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/vidalista-10mg-tablets/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/vidalista-10mg-tablets/1unnamed.jpg",
+      "/medicines_web2/vidalista-10mg-tablets/2unnamed.jpg",
+      "/medicines_web2/vidalista-10mg-tablets/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Vidalista Tablets 10 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "vilitra-40-mg",
+    "name": "Vilitra 40 mg",
+    "category": "Erectile Dysfunction",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/vilitra-40-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/vilitra-40-mg/1unnamed.jpg",
+      "/medicines_web2/vilitra-40-mg/2unnamed.jpg",
+      "/medicines_web2/vilitra-40-mg/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Vilitra 40 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "vominorm-10-mg",
+    "name": "Vominorm 10 mg",
+    "category": "Gastrointestinal",
+    "price": 12.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/vominorm-10-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/vominorm-10-mg/1unnamed.jpg",
+      "/medicines_web2/vominorm-10-mg/2unnamed.jpg",
+      "/medicines_web2/vominorm-10-mg/3unnamed.jpg",
+      "/medicines_web2/vominorm-10-mg/4unnamed.jpg",
+      "/medicines_web2/vominorm-10-mg/5unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Vominorm 10 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "minoxidil-15-mg",
+    "name": "Minoxidil 1.5 mg",
+    "category": "Hormones & Steroids",
+    "price": 22.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/minoxidil-15-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/minoxidil-15-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Minoxidil 1.5 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "minoxidil-25-mg",
+    "name": "Minoxidil 2.5 mg",
+    "category": "Hormones & Steroids",
+    "price": 22.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/minoxidil-25-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/minoxidil-25-mg/1unnamed.jpg",
+      "/medicines_web2/minoxidil-25-mg/2unnamed.jpg",
+      "/medicines_web2/minoxidil-25-mg/3unnamed.jpg",
+      "/medicines_web2/minoxidil-25-mg/4unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Minoxidil 2.5 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "vbolnor-methandienone-tablets-10-mg",
+    "name": "Vbolnor Methandienone Tablets 10 mg",
+    "category": "Hormones & Steroids",
+    "price": 22.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/vbolnor-methandienone-tablets-10-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/vbolnor-methandienone-tablets-10-mg/1unnamed.jpg",
+      "/medicines_web2/vbolnor-methandienone-tablets-10-mg/2unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Vbolnor Methandienone Tablets 10 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "carisoprodol-tablets-500-mg",
+    "name": "Carisoprodol Tablets 500 mg",
+    "category": "Pain Relief",
+    "price": 12.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/carisoprodol-tablets-500-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/carisoprodol-tablets-500-mg/1unnamed.jpg",
+      "/medicines_web2/carisoprodol-tablets-500-mg/2unnamed.jpg",
+      "/medicines_web2/carisoprodol-tablets-500-mg/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Carisoprodol Tablets 500 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "naproxen-500-mg",
+    "name": "Naproxen 500 mg",
+    "category": "Pain Relief",
+    "price": 12.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/naproxen-500-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/naproxen-500-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Naproxen 500 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "painosoma350-mg",
+    "name": "Painosoma350 Mg 350 mg",
+    "category": "Pain Relief",
+    "price": 12.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/painosoma350-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/painosoma350-mg/1unnamed.jpg",
+      "/medicines_web2/painosoma350-mg/2unnamed.jpg",
+      "/medicines_web2/painosoma350-mg/3unnamed.jpg",
+      "/medicines_web2/painosoma350-mg/4unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Painosoma350 Mg 350 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "prosoma-500-mg",
+    "name": "Prosoma 500 mg",
+    "category": "Pain Relief",
+    "price": 12.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/prosoma-500-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/prosoma-500-mg/1unnamed.jpg",
+      "/medicines_web2/prosoma-500-mg/2unnamed.jpg",
+      "/medicines_web2/prosoma-500-mg/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Prosoma 500 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "soma-dol-350-mg",
+    "name": "Soma Dol 350 mg",
+    "category": "Pain Relief",
+    "price": 12.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/soma-dol-350-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/soma-dol-350-mg/1unnamed.jpg",
+      "/medicines_web2/soma-dol-350-mg/2unnamed.jpg",
+      "/medicines_web2/soma-dol-350-mg/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Soma Dol 350 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "minosign-minocycline-tablets-50-mg",
+    "name": "Minosign Minocycline Tablets 50 mg",
+    "category": "Skin / Allergy / Asthma",
+    "price": 14.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/minosign-minocycline-tablets-50-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/minosign-minocycline-tablets-50-mg/1unnamed.jpg",
+      "/medicines_web2/minosign-minocycline-tablets-50-mg/2unnamed.jpg",
+      "/medicines_web2/minosign-minocycline-tablets-50-mg/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Minosign Minocycline Tablets 50 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "meloset-3-mg",
+    "name": "Meloset 3 mg",
+    "category": "Sleep Disorders",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/meloset-3-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/meloset-3-mg/1unnamed.jpg",
+      "/medicines_web2/meloset-3-mg/2unnamed.jpg",
+      "/medicines_web2/meloset-3-mg/3unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Meloset 3 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "zopiclone-20-mg",
+    "name": "Zopiclone 20 mg",
+    "category": "Sleep Disorders",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/zopiclone-20-mg/1unnamed (1).jpg",
+    "images": [
+      "/medicines_web2/zopiclone-20-mg/1unnamed (1).jpg"
+    ],
+    "inStock": true,
+    "description": "Zopiclone 20 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "zopiclone-75-mg",
+    "name": "Zopiclone 7.5 mg",
+    "category": "Sleep Disorders",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/zopiclone-75-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/zopiclone-75-mg/1unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Zopiclone 7.5 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "zopiclone-tablet-75-mg",
+    "name": "Zopiclone 7.5 mg",
+    "category": "Sleep Disorders",
+    "price": 18.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/zopiclone-tablet-75-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/zopiclone-tablet-75-mg/1unnamed.jpg",
+      "/medicines_web2/zopiclone-tablet-75-mg/2unnamed.jpg",
+      "/medicines_web2/zopiclone-tablet-75-mg/3unnamed.jpg",
+      "/medicines_web2/zopiclone-tablet-75-mg/4unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Zopiclone 7.5 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  },
+  {
+    "id": "menbendazole-500-mg",
+    "name": "Menbendazole 500 mg",
+    "category": "Uncategorized",
+    "price": 10.0,
+    "form": "Tablet",
+    "image": "/medicines_web2/menbendazole-500-mg/1unnamed.jpg",
+    "images": [
+      "/medicines_web2/menbendazole-500-mg/1unnamed.jpg",
+      "/medicines_web2/menbendazole-500-mg/2unnamed.jpg",
+      "/medicines_web2/menbendazole-500-mg/3unnamed.jpg",
+      "/medicines_web2/menbendazole-500-mg/4unnamed.jpg",
+      "/medicines_web2/menbendazole-500-mg/5unnamed.jpg"
+    ],
+    "inStock": true,
+    "description": "Menbendazole 500 mg - Tablet",
+    "manufacturer": "Generic",
+    "requiresPrescription": true
+  }
+]

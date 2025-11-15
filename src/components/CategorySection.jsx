@@ -1,65 +1,52 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import medicinesData from '../data/medicines.json';
 import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
 
-const categories = [
-  {
-    name: 'Pain Relief',
-    count: 45,
-    icon: (
-      <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Antibiotics',
-    count: 32,
-    icon: (
-      <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V7l-8-5-8 5v5c0 6 8 10 8 10z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Vitamins',
-    count: 68,
-    icon: (
-      <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Skincare',
-    count: 54,
-    icon: (
-      <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 10-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Supplements',
-    count: 41,
-    icon: (
-      <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 16V8a2 2 0 00-2-2h-6a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2z" />
-        <path d="M7 20H5a2 2 0 01-2-2v-2h6v2a2 2 0 01-2 2z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'General Health',
-    count: 89,
-    icon: (
-      <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="7" width="7" height="10" rx="3" />
-        <rect x="14" y="7" width="7" height="10" rx="3" />
-        <path d="M10 12h4" />
-      </svg>
-    ),
-  },
-];
+// SVG icon helpers
+const Icons = {
+  pain: (
+    <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
+    </svg>
+  ),
+  shield: (
+    <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V7l-8-5-8 5v5c0 6 8 10 8 10z" />
+    </svg>
+  ),
+  sun: (
+    <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+    </svg>
+  ),
+  heart: (
+    <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 10-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z" />
+    </svg>
+  ),
+  bottle: (
+    <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 16V8a2 2 0 00-2-2h-6a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2z" />
+      <path d="M7 20H5a2 2 0 01-2-2v-2h6v2a2 2 0 01-2 2z" />
+    </svg>
+  ),
+  pills: (
+    <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="7" width="7" height="10" rx="3" />
+      <rect x="14" y="7" width="7" height="10" rx="3" />
+      <path d="M10 12h4" />
+    </svg>
+  ),
+};
+
+const pickIcon = (name) => {
+  if (name.includes('Pain')) return Icons.pain;
+  if (name.includes('Antibiot')) return Icons.shield;
+  if (name.includes('Vitamin') || name.includes('Supplements')) return Icons.sun;
+  if (name.includes('Skin')) return Icons.heart;
+  if (name.includes('Chronic') || name.includes('Cardiac')) return Icons.pills;
+  return Icons.bottle;
+};
 
 const CategoryCard = ({ name, count, icon, index }) => (
   <AnimatedCard 
@@ -80,6 +67,17 @@ const CategoryCard = ({ name, count, icon, index }) => (
 
 const CategorySection = () => {
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
+
+  const categories = useMemo(() => {
+    const counts = new Map();
+    medicinesData.forEach((m) => {
+      const key = m.category || 'Other';
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+    const arr = Array.from(counts.entries()).map(([name, count]) => ({ name, count, icon: pickIcon(name) }));
+    // Show top 6 by count
+    return arr.sort((a, b) => b.count - a.count).slice(0, 6);
+  }, []);
 
   return (
     <section className="w-full bg-sky-50/40">

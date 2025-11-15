@@ -32,13 +32,13 @@ export default function Contact() {
           </div>
         </div>
       </div>
-      {/* Main Content: responsive two-column layout */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Left: Form in card */}
+      {/* Main Content: centered single-column layout */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="flex flex-col items-center gap-8 lg:gap-12">
+          {/* Form in card - centered */}
           <div 
             ref={formRef}
-            className={`w-full ${animationClasses.fadeLeft(formVisible)}`}
+            className={`w-full max-w-2xl ${animationClasses.fadeUp(formVisible)}`}
           >
             <div
               onMouseEnter={() => setFormHover(true)}
@@ -80,13 +80,13 @@ export default function Contact() {
               </form>
             </div>
           </div>
-          {/* Right: Contact Info */}
+          {/* Contact Info - centered */}
           <div 
             ref={contactInfoRef}
-            className={`w-full ${animationClasses.fadeRight(contactInfoVisible)}`}
+            className={`w-full max-w-2xl ${animationClasses.fadeUp(contactInfoVisible)}`}
           >
-            <h2 className="font-bold text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">Get in touch</h2>
-            <p className="text-gray-600 text-sm sm:text-base mb-6 sm:mb-8 leading-relaxed">
+            <h2 className="font-bold text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">Get in touch</h2>
+            <p className="text-gray-600 text-sm sm:text-base mb-6 sm:mb-8 leading-relaxed text-center">
               Our customer support team is available to assist you with any questions or concerns.
               Feel free to reach out through any of the following channels.
             </p>
