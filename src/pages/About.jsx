@@ -29,44 +29,44 @@ const MissionSection = () => {
   const [cardsRef, cardsVisible] = useScrollAnimation(0.1, 400);
 
   return (
-    <section className="py-18">
-      <div className="pl-34 max-w-9xl mx-auto pl-4 sm:px-6 lg:px-10 xl:px-19">
-        <div className="pl-70 grid md:grid-cols-2 gap-10 items-center justify-center">
+    <section className="py-12 sm:py-16 lg:py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Image left */}
           <div 
             ref={imageRef}
-            className={`order-1 md:order-none flex justify-center md:justify-start ${animationClasses.fadeLeft(imageVisible)}`}
+            className={`order-2 md:order-1 flex justify-center ${animationClasses.fadeLeft(imageVisible)}`}
           >
-            <div className="rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-200 w-full  max-w-[800px] sm:max-w-[620px] md:max-w-[640px] lg:max-w-[680px] xl:max-w-[720px]">
+            <div className="rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-200 w-full max-w-md sm:max-w-lg md:max-w-full">
               <div className="relative aspect-video">
                 <img
                   src={aboutTeam}
                   alt="MedCare professional team"
-                  className=""
+                  className="w-full h-full object-cover"
                 />
               </div>
             </div>
           </div>
           {/* Text and feature cards */}
-          <div className="max-w-2xl">
+          <div className="order-1 md:order-2">
             <div 
               ref={textRef}
               className={`transition-all duration-1000 ease-out ${
                 textVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
               }`}
             >
-              <div className="inline-flex items-center rounded-full bg-emerald-50 px-5 py-2 text-sm font-medium text-emerald-700 ring-1 ring-emerald-100 mb-6">
+              <div className="inline-flex items-center rounded-full bg-emerald-50 px-4 sm:px-5 py-2 text-sm font-medium text-emerald-700 ring-1 ring-emerald-100 mb-4 sm:mb-6">
                 OUR MISSION
               </div>
-              <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-6 leading-tight">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-gray-900 mb-4 sm:mb-6 leading-tight">
                 Making Healthcare <span className="text-emerald-600">Accessible</span> to Everyone
               </h2>
-              <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+              <p className="text-gray-600 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
                 At MedCare, we believe everyone deserves access to quality healthcare products.
                 Our mission is to make essential medicines and health products easily accessible
                 through our online platform, delivering directly to your doorstep.
               </p>
-              <p className="text-gray-600 text-lg leading-relaxed mb-8">
+              <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8">
                 We work tirelessly to ensure every product meets the highest safety and quality
                 standards, partnering only with certified manufacturers and distributors.
               </p>
@@ -74,25 +74,25 @@ const MissionSection = () => {
             {/* Feature cards */}
             <div 
               ref={cardsRef}
-              className={`flex flex-wrap gap-4 sm:flex-nowrap transition-all duration-1000 ease-out ${
+              className={`grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 transition-all duration-1000 ease-out ${
                 cardsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
             >
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 flex items-center gap-4 flex-1 min-w-0 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 cursor-pointer">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex-shrink-0">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
+              <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 cursor-pointer text-center sm:text-left">
+                <div className="inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex-shrink-0">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
                 </div>
                 <div className="text-sm font-medium text-gray-900">Quality Assured</div>
               </div>
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 flex items-center gap-4 flex-1 min-w-0 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 cursor-pointer">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex-shrink-0">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
+              <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 cursor-pointer text-center sm:text-left">
+                <div className="inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex-shrink-0">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
                 </div>
                 <div className="text-sm font-medium text-gray-900">Fast Delivery</div>
               </div>
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 flex items-center gap-4 flex-1 min-w-0 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 cursor-pointer">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex-shrink-0">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
+              <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 cursor-pointer text-center sm:text-left">
+                <div className="inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex-shrink-0">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
                 </div>
                 <div className="text-sm font-medium text-gray-900">24/7 Support</div>
               </div>
@@ -122,15 +122,15 @@ const ValuesSection = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Core Values</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">These principles guide everything we do</p>
         </div>
-        <div className="flex flex-wrap justify-center gap-8 sm:flex-nowrap">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           <div 
             ref={card1Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-left flex-1 max-w-sm hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 text-center sm:text-left hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card1Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <div className="h-12 w-12 rounded-lg bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
-              <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-4 sm:mb-6 mx-auto sm:mx-0">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="3"/>
                 <circle cx="12" cy="12" r="8"/>
                 <circle cx="12" cy="12" r="13"/>
@@ -141,12 +141,12 @@ const ValuesSection = () => {
           </div>
           <div 
             ref={card2Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-left flex-1 max-w-sm hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 text-center sm:text-left hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card2Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <div className="h-12 w-12 rounded-lg bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
-              <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-4 sm:mb-6 mx-auto sm:mx-0">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 22s8-4 8-10V7l-8-5-8 5v5c0 6 8 10 8 10z"/>
                 <path d="M9 12l2 2 4-4"/>
               </svg>
@@ -156,12 +156,12 @@ const ValuesSection = () => {
           </div>
           <div 
             ref={card3Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-left flex-1 max-w-sm hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 text-center sm:text-left hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card3Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <div className="h-12 w-12 rounded-lg bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
-              <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-4 sm:mb-6 mx-auto sm:mx-0">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 2v20"/>
                 <path d="M2 12h20"/>
                 <path d="M7.5 7.5l9 9"/>
@@ -187,6 +187,90 @@ const TrustSection = () => {
   return (
     <section className="py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
+        {/* Premium IndiaMART Certification Section - Moved to Top */}
+        <div className="relative bg-gradient-to-br from-emerald-50 via-emerald-100 to-emerald-200 rounded-3xl p-8 sm:p-12 border-2 border-emerald-300 shadow-2xl mb-16">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-white/30 rounded-3xl backdrop-blur-sm"></div>
+          
+          {/* Content */}
+          <div className="relative z-10">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-full text-sm font-semibold mb-4 shadow-lg">
+                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                </svg>
+                IndiaMART Certified Partner
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                Official IndiaMART Certifications
+              </h3>
+              <p className="text-gray-700 text-lg max-w-2xl mx-auto">
+                Verified business credentials and trusted supplier status on India's largest B2B marketplace
+              </p>
+            </div>
+
+            <div className="w-full flex justify-center">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center max-w-lg mx-auto">
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 sm:p-5 shadow-lg border border-white/50 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-64">
+                  <div className="mb-4">
+                    <img 
+                      src="/indiamart_two.png" 
+                      alt="IndiaMART Trust Seal Verified" 
+                      className="h-12 sm:h-16 w-auto mx-auto object-contain hover:scale-110 transition-transform duration-300"
+                      style={{ imageRendering: 'crisp-edges' }}
+                    />
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Trust Seal Verified</h4>
+                  <p className="text-gray-700 text-sm leading-relaxed">Verified and trusted supplier with authenticated business credentials on IndiaMART marketplace</p>
+                  <div className="mt-3 inline-flex items-center text-emerald-600 font-semibold text-sm">
+                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                    </svg>
+                    Verified ✓
+                  </div>
+                </div>
+
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 sm:p-5 shadow-lg border border-white/50 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-64">
+                  <div className="mb-4">
+                    <img 
+                      src="/indiamart_one.png" 
+                      alt="IndiaMART Verified Exporter" 
+                      className="h-12 sm:h-16 w-auto mx-auto object-contain hover:scale-110 transition-transform duration-300"
+                      style={{ imageRendering: 'crisp-edges' }}
+                    />
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Verified Exporter</h4>
+                  <p className="text-gray-700 text-sm leading-relaxed">Certified exporter with verified export capabilities and international business credentials</p>
+                  <div className="mt-3 inline-flex items-center text-emerald-600 font-semibold text-sm">
+                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                    </svg>
+                    Certified ✓
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="mt-8 text-center">
+              <div className="inline-flex items-center space-x-6 text-sm text-gray-600 bg-white/60 backdrop-blur-sm rounded-full px-6 py-3">
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                  Business Verified
+                </div>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-emerald-600 rounded-full mr-2"></div>
+                  Export Ready
+                </div>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-emerald-700 rounded-full mr-2"></div>
+                  Trusted Partner
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div 
           ref={headerRef}
           className={`text-center mb-16 transition-all duration-1000 ease-out ${
@@ -196,10 +280,11 @@ const TrustSection = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Trust MedCare</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">We maintain the highest standards in healthcare product delivery</p>
         </div>
-        <div className="flex flex-wrap justify-center gap-8 sm:flex-nowrap">
+        {/* Standard Trust Cards */}
+        <div className="flex flex-wrap justify-center gap-6 mb-16">
           <div 
             ref={card1Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center flex-1 max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card1Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
@@ -211,7 +296,7 @@ const TrustSection = () => {
           </div>
           <div 
             ref={card2Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center flex-1 max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card2Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
@@ -223,7 +308,7 @@ const TrustSection = () => {
           </div>
           <div 
             ref={card3Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center flex-1 max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card3Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
@@ -235,7 +320,7 @@ const TrustSection = () => {
           </div>
           <div 
             ref={card4Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center flex-1 max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card4Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >

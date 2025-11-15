@@ -1,0 +1,16 @@
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="150" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1" rx="8"/>
+  
+  <!-- Icon placeholder -->
+  <rect x="75" y="20" width="50" height="40" fill="#dee2e6" rx="4"/>
+  <text x="100" y="43" text-anchor="middle" fill="#6c757d" font-family="Arial, sans-serif" font-size="10">🏆</text>
+  
+  <!-- Title -->
+  <text x="100" y="85" text-anchor="middle" fill="#212529" font-family="Arial, sans-serif" font-size="14" font-weight="bold">IndiaMART Trust Seal</text>
+  <text x="100" y="100" text-anchor="middle" fill="#212529" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Verified</text>
+  
+  <!-- Description -->
+  <text x="100" y="120" text-anchor="middle" fill="#6c757d" font-family="Arial, sans-serif" font-size="10">Verified and trusted supplier on</text>
+  <text x="100" y="135" text-anchor="middle" fill="#6c757d" font-family="Arial, sans-serif" font-size="10">IndiaMART marketplace</text>
+</svg>

@@ -5,6 +5,8 @@ import imgVitamins from '../assets/product-vitamins.jpg';
 import imgAntibiotics from '../assets/product-antibiotics.jpg';
 import imgSkincare from '../assets/product-skincare.jpg';
 import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
+import { useCurrency } from '../store/useStore.jsx';
+import { formatPrice } from '../utils/currency';
 
 const products = [
   {
@@ -37,9 +39,8 @@ const products = [
   },
 ];
 
-const formatPrice = (n) => `$${n.toFixed(2)}`;
-
 const FeaturedCard = ({ product, index }) => {
+  const { currency } = useCurrency();
   return (
     <AnimatedCard 
       index={index}
@@ -51,7 +52,7 @@ const FeaturedCard = ({ product, index }) => {
       <div className="p-4 md:p-5 flex-1 flex flex-col">
         <p className="text-xs md:text-sm text-gray-500">{product.category}</p>
         <h3 className="mt-1 text-base md:text-lg font-semibold text-gray-800">{product.title}</h3>
-        <p className="mt-2 text-emerald-600 font-semibold">{formatPrice(product.price)}</p>
+        <p className="mt-2 text-emerald-600 font-semibold" key={`price-${currency}`}>{formatPrice(product.price, currency)}</p>
         <div className="mt-auto pt-4">
           <Link to={`/products/${product.id}`} className="w-full inline-flex items-center justify-center h-11 rounded-xl border border-emerald-200 text-emerald-700 text-sm font-medium bg-white transition-colors hover:bg-emerald-50 hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
             View Details

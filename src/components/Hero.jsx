@@ -20,30 +20,30 @@ const Hero = () => {
 
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 min-h-[520px] md:min-h-[560px] lg:min-h-[640px] flex items-center">
-          <div className="max-w-3xl">
+        <div className="py-12 sm:py-16 md:py-20 lg:py-24 xl:py-28 min-h-[480px] sm:min-h-[520px] md:min-h-[560px] lg:min-h-[640px] flex items-center">
+          <div className="max-w-2xl lg:max-w-3xl">
             <h1 
               ref={titleRef}
-              className={`text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 ${animationClasses.fadeUp(titleVisible)}`}
+              className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight ${animationClasses.fadeUp(titleVisible)}`}
             >
               <span className="block">Your Health, Our</span>
               <span className="block text-emerald-600">Priority</span>
             </h1>
             <p 
               ref={subtitleRef}
-              className={`mt-4 text-base sm:text-lg md:text-xl text-gray-700/90 max-w-2xl ${animationClasses.fadeUp(subtitleVisible)}`}
+              className={`mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-gray-700/90 max-w-xl lg:max-w-2xl leading-relaxed ${animationClasses.fadeUp(subtitleVisible)}`}
             >
               Quality medicines delivered to your doorstep. Fast, reliable and affordable
               healthcare products you can trust.
             </p>
             <div 
               ref={buttonsRef}
-              className={`mt-6 flex flex-col sm:flex-row sm:items-center gap-3 ${animationClasses.fadeUp(buttonsVisible)}`}
+              className={`mt-6 sm:mt-8 flex flex-row items-center gap-3 sm:gap-4 ${animationClasses.fadeUp(buttonsVisible)}`}
             >
-              <button className="inline-flex items-center justify-center px-5 md:px-6 lg:px-7 py-2.5 md:py-3 rounded-lg bg-emerald-600 text-white text-sm md:text-base font-medium shadow hover:bg-emerald-700 transition-colors">
+              <button className="inline-flex items-center justify-center px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 rounded-lg bg-emerald-600 text-white text-sm sm:text-base font-medium shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                 Shop Now
               </button>
-              <button className="inline-flex items-center justify-center px-5 md:px-6 lg:px-7 py-2.5 md:py-3 rounded-lg border border-emerald-200 bg-white text-emerald-700 text-sm md:text-base font-medium hover:bg-emerald-50 hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors">
+              <button className="inline-flex items-center justify-center px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 rounded-lg border border-emerald-200 bg-white/90 backdrop-blur-sm text-emerald-700 text-sm sm:text-base font-medium hover:bg-emerald-50 hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200">
                 Learn More
               </button>
             </div>
