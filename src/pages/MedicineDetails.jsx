@@ -30,7 +30,14 @@ export default function MedicineDetails() {
     'Gastrointestinal': 'Treatments for digestive issues and gastrointestinal disorders. Take as prescribed with appropriate dietary considerations.',
     'Uncategorized': 'General healthcare product.'
   };
-  const categoryDescription = product ? CATEGORY_DESCRIPTIONS[product.category] || CATEGORY_DESCRIPTIONS['Uncategorized'] : '';
+  const categoryDescription = useMemo(() => {
+    if (!product) return '';
+    const key = product.category;
+    const direct = CATEGORY_DESCRIPTIONS[key];
+    if (direct) return direct;
+    const normalized = key?.replace(/-/g, ' ');
+    return CATEGORY_DESCRIPTIONS[normalized] || CATEGORY_DESCRIPTIONS['Uncategorized'];
+  }, [product]);
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState('Dosage');
 
@@ -264,7 +271,7 @@ export default function MedicineDetails() {
               {/* Main CTA Button - Yes I am Interested */}
               <button className="w-full inline-flex items-center justify-center h-14 gap-3 px-6 rounded-xl border-2 border-emerald-500 bg-white text-emerald-600 text-lg font-semibold hover:bg-emerald-50 active:bg-emerald-100 transition-all duration-200 shadow-sm hover:shadow-md whitespace-nowrap">
                 <svg 
-                  className="w-5 h-5 flex-shrink-0" 
+                  className="w-5 h-5 shrink-0" 
                   fill="none" 
                   viewBox="0 0 24 24" 
                   stroke="currentColor"  
@@ -291,9 +298,36 @@ export default function MedicineDetails() {
             ))}
           </div>
           <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-8 text-gray-700">
-            {tab === 'Dosage' && <p><span className="font-semibold">Recommended Dosage</span><br />{product.dosage}</p>}
-            {tab === 'Usage' && <p>{product.usage}</p>}
-            {tab === 'Details' && <p>{product.details}</p>}
+            {tab === 'Dosage' && (
+              <div>
+                <div className="text-sm uppercase tracking-wide text-gray-500 mb-2">Recommended Dosage</div>
+                <p className="leading-7 whitespace-pre-line">{product.dosage || 'Information will be available soon.'}</p>
+              </div>
+            )}
+            {tab === 'Usage' && (
+              <div>
+                <div className="text-sm uppercase tracking-wide text-gray-500 mb-2">Usage Guidelines</div>
+                <p className="leading-7 whitespace-pre-line">{product.usage || 'Information will be available soon.'}</p>
+              </div>
+            )}
+            {tab === 'Details' && (
+              Array.isArray(product.details) && product.details.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <tbody className="divide-y divide-gray-100">
+                      {product.details.map((row, idx) => (
+                        <tr key={idx} className="odd:bg-gray-50/50">
+                          <th className="text-gray-600 font-medium text-left py-3 pr-6 w-48 align-top">{row.label}</th>
+                          <td className="text-gray-800 py-3">{row.value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="leading-7 whitespace-pre-line">{product.details || 'No additional details provided.'}</p>
+              )
+            )}
           </div>
         </div>
 

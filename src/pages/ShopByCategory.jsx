@@ -10,7 +10,13 @@ export default function ShopByCategory() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedManufacturer, setSelectedManufacturer] = useState('');
   const [selectedForm, setSelectedForm] = useState('');
-  const [maxPrice, setMaxPrice] = useState(50);
+  // Determine max price dynamically so newly added higher-priced items aren't hidden by default
+  const maxPriceInData = useMemo(() => {
+    const values = medicinesData.map(m => Number(m.price) || 0);
+    const max = values.length ? Math.max(...values) : 50;
+    return Math.max(50, Math.ceil(max));
+  }, []);
+  const [maxPrice, setMaxPrice] = useState(() => maxPriceInData);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('Featured');
   const [showFilters, setShowFilters] = useState(false);
@@ -211,7 +217,7 @@ export default function ShopByCategory() {
 
               <div className="filter-section">
                 <div className="filter-title">Price Range</div>
-                <input className="price-range" type="range" min="0" max="50" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
+                <input className="price-range" type="range" min="0" max={maxPriceInData} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} />
                 <div className="price-legend"><span>$0</span><span>${maxPrice}</span></div>
               </div>
 

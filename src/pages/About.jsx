@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Footer from '../components/Footer';
 import aboutTeam from '../assets/about-team.jpg';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 
@@ -12,7 +11,7 @@ const HeaderHero = () => {
         ref={ref}
         className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-20 sm:py-24 text-center ${animationClasses.fadeUp(isVisible)}`}
       >
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900">About MedCare</h1>
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900">About CureNeed</h1>
         <p className="mt-4 max-w-3xl mx-auto text-gray-600 text-base sm:text-lg leading-7">
           Delivering trusted healthcare products to families across America
           <br />
@@ -31,24 +30,24 @@ const MissionSection = () => {
   return (
     <section className="py-12 sm:py-16 lg:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Image left */}
           <div 
             ref={imageRef}
-            className={`order-2 md:order-1 flex justify-center ${animationClasses.fadeLeft(imageVisible)}`}
+            className={`order-2 md:order-1 md:col-span-8 lg:col-span-9 flex justify-center ${animationClasses.fadeLeft(imageVisible)}`}
           >
-            <div className="rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-200 w-full max-w-md sm:max-w-lg md:max-w-full">
-              <div className="relative aspect-video">
+            <div className="rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-200 w-full">
+              <div className="relative h-72 sm:h-80 md:h-96 lg:h-[32rem] xl:h-[40rem]">
                 <img
                   src={aboutTeam}
-                  alt="MedCare professional team"
+                  alt="CureNeed professional team"
                   className="w-full h-full object-cover"
                 />
               </div>
             </div>
           </div>
           {/* Text and feature cards */}
-          <div className="order-1 md:order-2">
+          <div className="order-1 md:order-2 md:col-span-4 lg:col-span-3">
             <div 
               ref={textRef}
               className={`transition-all duration-1000 ease-out ${
@@ -62,7 +61,7 @@ const MissionSection = () => {
                 Making Healthcare <span className="text-emerald-600">Accessible</span> to Everyone
               </h2>
               <p className="text-gray-600 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
-                At MedCare, we believe everyone deserves access to quality healthcare products.
+                At CureNeed, we believe everyone deserves access to quality healthcare products.
                 Our mission is to make essential medicines and health products easily accessible
                 through our online platform, delivering directly to your doorstep.
               </p>
@@ -177,6 +176,70 @@ const ValuesSection = () => {
   );
 };
 
+const BusinessDetailsSection = () => {
+  const [sectionRef, sectionVisible] = useScrollAnimation(0.1);
+
+  const details = [
+    { label: 'Nature of Business', value: 'Service Provider and Others' },
+    { label: 'Legal Status of Firm', value: 'Proprietorship' },
+    { label: 'Annual Turnover', value: '0 - 40 L' },
+    { label: 'GST Registration Date', value: '20-12-2024' },
+    { label: 'Total Number of Employees', value: 'Upto 10 People' },
+    { label: 'Import Export Code (IEC)', value: 'GHJPP2766N' },
+    { label: 'GST Number', value: '09GHJPP2766N1ZD', highlight: true }
+  ];
+
+  return (
+    <section className="py-12 sm:py-16 bg-sky-50/60">
+      <div 
+        ref={sectionRef}
+        className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 transition-all duration-700 ${
+          sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+        }`}
+      >
+        <div className="text-center mb-6">
+          <h2 className="font-extrabold text-2xl sm:text-3xl text-gray-900 tracking-tight">Business Details</h2>
+          <p className="text-gray-600 text-sm sm:text-base">Verified registration and company profile information</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {details.map((d) => (
+            <div
+              key={d.label}
+              className={`bg-white rounded-xl border p-4 shadow-sm flex items-start gap-3 ${
+                d.highlight ? 'ring-2 ring-emerald-400 bg-emerald-50/40' : 'border-gray-200'
+              }`}
+            >
+              <div className="text-sm text-gray-500 flex-1">
+                <div className="mb-1 flex items-center gap-2">
+                  {d.label}
+                  {d.highlight && (
+                    <span className="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 text-[11px] font-semibold px-2 py-0.5 ring-1 ring-emerald-200">
+                      Important
+                    </span>
+                  )}
+                </div>
+                <div className={`${d.highlight ? 'text-emerald-700 font-semibold font-mono tracking-wide' : 'text-gray-900 font-medium'}`}>
+                  {d.value}
+                </div>
+              </div>
+              {d.highlight && (
+                <button
+                  type="button"
+                  className="h-8 px-2 text-xs rounded-md border border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                  onClick={() => navigator.clipboard?.writeText(d.value)}
+                  title="Copy GST Number"
+                >
+                  Copy
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const TrustSection = () => {
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
   const [card1Ref, card1Visible] = useScrollAnimation(0.1, 100);
@@ -188,14 +251,14 @@ const TrustSection = () => {
     <section className="py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
         {/* Premium IndiaMART Certification Section - Moved to Top */}
-        <div className="relative bg-gradient-to-br from-emerald-50 via-emerald-100 to-emerald-200 rounded-3xl p-8 sm:p-12 border-2 border-emerald-300 shadow-2xl mb-16">
+        <div className="relative bg-linear-to-br from-emerald-50 via-emerald-100 to-emerald-200 rounded-3xl p-8 sm:p-12 border-2 border-emerald-300 shadow-2xl mb-16">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-white/30 rounded-3xl backdrop-blur-sm"></div>
           
           {/* Content */}
           <div className="relative z-10">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-full text-sm font-semibold mb-4 shadow-lg">
+              <div className="inline-flex items-center px-4 py-2 bg-linear-to-r from-emerald-600 to-emerald-700 text-white rounded-full text-sm font-semibold mb-4 shadow-lg">
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
                 </svg>
@@ -277,7 +340,7 @@ const TrustSection = () => {
             headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Trust MedCare</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Trust CureNeed</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">We maintain the highest standards in healthcare product delivery</p>
         </div>
         {/* Standard Trust Cards */}
@@ -493,6 +556,9 @@ export default function About() {
       {/* Values - themed cards */}
       <ValuesSection />
 
+      {/* Business details */}
+      <BusinessDetailsSection />
+
       {/* Why trust section */}
       <TrustSection />
 
@@ -515,7 +581,7 @@ export default function About() {
       {/* Stats strip */}
       <StatsSection />
 
-      <Footer />
+      {/* Footer is rendered globally in App.jsx */}
     </div>
   );
 }

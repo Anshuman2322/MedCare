@@ -102,8 +102,8 @@ export default function Contact() {
                 <div>
                   <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Email</div>
                   <div className="text-gray-700 text-xs sm:text-sm">
-                    <a href="mailto:support@medcare.com" className="hover:text-emerald-600 transition-colors">support@medcare.com</a><br />
-                    <a href="mailto:orders@medcare.com" className="hover:text-emerald-600 transition-colors">orders@medcare.com</a>
+                    <a href="mailto:support@cureneed.com" className="hover:text-emerald-600 transition-colors">support@cureneed.com</a><br />
+                    <a href="mailto:orders@cureneed.com" className="hover:text-emerald-600 transition-colors">orders@cureneed.com</a>
                   </div>
                 </div>
               </div>
@@ -116,8 +116,7 @@ export default function Contact() {
                 <div>
                   <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Phone</div>
                   <div className="text-gray-700 text-xs sm:text-sm">
-                    <a href="tel:1-800-633-2273" className="hover:text-emerald-600 transition-colors">1-800-MED-CARE (633-2273)</a><br />
-                    <a href="tel:1-800-555-0199" className="hover:text-emerald-600 transition-colors">1-800-555-0199</a>
+                    <a href="tel:07949282406" className="hover:text-emerald-600 transition-colors">07949282406</a>
                   </div>
                 </div>
               </div>
@@ -132,10 +131,31 @@ export default function Contact() {
                 <div>
                   <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Address</div>
                   <div className="text-gray-700 text-xs sm:text-sm">
-                    123 Healthcare Boulevard<br />
-                    Suite 456<br />
-                    New York, NY 10001
+                    Cureera Solution<br />
+                    00, Belwani, OD 660343, Mathela,<br />
+                    Common Service Centre, Sakaldiha,<br />
+                    Chandauli-232109, Uttar Pradesh, India
                   </div>
+                  <div className="mt-2">
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('00, Belwani, OD 660343, Mathela, Common Service Centre, Sakaldiha, Chandauli-232109, Uttar Pradesh, India')}`}
+                      target="_blank" rel="noreferrer"
+                      className="inline-flex items-center justify-center px-3 py-1.5 rounded-md border border-emerald-300 text-emerald-700 text-xs hover:bg-emerald-50"
+                    >
+                      Get Directions
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/><path d="M6 22v-2a6 6 0 0112 0v2"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Contact Person</div>
+                  <div className="text-gray-700 text-xs sm:text-sm">Kanhaiya Pal (CEO)</div>
                 </div>
               </div>
               
@@ -170,6 +190,7 @@ export default function Contact() {
       {/* FAQ Section */}
       <div className="bg-sky-50/60 py-12 sm:py-16 lg:py-20 mt-8 sm:mt-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Business Details section moved back to About page */}
           <div 
             ref={faqHeaderRef}
             className={`text-center mb-8 sm:mb-12 ${animationClasses.fadeUp(faqHeaderVisible)}`}
@@ -230,10 +251,7 @@ export default function Contact() {
         </div>
       </div>
       
-      {/* Footer */}
-      <div className="text-center text-gray-400 text-xs sm:text-sm bg-white py-3 sm:py-4">
-        © 2024 MedCare. All rights reserved.
-      </div>
+      {/* Footer is rendered globally in App.jsx */}
     </div>
   );
 }

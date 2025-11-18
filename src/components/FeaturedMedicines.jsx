@@ -1,43 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import imgPain from '../assets/product-pain-relief.jpg';
-import imgVitamins from '../assets/product-vitamins.jpg';
-import imgAntibiotics from '../assets/product-antibiotics.jpg';
-import imgSkincare from '../assets/product-skincare.jpg';
+import data from '../data/medicines.json';
 import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
 import { useCurrency } from '../store/useStore.jsx';
 import { formatPrice } from '../utils/currency';
 
-const products = [
-  {
-    id: 'pain-relief-extra',
-    category: 'Pain Relief',
-    title: 'Pain Relief Extra Strength',
-    price: 12.99,
-    image: imgPain,
-  },
-  {
-    id: 'daily-multivitamin',
-    category: 'Vitamins',
-    title: 'Daily Multivitamin Complex',
-    price: 24.99,
-    image: imgVitamins,
-  },
-  {
-    id: 'antibiotics-pack',
-    category: 'Antibiotics',
-    title: 'Antibiotic Treatment Pack',
-    price: 18.5,
-    image: imgAntibiotics,
-  },
-  {
-    id: 'advanced-skincare',
-    category: 'Skincare',
-    title: 'Advanced Skincare Cream',
-    price: 32.0,
-    image: imgSkincare,
-  },
-];
+// Pull first 6 actual medicines having an image
+const products = data
+  .filter((m) => m && m.image)
+  .slice(0, 6)
+  .map((m) => ({
+    id: m.id,
+    category: m.category,
+    title: m.name,
+    price: m.price ?? 0,
+    image: m.image || (m.images && m.images[0]) || '',
+  }));
 
 const FeaturedCard = ({ product, index }) => {
   const { currency } = useCurrency();
@@ -79,7 +57,7 @@ const FeaturedMedicines = () => {
             <p className="mt-2 text-gray-600">Popular and trusted products</p>
           </div>
           <div className="hidden sm:block">
-            <button className="h-10 rounded-lg border border-gray-300 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-emerald-400 transition-colors">View All</button>
+            <Link to="/shop" className="inline-flex items-center h-10 rounded-lg border border-gray-300 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-emerald-400 transition-colors">View More</Link>
           </div>
         </div>
 
@@ -93,7 +71,7 @@ const FeaturedMedicines = () => {
           ref={buttonRef}
           className={`sm:hidden mt-8 flex justify-center ${animationClasses.fadeUp(buttonVisible)}`}
         >
-          <button className="h-10 rounded-lg border border-gray-300 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-emerald-400 transition-colors">View All</button>
+          <Link to="/shop" className="inline-flex items-center h-10 rounded-lg border border-gray-300 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-emerald-400 transition-colors">View More</Link>
         </div>
       </div>
     </section>
