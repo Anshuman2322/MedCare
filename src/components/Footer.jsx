@@ -25,7 +25,8 @@ const Footer = () => {
             className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 ${animationClasses.fadeUp(footerVisible)}`}
           >
             <div className="sm:col-span-2 lg:col-span-1">
-              <h4 className="text-base sm:text-lg font-semibold text-gray-900">About MedCare</h4>
+              <img src="/logo.png" alt="CureEra logo" className="h-30 sm:h-35 w-auto mb-3" />
+              <h4 className="text-base sm:text-lg font-semibold text-gray-900">About Us</h4>
               <p className="mt-3 text-gray-600 text-sm leading-6">
                 Your trusted online pharmacy delivering quality healthcare products across the USA.
               </p>
@@ -49,7 +50,7 @@ const Footer = () => {
             <div>
               <h4 className="text-base sm:text-lg font-semibold text-gray-900">Contact</h4>
               <ul className="mt-3 space-y-2 text-sm text-gray-600">
-                <li>Email: <a className="hover:text-emerald-600 transition-colors break-all" href="mailto:support@medcare.com">support@medcare.com</a></li>
+                <li>Email: <a className="hover:text-emerald-600 transition-colors break-all" href="mailto:support@cureneed.com">support@cureneed.com</a></li>
                 <li>Phone: <a className="hover:text-emerald-600 transition-colors" href="tel:1-800-MED-CARE">1-800-MED-CARE</a></li>
                 <li>Hours: Mon-Fri 9AM-6PM EST</li>
               </ul>
@@ -59,7 +60,7 @@ const Footer = () => {
             ref={copyrightRef}
             className={`mt-8 border-t border-gray-200 pt-6 text-center text-sm text-gray-500 ${animationClasses.fadeUp(copyrightVisible)}`}
           >
-            © 2025 MedCare. All rights reserved.
+            © 2025 CureNeed. All rights reserved.
           </div>
         </div>
       </footer>

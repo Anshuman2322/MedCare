@@ -1,33 +1,53 @@
 [
   {
-    "id": "azi0070",
-    "name": "Azi0070",
-    "category": "Antibiotics",
-    "price": 16.0,
+    "id": "azithromycin-10",
+    "name": "Azithromycin 10",
+    "category": "Anti-Cancer",
+    "price": 16,
     "form": "Tablet",
-    "image": "/medicines/azi0070/1unnamed.jpg",
+    "image": "/medicines/azithromycin-10/1unnamed.jpg",
     "images": [
-      "/medicines/azi0070/1unnamed.jpg",
-      "/medicines/azi0070/2unnamed.jpg",
-      "/medicines/azi0070/3unnamed.jpg",
-      "/medicines/azi0070/4unnamed.jpg",
-      "/medicines/azi0070/5unnamed.jpg"
+      "/medicines/azithromycin-10/1unnamed.jpg",
+      "/medicines/azithromycin-10/2unnamed.jpg",
+      "/medicines/azithromycin-10/3unnamed.jpg",
+      "/medicines/azithromycin-10/4unnamed.jpg",
+      "/medicines/azithromycin-10/5unnamed.jpg"
     ],
     "inStock": true,
-    "description": "Azi0070 - Tablet",
-    "manufacturer": "Generic",
-    "requiresPrescription": true
+    "description": "Azithromycin Tablets",
+    "manufacturer": "CIPLA",
+    "requiresPrescription": true,
+    "dosage": "500 MG Once Daily For 3 Days",
+    "usage": "Azithromycin tablets are commonly prescribed to treat various bacterial infections, including respiratory, skin, and ear infections. They work by inhibiting bacterial protein synthesis, effectively preventing bacterial growth. It is often preferred for its convenience and short treatment duration.",
+    "details": [
+      {
+        "label": "Pack Type",
+        "value": "Strips"
+      },
+      {
+        "label": "Strength",
+        "value": "500 MG"
+      },
+      {
+        "label": "Packaging Size",
+        "value": "1*3 Tablets"
+      },
+      {
+        "label": "Brand Name",
+        "value": "Azicip"
+      }
+    ]
   },
   {
-    "id": "amoxicillin-potassium-clavulanate-tablet",
-    "name": "Amoxicillin Potassium Clavulanate",
+    "id": "amoxicillin-potassium-clavulanate-temp",
+    "name": "Amoxicillin Potassium Clavulanate Temp",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 20,
     "form": "Tablet",
-    "image": "/medicines/amoxicillin-potassium-clavulanate-tablet/1unnamed.jpg",
+    "image": "/medicines/amoxicillin-potassium-clavulanate-temp/1unnamed.jpg",
     "images": [
-      "/medicines/amoxicillin-potassium-clavulanate-tablet/1unnamed.jpg",
-      "/medicines/amoxicillin-potassium-clavulanate-tablet/2unnamed.jpg"
+      "/medicines/amoxicillin-potassium-clavulanate-temp/1unnamed.jpg",
+      "/medicines/amoxicillin-potassium-clavulanate-temp/2unnamed.jpg"
     ],
     "inStock": true,
     "description": "Amoxicillin Potassium Clavulanate - Tablet",
@@ -36,9 +56,9 @@
   },
   {
     "id": "azithromycin-250-mg",
-    "name": "Azithromycin 250 mg",
+    "name": "Azithromycin 250 mg ",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Tablet",
     "image": "/medicines/azithromycin-250-mg/IMG_0191.jpg",
     "images": [
@@ -47,13 +67,25 @@
     "inStock": true,
     "description": "Azithromycin 250 mg - Tablet",
     "manufacturer": "Generic",
-    "requiresPrescription": true
+    "requiresPrescription": true,
+    "dosage": "There are available 500 and 250 mg",
+    "usage": "this is use for high fever",
+    "details": [
+      {
+        "label": "strength",
+        "value": "500 mg"
+      },
+      {
+        "label": "strength",
+        "value": "250 mg"
+      }
+    ]
   },
   {
     "id": "cefadroxil-capsules-500mg",
     "name": "Cefadroxil 500 mg",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Capsule",
     "image": "/medicines/cefadroxil-capsules-500mg/2unnamed.jpg",
     "images": [
@@ -69,7 +101,7 @@
     "id": "cefixime-ofloxacin-tablets",
     "name": "Cefixime Ofloxacin Tablets",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Tablet",
     "image": "/medicines/cefixime-ofloxacin-tablets/1unnamed.jpg",
     "images": [
@@ -85,7 +117,7 @@
     "id": "egaten-triclabendazole-250mg-tablet",
     "name": "Egaten Triclabendazole 250 mg",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Tablet",
     "image": "/medicines/egaten-triclabendazole-250mg-tablet/1unnamed.jpg",
     "images": [
@@ -102,7 +134,7 @@
     "id": "ivecop-6mg-12mg-ivermectin-tablets",
     "name": "Ivecop Ivermectin Tablets 6 mg",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Tablet",
     "image": "/medicines/ivecop-6mg-12mg-ivermectin-tablets/1unnamed.jpg",
     "images": [
@@ -120,7 +152,7 @@
     "id": "ivejuv-ivermectin-12-m-g",
     "name": "Ivejuv Ivermectin 12 M G",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Tablet",
     "image": "/medicines/ivejuv-ivermectin-12-m-g/1unnamed.jpg",
     "images": [
@@ -137,7 +169,7 @@
     "id": "iverheal-ivermectin-12mg-tablets",
     "name": "Iverheal Ivermectin Tablets 12 mg",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Tablet",
     "image": "/medicines/iverheal-ivermectin-12mg-tablets/1unnamed.jpg",
     "images": [
@@ -152,16 +184,16 @@
     "requiresPrescription": true
   },
   {
-    "id": "ivermectin-3-mg",
-    "name": "Ivermectin",
+    "id": "ivermectin-33-mg",
+    "name": "Ivermectin 33 mg",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Tablet",
-    "image": "/medicines/ivermectin-3-mg/1unnamed.jpg",
+    "image": "/medicines/ivermectin-33-mg/1unnamed.jpg",
     "images": [
-      "/medicines/ivermectin-3-mg/1unnamed.jpg",
-      "/medicines/ivermectin-3-mg/2unnamed.jpg",
-      "/medicines/ivermectin-3-mg/3unnamed.jpg"
+      "/medicines/ivermectin-33-mg/1unnamed.jpg",
+      "/medicines/ivermectin-33-mg/2unnamed.jpg",
+      "/medicines/ivermectin-33-mg/3unnamed.jpg"
     ],
     "inStock": true,
     "description": "Ivermectin - Tablet",
@@ -169,35 +201,38 @@
     "requiresPrescription": true
   },
   {
-    "id": "ivrea-ivermectin-cream-1-0",
-    "name": "Ivrea Ivermectin 1 0",
+    "id": "ivermectin",
+    "name": "Ivermectin",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Cream",
-    "image": "/medicines/ivrea-ivermectin-cream-1-0/10unnamed.jpg",
+    "image": "/medicines/ivermectin/1unnamed.jpg",
     "images": [
-      "/medicines/ivrea-ivermectin-cream-1-0/10unnamed.jpg",
-      "/medicines/ivrea-ivermectin-cream-1-0/11unnamed.jpg",
-      "/medicines/ivrea-ivermectin-cream-1-0/1unnamed.jpg",
-      "/medicines/ivrea-ivermectin-cream-1-0/2unnamed.jpg",
-      "/medicines/ivrea-ivermectin-cream-1-0/3unnamed.jpg",
-      "/medicines/ivrea-ivermectin-cream-1-0/4unnamed.jpg",
-      "/medicines/ivrea-ivermectin-cream-1-0/5unnamed.jpg",
-      "/medicines/ivrea-ivermectin-cream-1-0/6unnamed.jpg",
-      "/medicines/ivrea-ivermectin-cream-1-0/7unnamed.jpg",
-      "/medicines/ivrea-ivermectin-cream-1-0/8unnamed.jpg",
-      "/medicines/ivrea-ivermectin-cream-1-0/9unnamed.jpg"
+      "/medicines/ivermectin/1unnamed.jpg",
+      "/medicines/ivermectin/2unnamed.jpg",
+      "/medicines/ivermectin/3unnamed.jpg",
+      "/medicines/ivermectin/4unnamed.jpg",
+      "/medicines/ivermectin/5unnamed.jpg",
+      "/medicines/ivermectin/6unnamed.jpg",
+      "/medicines/ivermectin/7unnamed.jpg",
+      "/medicines/ivermectin/8unnamed.jpg",
+      "/medicines/ivermectin/9unnamed.jpg",
+      "/medicines/ivermectin/10unnamed.jpg",
+      "/medicines/ivermectin/11unnamed.jpg"
     ],
     "inStock": true,
     "description": "Ivrea Ivermectin 1 0 - Cream",
     "manufacturer": "Generic",
-    "requiresPrescription": true
+    "requiresPrescription": true,
+    "dosage": "",
+    "usage": "",
+    "details": []
   },
   {
     "id": "mebemole",
     "name": "Mebemole",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Tablet",
     "image": "/medicines/mebemole/1unnamed.jpg",
     "images": [
@@ -212,7 +247,7 @@
     "id": "mebentel-100-mg-mebendazole-tablet",
     "name": "Mebentel Mebendazole",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Tablet",
     "image": "/medicines/mebentel-100-mg-mebendazole-tablet/1unnamed.jpg",
     "images": [
@@ -228,7 +263,7 @@
     "id": "vermox-500-mg",
     "name": "Vermox 500 mg",
     "category": "Antibiotics",
-    "price": 16.0,
+    "price": 16,
     "form": "Tablet",
     "image": "/medicines/vermox-500-mg/1unnamed.jpg",
     "images": [
@@ -245,7 +280,7 @@
     "id": "250mg-iressa-tablet",
     "name": "Iressa 250 mg",
     "category": "Anti Cancer",
-    "price": 45.0,
+    "price": 45,
     "form": "Tablet",
     "image": "/medicines/250mg-iressa-tablet/1unnamed.jpg",
     "images": [
@@ -264,7 +299,7 @@
     "id": "abirat-250-mg-tablets",
     "name": "Abirat Tablets",
     "category": "Anti Cancer",
-    "price": 45.0,
+    "price": 45,
     "form": "Tablet",
     "image": "/medicines/abirat-250-mg-tablets/1unnamed.jpg",
     "images": [
@@ -282,7 +317,7 @@
     "id": "axilieva",
     "name": "Axilieva",
     "category": "Anti Cancer",
-    "price": 45.0,
+    "price": 45,
     "form": "Tablet",
     "image": "/medicines/axilieva/1unnamed.jpg",
     "images": [
@@ -300,7 +335,7 @@
     "id": "capegard-500",
     "name": "Capegard 500",
     "category": "Anti Cancer",
-    "price": 45.0,
+    "price": 45,
     "form": "Tablet",
     "image": "/medicines/capegard-500/1unnamed.jpg",
     "images": [
@@ -320,7 +355,7 @@
     "id": "ocrevus-ocrelizumab-300mg",
     "name": "Ocrevus Ocrelizumab 300 mg",
     "category": "Anti Cancer",
-    "price": 45.0,
+    "price": 45,
     "form": "Tablet",
     "image": "/medicines/ocrevus-ocrelizumab-300mg/1unnamed.jpg",
     "images": [
@@ -337,7 +372,7 @@
     "id": "rolimus-10-mg-everolimus",
     "name": "Rolimus Everolimus",
     "category": "Anti Cancer",
-    "price": 45.0,
+    "price": 45,
     "form": "Tablet",
     "image": "/medicines/rolimus-10-mg-everolimus/1unnamed.jpg",
     "images": [
@@ -352,7 +387,7 @@
     "id": "hydroxychloroquine-sulphate-200mg-tablets",
     "name": "Hydroxychloroquine Sulphate Tablets 200 mg",
     "category": "Anti Malarial",
-    "price": 28.0,
+    "price": 28,
     "form": "Tablet",
     "image": "/medicines/hydroxychloroquine-sulphate-200mg-tablets/1unnamed.jpg",
     "images": [
@@ -370,7 +405,7 @@
     "id": "abendol-plus-albendazole-and-ivermectin-tablets",
     "name": "Abendol Plus Albendazole And Ivermectin Tablets",
     "category": "Anti Malarial",
-    "price": 28.0,
+    "price": 28,
     "form": "Tablet",
     "image": "/medicines/abendol-plus-albendazole-and-ivermectin-tablets/1unnamed.jpg",
     "images": [
@@ -387,7 +422,7 @@
     "id": "artemether-20mg-and-lumefantrine-120mg-tablets",
     "name": "Artemether And Lumefantrine Tablets 20 mg",
     "category": "Anti Malarial",
-    "price": 28.0,
+    "price": 28,
     "form": "Tablet",
     "image": "/medicines/artemether-20mg-and-lumefantrine-120mg-tablets/1unnamed.jpg",
     "images": [
@@ -403,7 +438,7 @@
     "id": "artemether-lumefantrine-tablets",
     "name": "Artemether Lumefantrine Tablets",
     "category": "Anti Malarial",
-    "price": 28.0,
+    "price": 28,
     "form": "Tablet",
     "image": "/medicines/artemether-lumefantrine-tablets/1unnamed.jpg",
     "images": [
@@ -420,7 +455,7 @@
     "id": "covimectin",
     "name": "Covimectin",
     "category": "Anti Malarial",
-    "price": 28.0,
+    "price": 28,
     "form": "Tablet",
     "image": "/medicines/covimectin/1unnamed.jpg",
     "images": [
@@ -440,7 +475,7 @@
     "id": "fenbendazole-tablets-1000-mg-wormentel",
     "name": "Fenbendazole Tablets Wormentel",
     "category": "Anti Malarial",
-    "price": 28.0,
+    "price": 28,
     "form": "Tablet",
     "image": "/medicines/fenbendazole-tablets-1000-mg-wormentel/1unnamed (2).jpg",
     "images": [
@@ -463,7 +498,7 @@
     "id": "hcqs-400-mg",
     "name": "Hcqs 400 mg",
     "category": "Anti Malarial",
-    "price": 28.0,
+    "price": 28,
     "form": "Tablet",
     "image": "/medicines/hcqs-400-mg/1unnamed.jpg",
     "images": [
@@ -479,7 +514,7 @@
     "id": "490mg-hepcinat-lp-ledipasvir-tablets",
     "name": "Hepcinat Lp Ledipasvir Tablets 490 mg",
     "category": "Anti Viral",
-    "price": 30.0,
+    "price": 30,
     "form": "Tablet",
     "image": "/medicines/490mg-hepcinat-lp-ledipasvir-tablets/1unnamed.jpg",
     "images": [
@@ -496,7 +531,7 @@
     "id": "60mg-my-dekla-daclatasvir-dihydrochloride-tablets",
     "name": "My Dekla Daclatasvir Dihydrochloride Tablets 60 mg",
     "category": "Anti Viral",
-    "price": 30.0,
+    "price": 30,
     "form": "Tablet",
     "image": "/medicines/60mg-my-dekla-daclatasvir-dihydrochloride-tablets/1unnamed.jpg",
     "images": [
@@ -513,7 +548,7 @@
     "id": "antiviral-drugs-tablets",
     "name": "Antiviral Drugs Tablets",
     "category": "Anti Viral",
-    "price": 30.0,
+    "price": 30,
     "form": "Tablet",
     "image": "/medicines/antiviral-drugs-tablets/1unnamed.jpg",
     "images": [
@@ -530,7 +565,7 @@
     "id": "paxista-nirmatrelvir-150mg-and-ritonavir-100mg",
     "name": "Paxista Nirmatrelvir And Ritonavir 100 mg",
     "category": "Anti Viral",
-    "price": 30.0,
+    "price": 30,
     "form": "Tablet",
     "image": "/medicines/paxista-nirmatrelvir-150mg-and-ritonavir-100mg/1unnamed.jpg",
     "images": [
@@ -546,7 +581,7 @@
     "id": "paxista-tab-mg",
     "name": "Paxista Tab Mg",
     "category": "Anti Viral",
-    "price": 30.0,
+    "price": 30,
     "form": "Tablet",
     "image": "/medicines/paxista-tab-mg/1unnamed.jpg",
     "images": [
@@ -562,7 +597,7 @@
     "id": "antidepressant-anti-anxiety-75-mg",
     "name": "Antidepressant Anti Anxiety 7.5 mg",
     "category": "Antidepressant / Anti-Anxiety",
-    "price": 15.0,
+    "price": 15,
     "form": "Tablet",
     "image": "/medicines/antidepressant-anti-anxiety-75-mg/unnamed.jpg",
     "images": [
@@ -577,7 +612,7 @@
     "id": "antidepressant-anti-anxiety-medicine-10-mg",
     "name": "Antidepressant Anti Anxiety Medicine 10 mg",
     "category": "Antidepressant / Anti-Anxiety",
-    "price": 15.0,
+    "price": 15,
     "form": "Tablet",
     "image": "/medicines/antidepressant-anti-anxiety-medicine-10-mg/1unnamed.jpg",
     "images": [
@@ -592,7 +627,7 @@
     "id": "antidepressant-anti-anxiety-medicines-375-mg",
     "name": "Antidepressant Anti Anxiety Medicines 3.75 mg",
     "category": "Antidepressant / Anti-Anxiety",
-    "price": 15.0,
+    "price": 15,
     "form": "Tablet",
     "image": "/medicines/antidepressant-anti-anxiety-medicines-375-mg/1unnamed.jpg",
     "images": [
@@ -607,7 +642,7 @@
     "id": "antidepressant-anti-anxiety-medicines-20-mg",
     "name": "Antidepressant Anti Anxiety Medicines 20 mg",
     "category": "Antidepressant / Anti-Anxiety",
-    "price": 15.0,
+    "price": 15,
     "form": "Tablet",
     "image": "/medicines/antidepressant-anti-anxiety-medicines-20-mg/1unnamed.jpg",
     "images": [
@@ -622,7 +657,7 @@
     "id": "lexaheal-escitalopram-10-mg-tablets",
     "name": "Lexaheal Escitalopram Tablets 10 mg",
     "category": "Antidepressant / Anti-Anxiety",
-    "price": 15.0,
+    "price": 15,
     "form": "Tablet",
     "image": "/medicines/lexaheal-escitalopram-10-mg-tablets/1unnamed.jpg",
     "images": [
@@ -638,7 +673,7 @@
     "id": "lexaheal-escitalopram-20-mg-tablets",
     "name": "Lexaheal Escitalopram Tablets 20 mg",
     "category": "Antidepressant / Anti-Anxiety",
-    "price": 15.0,
+    "price": 15,
     "form": "Tablet",
     "image": "/medicines/lexaheal-escitalopram-20-mg-tablets/1unnamed.jpg",
     "images": [
@@ -654,7 +689,7 @@
     "id": "20mg-fludac-capsules",
     "name": "Fludac 20 mg",
     "category": "Chronic / Cardiac",
-    "price": 25.0,
+    "price": 25,
     "form": "Capsule",
     "image": "/medicines/20mg-fludac-capsules/1unnamed.jpg",
     "images": [
@@ -670,7 +705,7 @@
     "id": "250-mg-crizotinib-capsules2",
     "name": "Crizotinib Capsules2",
     "category": "Chronic / Cardiac",
-    "price": 25.0,
+    "price": 25,
     "form": "Capsule",
     "image": "/medicines/250-mg-crizotinib-capsules2/1unnamed.jpg",
     "images": [
@@ -687,7 +722,7 @@
     "id": "capsule-250-mg",
     "name": "250 mg",
     "category": "Chronic / Cardiac",
-    "price": 25.0,
+    "price": 25,
     "form": "Capsule",
     "image": "/medicines/capsule-250-mg/1unnamed.jpg",
     "images": [
@@ -704,7 +739,7 @@
     "id": "aprelieva-aprepitant-capsules",
     "name": "Aprelieva Aprepitant",
     "category": "Chronic / Cardiac",
-    "price": 25.0,
+    "price": 25,
     "form": "Capsule",
     "image": "/medicines/aprelieva-aprepitant-capsules/1unnamed.jpg",
     "images": [
@@ -720,7 +755,7 @@
     "id": "artemisinin-100mg-capsules",
     "name": "Artemisinin 100 mg",
     "category": "Chronic / Cardiac",
-    "price": 25.0,
+    "price": 25,
     "form": "Capsule",
     "image": "/medicines/artemisinin-100mg-capsules/1unnamed.jpg",
     "images": [
@@ -739,7 +774,7 @@
     "id": "diflucan-150-capsule",
     "name": "Diflucan 150",
     "category": "Chronic / Cardiac",
-    "price": 25.0,
+    "price": 25,
     "form": "Capsule",
     "image": "/medicines/diflucan-150-capsule/1unnamed.jpg",
     "images": [
@@ -755,7 +790,7 @@
     "id": "finast",
     "name": "Finast",
     "category": "Chronic / Cardiac",
-    "price": 25.0,
+    "price": 25,
     "form": "Tablet",
     "image": "/medicines/finast/1unnamed.jpg",
     "images": [
@@ -773,7 +808,7 @@
     "id": "metaformin-hydrochloride-1000-mg",
     "name": "Metaformin Hydrochloride 1000 mg",
     "category": "Chronic / Cardiac",
-    "price": 25.0,
+    "price": 25,
     "form": "Tablet",
     "image": "/medicines/metaformin-hydrochloride-1000-mg/1unnamed.jpg",
     "images": [
@@ -789,7 +824,7 @@
     "id": "silodosin-capsules-8-mg",
     "name": "Silodosin 8 mg",
     "category": "Chronic / Cardiac",
-    "price": 25.0,
+    "price": 25,
     "form": "Capsule",
     "image": "/medicines/silodosin-capsules-8-mg/1unnamed.jpg",
     "images": [
@@ -805,7 +840,7 @@
     "id": "super-kamagra-sildenafil-and-dapoxetine-tablets-160mg",
     "name": "Super Kamagra Sildenafil And Dapoxetine Tablets 160 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/super-kamagra-sildenafil-and-dapoxetine-tablets-160mg/1unnamed.jpg",
     "images": [
@@ -821,7 +856,7 @@
     "id": "cenforce-200-mg-black",
     "name": "Cenforce Black 200 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/cenforce-200-mg-black/1unnamed.jpg",
     "images": [
@@ -838,7 +873,7 @@
     "id": "kamagra-oral-jelly",
     "name": "Kamagra Oral",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Jelly",
     "image": "/medicines/kamagra-oral-jelly/1unnamed.jpg",
     "images": [
@@ -855,7 +890,7 @@
     "id": "malegra-sildenafil-25mg-tablet",
     "name": "Malegra Sildenafil 25 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/malegra-sildenafil-25mg-tablet/1unnamed.jpg",
     "images": [
@@ -870,7 +905,7 @@
     "id": "abhiforce",
     "name": "Abhiforce",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/abhiforce/1unnamed.jpg",
     "images": [
@@ -886,7 +921,7 @@
     "id": "cenforce-100-web",
     "name": "Cenforce 100 Web",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/cenforce-100-web/1unnamed.jpg",
     "images": [
@@ -909,7 +944,7 @@
     "id": "cenforce-fm",
     "name": "Cenforce Fm",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/cenforce-fm/1unnamed.jpg",
     "images": [
@@ -925,7 +960,7 @@
     "id": "cenforce-professional-tablets",
     "name": "Cenforce Professional Tablets",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/cenforce-professional-tablets/cenforce-professional-tablets-1000x1000.webp",
     "images": [
@@ -941,7 +976,7 @@
     "id": "cenforce-soft-100",
     "name": "Cenforce Soft 100",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/cenforce-soft-100/1unnamed.jpg",
     "images": [
@@ -956,7 +991,7 @@
     "id": "dapoforce-60-tablets",
     "name": "Dapoforce 60 Tablets",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/dapoforce-60-tablets/1unnamed.jpg",
     "images": [
@@ -972,7 +1007,7 @@
     "id": "duratia-30-mg",
     "name": "Duratia 30 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/duratia-30-mg/1unnamed.jpg",
     "images": [
@@ -987,7 +1022,7 @@
     "id": "duratia-60-mg",
     "name": "Duratia 60 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/duratia-60-mg/1unnamed.jpg",
     "images": [
@@ -1002,7 +1037,7 @@
     "id": "duratia-90-mg-dapoxetine-tablets",
     "name": "Duratia Dapoxetine Tablets",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/duratia-90-mg-dapoxetine-tablets/1unnamed.jpg",
     "images": [
@@ -1020,7 +1055,7 @@
     "id": "extra-super-p-force-tablets",
     "name": "Extra Super P Force Tablets",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/extra-super-p-force-tablets/1unnamed.jpg",
     "images": [
@@ -1037,7 +1072,7 @@
     "id": "extra-super-p-force-tablets-v1",
     "name": "Extra Super P Force Tablets",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/extra-super-p-force-tablets-v1/1unnamed.jpg",
     "images": [
@@ -1053,7 +1088,7 @@
     "id": "femalegra-100-tab",
     "name": "Femalegra 100 Tab",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/femalegra-100-tab/1unnamed (2).jpg",
     "images": [
@@ -1074,7 +1109,7 @@
     "id": "fildena-100-mg-tablet-sildenafil-citrate-tablet",
     "name": "Fildena Sildenafil Citrate",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/fildena-100-mg-tablet-sildenafil-citrate-tablet/1unnamed.jpg",
     "images": [
@@ -1096,7 +1131,7 @@
     "id": "fildena-120-mg",
     "name": "Fildena",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/fildena-120-mg/1unnamed.jpg",
     "images": [
@@ -1118,7 +1153,7 @@
     "id": "fildena-150-mg",
     "name": "Fildena",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/fildena-150-mg/1unnamed.jpg",
     "images": [
@@ -1138,7 +1173,7 @@
     "id": "kamagra-100-mg",
     "name": "Kamagra",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/kamagra-100-mg/1unnamed.jpg",
     "images": [
@@ -1155,7 +1190,7 @@
     "id": "lovegra-100-mg",
     "name": "Lovegra 100 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/lovegra-100-mg/1unnamed.jpg",
     "images": [
@@ -1170,7 +1205,7 @@
     "id": "lovegra-100mg-tablet",
     "name": "Lovegra 100 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/lovegra-100mg-tablet/1unnamed.jpg",
     "images": [
@@ -1189,7 +1224,7 @@
     "id": "malegra-200-mg",
     "name": "Malegra 200 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/malegra-200-mg/1unnamed.jpg",
     "images": [
@@ -1204,7 +1239,7 @@
     "id": "poxet-30-tablets-dapoxetine-30mg",
     "name": "Poxet 30 Tablets Dapoxetine 30 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/poxet-30-tablets-dapoxetine-30mg/1unnamed.jpg",
     "images": [
@@ -1222,7 +1257,7 @@
     "id": "poxet-60-mg-tablets",
     "name": "Poxet Tablets",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/poxet-60-mg-tablets/1unnamed.jpg",
     "images": [
@@ -1237,7 +1272,7 @@
     "id": "poxet-90-mg-dapoxetine-tablets",
     "name": "Poxet Dapoxetine Tablets",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/poxet-90-mg-dapoxetine-tablets/1unnamed.jpg",
     "images": [
@@ -1254,7 +1289,7 @@
     "id": "super-tadarise",
     "name": "Super Tadarise",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/super-tadarise/1unnamed.jpg",
     "images": [
@@ -1269,7 +1304,7 @@
     "id": "super-vidalista",
     "name": "Super Vidalista",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/super-vidalista/1unnamed.jpg",
     "images": [
@@ -1284,7 +1319,7 @@
     "id": "super-vilitra",
     "name": "Super Vilitra",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/super-vilitra/1unnamed.jpg",
     "images": [
@@ -1302,7 +1337,7 @@
     "id": "tadalafil-60-mg",
     "name": "Tadalafil 60 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadalafil-60-mg/1unnamed.jpg",
     "images": [
@@ -1317,7 +1352,7 @@
     "id": "tadalafil-80-mg",
     "name": "Tadalafil 80 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadalafil-80-mg/1unnamed.jpg",
     "images": [
@@ -1332,7 +1367,7 @@
     "id": "tadalafil-dapoxetine-hcl-tablet",
     "name": "Tadalafil Dapoxetine HCL",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadalafil-dapoxetine-hcl-tablet/1unnamed.jpg",
     "images": [
@@ -1347,7 +1382,7 @@
     "id": "tadalista-10-mg",
     "name": "Tadalista 10 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadalista-10-mg/1unnamed.jpg",
     "images": [
@@ -1362,7 +1397,7 @@
     "id": "tadalista-20-mg",
     "name": "Tadalista 20 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadalista-20-mg/1unnamed.jpg",
     "images": [
@@ -1379,7 +1414,7 @@
     "id": "tadalista-40-mg",
     "name": "Tadalista 40 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadalista-40-mg/1unnamed.jpg",
     "images": [
@@ -1394,7 +1429,7 @@
     "id": "tadalista-5-mg",
     "name": "Tadalista 5 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadalista-5-mg/1unnamed.jpg",
     "images": [
@@ -1409,7 +1444,7 @@
     "id": "tadalista-professional-20-mg",
     "name": "Tadalista Professional 20 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadalista-professional-20-mg/11unnamed.jpg",
     "images": [
@@ -1424,7 +1459,7 @@
     "id": "tadalista-super-active",
     "name": "Tadalista Super Active",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadalista-super-active/1unnamed.jpg",
     "images": [
@@ -1441,12 +1476,12 @@
     "id": "tadapox",
     "name": "Tadapox",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
-    "image": "/medicines/tadapox/IMG-20231208-WA0074.jpg",
+    "image": "/medicines/tadapox/IMG_20231213_175822_820.jpg",
     "images": [
-      "/medicines/tadapox/IMG-20231208-WA0074.jpg",
       "/medicines/tadapox/IMG_20231213_175822_820.jpg",
+      "/medicines/tadapox/IMG-20231208-WA0074.jpg",
       "/medicines/tadapox/tadapox-tadalafil-and-dapoxetine-tablets-1000x1000.jpeg",
       "/medicines/tadapox/tadapox-tadalafil-and-dapoxetine-tablets-1000x1000.webp"
     ],
@@ -1459,7 +1494,7 @@
     "id": "tadarise-10-mg",
     "name": "Tadarise 10 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadarise-10-mg/1unnamed.jpg",
     "images": [
@@ -1474,7 +1509,7 @@
     "id": "tadarise-20-mg",
     "name": "Tadarise 20 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadarise-20-mg/1unnamed.jpg",
     "images": [
@@ -1489,7 +1524,7 @@
     "id": "tadarise-5-mg",
     "name": "Tadarise 5 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadarise-5-mg/1unnamed.jpg",
     "images": [
@@ -1504,7 +1539,7 @@
     "id": "tadarise-pro-40-mg",
     "name": "Tadarise Pro 40 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/tadarise-pro-40-mg/1unnamed.jpg",
     "images": [
@@ -1519,7 +1554,7 @@
     "id": "valif-20-mg",
     "name": "Valif 20 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/valif-20-mg/1unnamed.jpg",
     "images": [
@@ -1537,7 +1572,7 @@
     "id": "vidalista-40-mg",
     "name": "Vidalista 40 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/vidalista-40-mg/1unnamed.jpg",
     "images": [
@@ -1555,7 +1590,7 @@
     "id": "vidalista-60-mg",
     "name": "Vidalista 60 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/vidalista-60-mg/1unnamed.jpg",
     "images": [
@@ -1570,7 +1605,7 @@
     "id": "vidalista-80-mg",
     "name": "Vidalista 80 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/vidalista-80-mg/1unnamed.jpg",
     "images": [
@@ -1585,7 +1620,7 @@
     "id": "vidalista-professional",
     "name": "Vidalista Professional",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/vidalista-professional/1unnamed.jpg",
     "images": [
@@ -1601,7 +1636,7 @@
     "id": "vidalista-10mg-tablets",
     "name": "Vidalista Tablets 10 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/vidalista-10mg-tablets/1unnamed.jpg",
     "images": [
@@ -1618,7 +1653,7 @@
     "id": "vilitra-40-mg",
     "name": "Vilitra 40 mg",
     "category": "Erectile Dysfunction",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/vilitra-40-mg/1unnamed.jpg",
     "images": [
@@ -1635,7 +1670,7 @@
     "id": "vominorm-10-mg",
     "name": "Vominorm 10 mg",
     "category": "Gastrointestinal",
-    "price": 12.0,
+    "price": 12,
     "form": "Tablet",
     "image": "/medicines/vominorm-10-mg/1unnamed.jpg",
     "images": [
@@ -1654,7 +1689,7 @@
     "id": "100-mg-clomiphene-citrate-tablet",
     "name": "Clomiphene Citrate",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/100-mg-clomiphene-citrate-tablet/1unnamed.jpg",
     "images": [
@@ -1669,7 +1704,7 @@
     "id": "50mg-eclomisign-enclomiphene-tablets",
     "name": "Eclomisign Enclomiphene Tablets 50 mg",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/50mg-eclomisign-enclomiphene-tablets/1unnamed.jpg",
     "images": [
@@ -1686,7 +1721,7 @@
     "id": "altraz-anastrozole-tablets",
     "name": "Altraz Anastrozole Tablets",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/altraz-anastrozole-tablets/1unnamed.jpg",
     "images": [
@@ -1703,7 +1738,7 @@
     "id": "anabrez-1mg-anastrozole-tablets",
     "name": "Anabrez Anastrozole Tablets 1 mg",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/anabrez-1mg-anastrozole-tablets/1unnamed.jpg",
     "images": [
@@ -1721,7 +1756,7 @@
     "id": "anadrol-maxx-tablet",
     "name": "Anadrol Maxx",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/anadrol-maxx-tablet/1unnamed.jpg",
     "images": [
@@ -1738,7 +1773,7 @@
     "id": "clomibol-50mg",
     "name": "Clomibol 50 mg",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/clomibol-50mg/1unnamed.jpg",
     "images": [
@@ -1755,7 +1790,7 @@
     "id": "clomifene-citrate-tablets-ip-50-mg",
     "name": "Clomifene Citrate Tablets IP",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/clomifene-citrate-tablets-ip-50-mg/1unnamed.jpg",
     "images": [
@@ -1775,7 +1810,7 @@
     "id": "clomiphene-citrate",
     "name": "Clomiphene Citrate",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/clomiphene-citrate/1unnamed.jpg",
     "images": [
@@ -1792,7 +1827,7 @@
     "id": "clomiphene-citrate-tablet-fertom",
     "name": "Clomiphene Citrate Fertom",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/clomiphene-citrate-tablet-fertom/1unnamed.jpg",
     "images": [
@@ -1809,7 +1844,7 @@
     "id": "minoxidil-15-mg",
     "name": "Minoxidil 1.5 mg",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/minoxidil-15-mg/1unnamed.jpg",
     "images": [
@@ -1824,7 +1859,7 @@
     "id": "minoxidil-25-mg",
     "name": "Minoxidil 2.5 mg",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/minoxidil-25-mg/1unnamed.jpg",
     "images": [
@@ -1842,7 +1877,7 @@
     "id": "vbolnor-methandienone-tablets-10-mg",
     "name": "Vbolnor Methandienone Tablets 10 mg",
     "category": "Hormones & Steroids",
-    "price": 22.0,
+    "price": 22,
     "form": "Tablet",
     "image": "/medicines/vbolnor-methandienone-tablets-10-mg/1unnamed.jpg",
     "images": [
@@ -1858,7 +1893,7 @@
     "id": "100mg-nandrolone-decanoate-injection",
     "name": "Nandrolone Decanoate 100 mg",
     "category": "Injections",
-    "price": 35.0,
+    "price": 35,
     "form": "Injection",
     "image": "/medicines/100mg-nandrolone-decanoate-injection/1unnamed.jpg",
     "images": [
@@ -1875,7 +1910,7 @@
     "id": "alimta-500-mg-injection",
     "name": "Alimta",
     "category": "Injections",
-    "price": 35.0,
+    "price": 35,
     "form": "Injection",
     "image": "/medicines/alimta-500-mg-injection/1unnamed.jpg",
     "images": [
@@ -1891,7 +1926,7 @@
     "id": "30mg-dulata-duloxetine-tablets",
     "name": "Dulata Duloxetine Tablets 30 mg",
     "category": "Pain Relief",
-    "price": 12.0,
+    "price": 12,
     "form": "Tablet",
     "image": "/medicines/30mg-dulata-duloxetine-tablets/1unnamed.jpg",
     "images": [
@@ -1908,7 +1943,7 @@
     "id": "carisoprodol-tablets-500-mg",
     "name": "Carisoprodol Tablets 500 mg",
     "category": "Pain Relief",
-    "price": 12.0,
+    "price": 12,
     "form": "Tablet",
     "image": "/medicines/carisoprodol-tablets-500-mg/1unnamed.jpg",
     "images": [
@@ -1925,7 +1960,7 @@
     "id": "amitocare-tablet-amitriptyline",
     "name": "Amitocare Amitriptyline",
     "category": "Pain Relief",
-    "price": 12.0,
+    "price": 12,
     "form": "Tablet",
     "image": "/medicines/amitocare-tablet-amitriptyline/1unnamed.jpg",
     "images": [
@@ -1941,7 +1976,7 @@
     "id": "naproxen-500-mg",
     "name": "Naproxen 500 mg",
     "category": "Pain Relief",
-    "price": 12.0,
+    "price": 12,
     "form": "Tablet",
     "image": "/medicines/naproxen-500-mg/1unnamed.jpg",
     "images": [
@@ -1956,7 +1991,7 @@
     "id": "painosoma350-mg",
     "name": "Painosoma350 Mg 350 mg",
     "category": "Pain Relief",
-    "price": 12.0,
+    "price": 12,
     "form": "Tablet",
     "image": "/medicines/painosoma350-mg/1unnamed.jpg",
     "images": [
@@ -1974,7 +2009,7 @@
     "id": "prosoma-500-mg",
     "name": "Prosoma 500 mg",
     "category": "Pain Relief",
-    "price": 12.0,
+    "price": 12,
     "form": "Tablet",
     "image": "/medicines/prosoma-500-mg/1unnamed.jpg",
     "images": [
@@ -1991,7 +2026,7 @@
     "id": "soma-dol-350-mg",
     "name": "Soma Dol 350 mg",
     "category": "Pain Relief",
-    "price": 12.0,
+    "price": 12,
     "form": "Tablet",
     "image": "/medicines/soma-dol-350-mg/1unnamed.jpg",
     "images": [
@@ -2008,7 +2043,7 @@
     "id": "alermed-120mg-tablet",
     "name": "Alermed 120 mg",
     "category": "Skin / Allergy / Asthma",
-    "price": 14.0,
+    "price": 14,
     "form": "Tablet",
     "image": "/medicines/alermed-120mg-tablet/1unnamed.jpg",
     "images": [
@@ -2024,7 +2059,7 @@
     "id": "algreat-m-montelukast-10mg-fexofenadine-120mg-tablet",
     "name": "Algreat M Montelukast Fexofenadine 10 mg",
     "category": "Skin / Allergy / Asthma",
-    "price": 14.0,
+    "price": 14,
     "form": "Tablet",
     "image": "/medicines/algreat-m-montelukast-10mg-fexofenadine-120mg-tablet/1unnamed.jpg",
     "images": [
@@ -2040,7 +2075,7 @@
     "id": "anti-allergic-drug",
     "name": "Anti Allergic Drug",
     "category": "Skin / Allergy / Asthma",
-    "price": 14.0,
+    "price": 14,
     "form": "Tablet",
     "image": "/medicines/anti-allergic-drug/1unnamed.jpg",
     "images": [
@@ -2055,7 +2090,7 @@
     "id": "asthafen-tablet-ketotifen",
     "name": "Asthafen Ketotifen",
     "category": "Skin / Allergy / Asthma",
-    "price": 14.0,
+    "price": 14,
     "form": "Tablet",
     "image": "/medicines/asthafen-tablet-ketotifen/1unnamed.jpg",
     "images": [
@@ -2072,7 +2107,7 @@
     "id": "cetirizine-cetcip-10-mg-tablet",
     "name": "Cetirizine Cetcip",
     "category": "Skin / Allergy / Asthma",
-    "price": 14.0,
+    "price": 14,
     "form": "Tablet",
     "image": "/medicines/cetirizine-cetcip-10-mg-tablet/1unnamed.jpg",
     "images": [
@@ -2088,7 +2123,7 @@
     "id": "minosign-minocycline-tablets-50-mg",
     "name": "Minosign Minocycline Tablets 50 mg",
     "category": "Skin / Allergy / Asthma",
-    "price": 14.0,
+    "price": 14,
     "form": "Tablet",
     "image": "/medicines/minosign-minocycline-tablets-50-mg/1unnamed.jpg",
     "images": [
@@ -2105,7 +2140,7 @@
     "id": "meloset-3-mg",
     "name": "Meloset 3 mg",
     "category": "Sleep Disorders",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/meloset-3-mg/1unnamed.jpg",
     "images": [
@@ -2122,7 +2157,7 @@
     "id": "zopiclone-20-mg",
     "name": "Zopiclone 20 mg",
     "category": "Sleep Disorders",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/zopiclone-20-mg/1unnamed (1).jpg",
     "images": [
@@ -2137,7 +2172,7 @@
     "id": "zopiclone-75-mg",
     "name": "Zopiclone 7.5 mg",
     "category": "Sleep Disorders",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/zopiclone-75-mg/1unnamed.jpg",
     "images": [
@@ -2152,7 +2187,7 @@
     "id": "zopiclone-tablet-75-mg",
     "name": "Zopiclone 7.5 mg",
     "category": "Sleep Disorders",
-    "price": 18.0,
+    "price": 18,
     "form": "Tablet",
     "image": "/medicines/zopiclone-tablet-75-mg/1unnamed.jpg",
     "images": [
@@ -2170,7 +2205,7 @@
     "id": "adgain-plus-healthy-hair-capsule",
     "name": "Adgain Plus Healthy Hair",
     "category": "Supplements & Hair",
-    "price": 20.0,
+    "price": 20,
     "form": "Capsule",
     "image": "/medicines/adgain-plus-healthy-hair-capsule/1unnamed.jpg",
     "images": [
@@ -2187,7 +2222,7 @@
     "id": "alba-throw-plus-albendazole-ivermectine-tab",
     "name": "Alba Throw Plus Albendazole Ivermectine Tab",
     "category": "Supplements & Hair",
-    "price": 20.0,
+    "price": 20,
     "form": "Tablet",
     "image": "/medicines/alba-throw-plus-albendazole-ivermectine-tab/1unnamed.jpg",
     "images": [
@@ -2204,7 +2239,7 @@
     "id": "menbendazole-500-mg",
     "name": "Menbendazole 500 mg",
     "category": "Uncategorized",
-    "price": 10.0,
+    "price": 10,
     "form": "Tablet",
     "image": "/medicines/menbendazole-500-mg/1unnamed.jpg",
     "images": [

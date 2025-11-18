@@ -1,11 +1,10 @@
-# MedCare – Advanced Healthcare E-Commerce Platform
+# CureNeed – Advanced Healthcare E-Commerce Platform
 
 [![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-7.9.5-646CFF?logo=vite)](https://vitejs.dev/)
+[![Vite](https://img.shields.io/badge/Vite-7.1.7-646CFF?logo=vite)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.1.16-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-MedCare is a comprehensive, responsive healthcare e-commerce platform built with cutting-edge technologies. Featuring real-time currency conversion, advanced search functionality, IndiaMART certifications, and a polished user experience optimized for pharmaceutical and medical product sales.
+CureNeed is a comprehensive, responsive healthcare e-commerce platform built with cutting-edge technologies. Featuring real-time currency conversion, advanced search functionality, IndiaMART certifications, and a polished user experience optimized for pharmaceutical and medical product sales.
 
 ## Key Features
 
@@ -32,6 +31,15 @@ MedCare is a comprehensive, responsive healthcare e-commerce platform built with
 - **Smooth Animations**: Scroll-triggered animations and hover effects
 - **Fast Performance**: Vite-powered with React 19 optimizations
 - **Accessibility**: WCAG compliant with proper focus management
+
+## Recent Updates
+
+- Rebranded the site to **CureNeed** across all pages and configs
+- Navbar now uses your brand logo from `/public/logo.png` and the favicon also points to this file
+- Hero section uses a high‑quality background video at `/public/video/medicine.mp4` with an image poster fallback
+- Featured Medicines now loads 6 real items from `src/data/medicines.json` and includes a “View More” button to `/shop`
+- Unified, global `Footer` rendered on every page for consistent branding
+- About page enhancements: much larger team photo and a Business Details section with GST highlight + copy button
 
 ## Tech Stack
 
@@ -80,7 +88,6 @@ npm run dev
 ```bash
 # Development
 npm run dev          # Start dev server with HMR
-npm run dev:host     # Start dev server accessible on network
 
 # Production
 npm run build        # Build for production → dist/
@@ -88,18 +95,12 @@ npm run preview      # Preview production build locally
 
 # Code Quality
 npm run lint         # Run ESLint
-npm run lint:fix     # Fix auto-fixable ESLint issues
-npm run format       # Format code with Prettier
-
-# Testing
-npm run test         # Run test suite
-npm run test:coverage # Run tests with coverage report
 ```
 
 ### **Environment Setup**
 Create a `.env.local` file for local development:
 ```env
-VITE_API_BASE_URL=http://localhost:3001
+VITE_API_BASE_URL=http://localhost:5050/api
 VITE_CURRENCY_API_KEY=your_api_key_here
 VITE_ANALYTICS_ID=your_analytics_id
 ```
@@ -136,6 +137,13 @@ MedCare/
 - The base font is Inter (loaded in `src/index.css`).
 - Utility‑first classes provide consistent sizing, spacing, and color. Light custom CSS is used to reset defaults and improve rendering.
 
+### Branding & Content
+
+- Replace the logo at `/public/logo.png` to update the brand everywhere (Navbar + favicon)
+- Hero background video path: `/public/video/medicine.mp4` (configured in `src/components/Hero.jsx`); poster image: `src/assets/hero-pharmacy.jpg`
+- Navbar logo sizing is controlled in `src/components/Navbar.jsx` via Tailwind classes (default `h-10 sm:h-12`)
+- Business details shown on the About page (`src/pages/About.jsx`) can be edited inside `BusinessDetailsSection`
+
 ## Accessibility notes
 
 - High‑contrast text over imagery using a left‑to‑right white gradient overlay in the hero
@@ -143,19 +151,10 @@ MedCare/
 - Logical heading structure across sections
 - Descriptive button labels; images use meaningful `alt` text
 
-## Available scripts
-
-These are defined in `package.json`:
-
-- `npm run dev` – start the dev server with React Fast Refresh
-- `npm run build` – production build to `dist/`
-- `npm run preview` – preview the production build locally
-- `npm run lint` – run ESLint on the project
-
 ## Components overview
 
 - `Navbar.jsx` – brand, search, navigation, currency, and cart
-- `Hero.jsx` – promotional banner with image background and CTA buttons
+- `Hero.jsx` – promotional banner with video background and CTA buttons
 - `CategorySection.jsx` – grid of category cards with counts
 - `FeaturedMedicines.jsx` – product cards with price and CTA
 - `Footer.jsx` – feature highlights and resource links
@@ -170,6 +169,35 @@ These are defined in `package.json`:
 
 1. Build: `npm run build`
 2. Deploy the `dist/` directory to your host (e.g., GitHub Pages, Netlify, Vercel, or any static host).
+
+## Admin Dashboard & API
+
+- Backend (ESM, Node/Express) lives in `backend/` and serves APIs at `http://localhost:5050/api`.
+- Admin dashboard (React + Vite + Tailwind) lives in `admin/` on `http://localhost:5174` by default.
+- Both integrate with the main site using the SAME data and images:
+	- JSON: `src/data/medicines.json`
+	- Images root: `public/medicines/` (stored on disk as `public/medicines/<category>/<id>/<n>.jpg`)
+- Image URLs written to JSON follow the main site’s existing flat pattern: `/medicines/<id>/<n>.jpg`.
+
+### Run locally (Windows PowerShell)
+
+```powershell
+# Backend API
+Set-Location "s:\MedCare\backend"; npm install; npm run dev
+
+# Admin dashboard (in a new terminal)
+Set-Location "s:\MedCare\admin"; npm install; npm run dev
+```
+
+Key endpoints:
+- `GET /api/medicines` – list all medicines
+- `POST /api/medicines` – create medicine (multipart, field: images[])
+- `PUT /api/medicines/:id` – update medicine (supports additional images)
+- `DELETE /api/medicines/:id` – delete medicine and its folder
+- `POST /api/medicines/:id/images` – add images (multipart)
+- `DELETE /api/medicines/:id/images` – remove one image `{ url }`
+
+Allowed categories (validated): Antibiotics, Anti-Cancer, Anti-Malarial, Anti-Viral, Chronic-Cardiac, ED, Hormones-Steroids, Injections, Pain-Killers, Skin-Allergy-Asthma, Supplements-Vitamins-Hair.
 
 ## Contributing
 
@@ -192,7 +220,7 @@ docs: rewrite README with project overview, setup, and usage
 Body:
 
 ```
-This PR replaces the template README with comprehensive documentation for MedCare.
+This PR replaces the template README with comprehensive documentation for CureNeed.
 
 Changes
 - Add project overview and feature list

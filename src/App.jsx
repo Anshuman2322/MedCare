@@ -30,7 +30,6 @@ function App() {
                 <Hero />
                 <CategorySection />
                 <FeaturedMedicines />
-                <Footer />
               </>
             }
           />
@@ -39,6 +38,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
+        <Footer />
         <FloatingHomeButton />
       </div>
     </CurrencyProvider>

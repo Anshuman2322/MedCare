@@ -191,3 +191,19 @@ dist/
 
 # Rush
 common/temp/
+
+# Monorepo apps (admin + backend)
+# Admin app build/cache/node_modules
+admin/node_modules/
+admin/dist/
+admin/.vite/
+admin/.parcel-cache/
+admin/.eslintcache
+
+# Backend temp/uploads/cache and dependencies
+backend/node_modules/
+backend/.tmp/
+backend/dist/
+backend/*.log
+backend/.eslintcache
+backend/.env*

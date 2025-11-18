@@ -4,12 +4,12 @@ Usage Documentation for the Unified Medicine Management System
 After running the merge and unified JSON generation, you now have:
 
 1. SINGLE MEDICINES DIRECTORY: 
-   - Location: s:\MedCare\medicines\
+   - Location: s:\CureNeed\medicines\
    - Contains: 132 medicines organized in 15 categories
    - Source: Combined from both final_web and final_web_2
 
 2. UNIFIED JSON FILE:
-   - Location: s:\MedCare\src\data\medicines.json
+   - Location: s:\CureNeed\src\data\medicines.json
    - Contains: All 132 medicines with proper "Medicine Name Dose" formatting
    - Images: Copied to public/medicines/ directory
 
@@ -35,22 +35,22 @@ After running the merge and unified JSON generation, you now have:
    A. For adding new medicines to existing categories:
    
       Just add the medicine folder to the appropriate category in:
-      s:\MedCare\medicines\<CategoryName>\<medicine-folder>\
+      s:\CureNeed\medicines\<CategoryName>\<medicine-folder>\
       
       Then regenerate JSON:
-      python .\scripts\generate_unified_medicines_json.py --medicines-dir "s:\MedCare\medicines" --public-dir "s:\MedCare\public" --output "s:\MedCare\src\data\medicines.json" --copy-images
+      python .\scripts\generate_unified_medicines_json.py --medicines-dir "s:\CureNeed\medicines" --public-dir "s:\CureNeed\public" --output "s:\CureNeed\src\data\medicines.json" --copy-images
 
    B. For batch processing new medicine folders:
    
       1. Create a new folder (e.g., new_medicines)
       2. Add medicine folders inside
       3. Use categorize_medicines.py (modify base-dir to point to your new folder)
-      4. Move categorized medicines to appropriate folders in s:\MedCare\medicines\
+      4. Move categorized medicines to appropriate folders in s:\CureNeed\medicines\
       5. Regenerate JSON using generate_unified_medicines_json.py
 
    C. Complete regeneration of JSON (recommended after any changes):
    
-      python .\scripts\generate_unified_medicines_json.py --medicines-dir "s:\MedCare\medicines" --public-dir "s:\MedCare\public" --output "s:\MedCare\src\data\medicines.json" --copy-images
+      python .\scripts\generate_unified_medicines_json.py --medicines-dir "s:\CureNeed\medicines" --public-dir "s:\CureNeed\public" --output "s:\CureNeed\src\data\medicines.json" --copy-images
 
 5. DEPRECATED SCRIPTS (no longer needed):
    - categorize_medicines_web2.py

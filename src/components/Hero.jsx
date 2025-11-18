@@ -1,5 +1,5 @@
 import React from 'react';
-import heroBg from '../assets/hero-pharmacy.jpg';
+import heroPoster from '../assets/hero-pharmacy.jpg';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 
 const Hero = () => {
@@ -9,10 +9,17 @@ const Hero = () => {
 
   return (
     <section className="relative w-full">
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-center bg-cover"
-        style={{ backgroundImage: `url(${heroBg})` }}
+      {/* Background video (falls back to poster) */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover"
+        src="/video/medicine.mp4"
+        poster={heroPoster}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
       />
 
       {/* Left shading for legibility (white fade to transparent) */}

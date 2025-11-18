@@ -65,21 +65,13 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="shrink-0 flex items-center hover:opacity-80 transition-opacity duration-200">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-emerald-500 rounded-lg flex items-center justify-center mr-2">
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 2L3 7v11a1 1 0 001 1h3v-6h6v6h3a1 1 0 001-1V7l-7-5z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <span className="text-lg sm:text-xl font-bold text-gray-800">MedCare</span>
+            <Link to="/" className="shrink-0 flex items-center hover:opacity-90 transition-opacity duration-200">
+              <img
+                src="/logo.png"
+                alt="CureEra – Trust in Every Dose"
+                className="h-30 sm:h-35 w-auto"
+              />
+              <span className="sr-only">CureEra</span>
             </Link>
           </div>
 
