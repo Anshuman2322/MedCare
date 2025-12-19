@@ -7,11 +7,11 @@ import { formatPrice } from '../utils/currency';
 
 // Pull first 6 actual medicines having an image
 const products = data
-  .filter((m) => m && m.image)
+  .filter((m) => m && m.image && !m.deletedAt)
   .slice(0, 6)
   .map((m) => ({
     id: m.id,
-    category: m.category,
+    category: (Array.isArray(m.categories) && m.categories.length ? m.categories[0] : m.category),
     title: m.name,
     price: m.price ?? 0,
     image: m.image || (m.images && m.images[0]) || '',

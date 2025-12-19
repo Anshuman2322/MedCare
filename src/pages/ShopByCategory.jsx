@@ -28,7 +28,12 @@ export default function ShopByCategory() {
 
   // Derive filter values dynamically from data
   const categories = useMemo(() => {
-    return Array.from(new Set(medicinesData.map(m => m.category))).sort();
+    const set = new Set();
+    for (const m of medicinesData) {
+      const cats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];
+      cats.filter(Boolean).forEach(c => set.add(c));
+    }
+    return Array.from(set).sort();
   }, []);
   const manufacturers = useMemo(() => {
     return Array.from(new Set(medicinesData.map(m => m.manufacturer).filter(Boolean))).sort();
@@ -38,8 +43,11 @@ export default function ShopByCategory() {
   }, []);
 
   const filtered = useMemo(() => {
-    let list = medicinesData.slice();
-    if (selectedCategory) list = list.filter(m => m.category === selectedCategory);
+    let list = medicinesData.filter(m => !m.deletedAt).slice();
+    if (selectedCategory) list = list.filter(m => {
+      const cats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];
+      return cats.includes(selectedCategory);
+    });
     if (selectedManufacturer) list = list.filter(m => m.manufacturer === selectedManufacturer);
     if (selectedForm) list = list.filter(m => m.form === selectedForm);
     list = list.filter(m => Number(m.price) <= Number(maxPrice));

@@ -34,11 +34,15 @@ const Navbar = () => {
   const handleSearch = (value) => {
     setSearchTerm(value);
     if (value.trim().length > 0) {
-      const filtered = data.filter(medicine => 
-        medicine.name.toLowerCase().includes(value.toLowerCase()) ||
-        medicine.category.toLowerCase().includes(value.toLowerCase()) ||
-        (medicine.manufacturer && medicine.manufacturer.toLowerCase().includes(value.toLowerCase()))
-      ).slice(0, 5); // Limit to 5 results
+      const filtered = data.filter(medicine => {
+        const cats = Array.isArray(medicine.categories) && medicine.categories.length ? medicine.categories.join(' ') : String(medicine.category || '');
+        return (
+          !medicine.deletedAt &&
+          medicine.name.toLowerCase().includes(value.toLowerCase()) ||
+          cats.toLowerCase().includes(value.toLowerCase()) ||
+          (medicine.manufacturer && medicine.manufacturer.toLowerCase().includes(value.toLowerCase()))
+        );
+      }).slice(0, 5); // Limit to 5 results
       setSearchResults(filtered);
       setIsSearchOpen(true);
     } else {
@@ -118,7 +122,7 @@ const Navbar = () => {
                         />
                         <div>
                           <div className="font-medium text-gray-900 text-sm">{medicine.name}</div>
-                          <div className="text-xs text-gray-500">{medicine.category}</div>
+                          <div className="text-xs text-gray-500">{Array.isArray(medicine.categories) && medicine.categories.length ? medicine.categories.join(', ') : medicine.category}</div>
                         </div>
                       </div>
                     </button>

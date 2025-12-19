@@ -8,10 +8,13 @@ import { api } from './api/axios.js';
 export default function App() {
   const [page, setPage] = useState('list');
   const [editId, setEditId] = useState(null);
+  const [listScrollTop, setListScrollTop] = useState(0);
   const [q, setQ] = useState('');
   const [all, setAll] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(false);
+  const [showDeleted, setShowDeleted] = useState(false);
+  const [deletedCount, setDeletedCount] = useState(0);
 
   // Load once for client-side search
   async function ensureLoaded() {
@@ -35,6 +38,18 @@ export default function App() {
       window.history.length > 1 && window.history.back();
     }
   };
+
+  // Restore scroll when returning to the list view after edits/navigation
+  useEffect(() => {
+    if (page === 'list') {
+      // Wait for list to render, then restore position
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: listScrollTop, behavior: 'auto' });
+        });
+      });
+    }
+  }, [page]);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -91,19 +106,36 @@ export default function App() {
           </div>
 
           <nav className="ml-auto flex gap-2">
-            <button className="px-3 py-2 rounded-md bg-slate-200 hover:bg-slate-300" onClick={goBack}>Back</button>
-            <button className="px-3 py-2 rounded-md bg-slate-200 hover:bg-slate-300" onClick={() => { setPage('list'); setEditId(null); }}>Home</button>
-            <button className={`px-3 py-2 rounded-md ${page==='list'?'bg-emerald-600 text-white':'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`} onClick={() => { setPage('list'); setEditId(null); }}>Medicines</button>
-            <button className={`px-3 py-2 rounded-md ${page==='add'?'bg-emerald-600 text-white':'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`} onClick={() => { setPage('add'); setEditId(null); }}>Add</button>
-            <button className={`px-3 py-2 rounded-md ${page==='cats'?'bg-emerald-600 text-white':'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`} onClick={() => { setPage('cats'); setEditId(null); }}>Categories</button>
+            <button className={`px-3 py-2 rounded-md ${page==='list'?'bg-emerald-600 text-white':'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`} onClick={() => { setPage('list'); setEditId(null); setTimeout(() => window.scrollTo({ top: listScrollTop, behavior: 'auto' }), 0); }}>Medicines</button>
+            <button className={`px-3 py-2 rounded-md ${page==='add'?'bg-emerald-600 text-white':'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`} onClick={() => { setListScrollTop(window.scrollY || document.documentElement.scrollTop || 0); setPage('add'); setEditId(null); }}>Add</button>
+            <button className={`px-3 py-2 rounded-md ${page==='cats'?'bg-emerald-600 text-white':'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`} onClick={() => { setListScrollTop(window.scrollY || document.documentElement.scrollTop || 0); setPage('cats'); setEditId(null); }}>Categories</button>
           </nav>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto p-4">
-        {page === 'list' && <ManageMedicines onEdit={(id) => { setEditId(id); setPage('edit'); }} />}
+        {page === 'list' && (
+          <ManageMedicines
+            showDeleted={showDeleted}
+            onToggleDeleted={setShowDeleted}
+            onDeletedCountChange={setDeletedCount}
+            onEdit={(id) => {
+              setListScrollTop(window.scrollY || document.documentElement.scrollTop || 0);
+              setEditId(id);
+              setPage('edit');
+            }}
+            onReady={() => {
+              // Restore scroll precisely after list has loaded and rendered
+              window.scrollTo({ top: listScrollTop, behavior: 'auto' });
+            }}
+          />
+        )}
         {page === 'add' && <AddMedicine onDone={() => setPage('list')} />}
-        {page === 'edit' && editId && <EditMedicine id={editId} onDone={() => { setEditId(null); setPage('list'); }} />}
+        {page === 'edit' && editId && <EditMedicine id={editId} onDone={() => {
+          setEditId(null);
+          setPage('list');
+          setTimeout(() => window.scrollTo({ top: listScrollTop, behavior: 'auto' }), 0);
+        }} />}
         {page === 'cats' && <ManageCategories />}
       </main>
     </div>

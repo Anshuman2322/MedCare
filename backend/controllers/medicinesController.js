@@ -1,8 +1,8 @@
-import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import mime from 'mime-types';
 import { fileURLToPath } from 'node:url';
+import process from 'node:process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,8 +10,9 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..', '..');
 
 // Default to repo's src/data/medicines.json used by the main site
-const DATA_JSON_PATH = process.env.DATA_JSON_PATH
-  ? path.resolve(ROOT, process.env.DATA_JSON_PATH)
+const ENV_DATA_JSON_PATH = process.env?.DATA_JSON_PATH ? String(process.env.DATA_JSON_PATH) : null;
+const DATA_JSON_PATH = ENV_DATA_JSON_PATH
+  ? path.resolve(ROOT, ENV_DATA_JSON_PATH)
   : path.resolve(ROOT, 'src', 'data', 'medicines.json');
 
 const PUBLIC_MEDICINES_DIR = path.resolve(ROOT, 'public', 'medicines');
@@ -68,6 +69,55 @@ async function readJson() {
 async function writeJson(arr) {
   await fsp.writeFile(DATA_JSON_PATH, JSON.stringify(arr, null, 2), 'utf-8');
 }
+const PREDEFINED_DETAIL_LABELS = [
+  'Brand Name',
+  'Manufacturer',
+  'Strength',
+  'Composition',
+  'Form',
+  'Pack Size',
+  'Packaging Type',
+  'Tablets in a Strip',
+  'Shelf Life',
+  'Category',
+  'Medicine Type',
+  'Storage'
+];
+
+function mergePredefinedDetails(entry, incoming) {
+  const byLabel = new Map();
+  for (const row of Array.isArray(incoming) ? incoming : []) {
+    if (!row || !row.label) continue;
+    byLabel.set(String(row.label), { label: String(row.label), value: String(row.value ?? '') });
+  }
+  // Ensure standard rows exist, prefilling from entry scalars when possible
+  const defaults = new Map([
+    ['Brand Name', entry.name ?? ''],
+    ['Manufacturer', entry.manufacturer ?? ''],
+    ['Strength', ''],
+    ['Composition', entry.composition ?? ''],
+    ['Form', entry.form ?? ''],
+    ['Pack Size', ''],
+    ['Packaging Type', ''],
+    ['Tablets in a Strip', ''],
+    ['Shelf Life', ''],
+    ['Category', entry.category ?? ''],
+    ['Medicine Type', ''],
+    ['Storage', '']
+  ]);
+  const result = [];
+  for (const label of PREDEFINED_DETAIL_LABELS) {
+    const current = byLabel.get(label);
+    const value = current?.value ?? defaults.get(label) ?? '';
+    result.push({ label, value });
+    if (current) byLabel.delete(label);
+  }
+  // Append any custom rows that were provided
+  for (const leftover of byLabel.values()) {
+    if (leftover && leftover.label) result.push(leftover);
+  }
+  return result;
+}
 
 // Match current site: flat URLs /medicines/<id>/<n>.jpg
 const USE_CATEGORY_IN_PATH = false;
@@ -91,7 +141,8 @@ async function nextImageNumber(dir) {
     const files = await fsp.readdir(dir);
     let max = 0;
     for (const f of files) {
-      const m = /^(\d+)\.[a-z0-9]+$/i.exec(f);
+      // Support both "1.jpg" and legacy names like "1unnamed.jpg"
+      const m = /^(\d+)/.exec(f);
       if (m) max = Math.max(max, parseInt(m[1], 10));
     }
     return max + 1;
@@ -134,9 +185,16 @@ export async function listCategories(_req, res) {
   res.json({ categories: ALLOWED_CATEGORIES });
 }
 
-export async function listMedicines(_req, res) {
+export async function listMedicines(req, res) {
   const data = await readJson();
-  res.json(data);
+  const { deleted } = req.query || {};
+  if (String(deleted) === 'true') {
+    // Only return items that have deletedAt property and it's not null/undefined
+    res.json(data.filter((m) => m.deletedAt != null));
+  } else {
+    // Only return items that don't have deletedAt or it's null/undefined
+    res.json(data.filter((m) => m.deletedAt == null));
+  }
 }
 
 export async function getMedicine(req, res, next) {
@@ -160,6 +218,7 @@ export async function createMedicine(req, res, next) {
       form = 'Tablet',
       description = '',
       manufacturer = 'Generic',
+      composition = '',
       requiresPrescription = true,
       inStock = true,
       dosage = '',
@@ -169,7 +228,13 @@ export async function createMedicine(req, res, next) {
 
     if (!name) throw Object.assign(new Error('Name is required'), { status: 400 });
 
-    const normalizedCategory = validateCategory(category);
+    let categories = [];
+    try {
+      categories = JSON.parse(req.body.categories || '[]');
+      if (!Array.isArray(categories)) categories = [];
+    } catch { categories = []; }
+    const normalizedCategories = categories.map((c) => validateCategory(c));
+    const primaryCategory = normalizedCategories[0] || validateCategory(category);
     const id = slug(name);
 
     const data = await readJson();
@@ -177,7 +242,7 @@ export async function createMedicine(req, res, next) {
       throw Object.assign(new Error('Duplicate medicine ID'), { status: 409 });
     }
 
-    const dir = resolveDiskFolder(normalizedCategory, id);
+    const dir = resolveDiskFolder(primaryCategory, id);
     await ensureDir(dir);
 
     // Move uploads, auto-number
@@ -189,7 +254,8 @@ export async function createMedicine(req, res, next) {
       const finalName = `${n}.${safeExt}`;
       const dest = path.join(dir, finalName);
       await fsp.rename(file.path, dest);
-      urls.push(imageUrl(normalizedCategory, id, finalName));
+      // Use the resolved primary category for image URL path
+      urls.push(imageUrl(primaryCategory, id, finalName));
       n++;
     }
 
@@ -201,10 +267,11 @@ export async function createMedicine(req, res, next) {
       try { detailsArr = JSON.parse(details); } catch { detailsArr = []; }
     }
 
-    const entry = {
+    let entry = {
       id,
       name,
-      category: normalizedCategory,
+      category: primaryCategory,
+      categories: normalizedCategories,
       price: Number(price),
       form,
       image: urls[0] || '',
@@ -212,11 +279,15 @@ export async function createMedicine(req, res, next) {
       inStock: Boolean(inStock),
       description,
       manufacturer,
+      composition,
       requiresPrescription: String(requiresPrescription) !== 'false',
       dosage,
       usage,
       details: detailsArr
     };
+
+    // Normalize details to include predefined labels
+    entry.details = mergePredefinedDetails(entry, entry.details);
 
     data.push(entry);
     await writeJson(data);
@@ -240,6 +311,7 @@ export async function updateMedicine(req, res, next) {
     const body = req.body || {};
     let targetId = data[idx].id;
     let targetCat = data[idx].category;
+    let pendingCategories = null;
 
     if (body.name && slug(body.name) !== id) {
       const newId = slug(body.name);
@@ -280,18 +352,24 @@ export async function updateMedicine(req, res, next) {
       }
     }
 
-    if (body.category) {
-      const newCat = validateCategory(body.category);
-      if (newCat !== targetCat) {
-        // With flat storage, category change doesn't move files; update JSON only
-        targetCat = newCat;
+    if (body.category || body.categories) {
+      let nextCats = [];
+      try { nextCats = JSON.parse(body.categories || '[]'); } catch { nextCats = []; }
+      if (!Array.isArray(nextCats) || nextCats.length === 0) {
+        const single = body.category ? validateCategory(body.category) : targetCat;
+        nextCats = [single];
+      } else {
+        nextCats = nextCats.map((c) => validateCategory(c));
       }
+      targetCat = nextCats[0] || targetCat;
+      pendingCategories = nextCats;
     }
 
     const entry = data[idx];
     // Apply target id/category to entry now
     entry.id = targetId;
     entry.category = targetCat;
+    if (pendingCategories) entry.categories = pendingCategories;
     const dir = resolveDiskFolder(entry.category, entry.id);
     await ensureDir(dir);
 
@@ -309,7 +387,7 @@ export async function updateMedicine(req, res, next) {
     }
 
     // Update scalars
-    const scalars = ['name', 'price', 'form', 'description', 'manufacturer', 'requiresPrescription', 'inStock', 'dosage', 'usage'];
+    const scalars = ['name', 'price', 'form', 'description', 'manufacturer', 'composition', 'requiresPrescription', 'inStock', 'dosage', 'usage'];
     for (const k of scalars) {
       if (k in body) {
         if (k === 'price') entry[k] = Number(body[k]);
@@ -325,12 +403,23 @@ export async function updateMedicine(req, res, next) {
       } catch {}
     }
 
-    // If ID changed, rewrite image URLs to the new path to avoid 404s
+    // Ensure predefined details exist after any scalar/detail changes
+    entry.details = mergePredefinedDetails(entry, entry.details);
+
+    // If ID changed, rewrite image URLs only if the new folder actually has files
     if (targetId !== id) {
-      entry.images = (entry.images || []).map((u) => {
-        const fileName = path.basename(u);
-        return imageUrl(entry.category, entry.id, fileName);
-      });
+      const newDir = resolveDiskFolder(entry.category, entry.id);
+      let hasFiles = false;
+      try {
+        const files = await fsp.readdir(newDir);
+        hasFiles = Array.isArray(files) && files.length > 0;
+      } catch {}
+      if (hasFiles) {
+        entry.images = (entry.images || []).map((u) => {
+          const fileName = path.basename(u);
+          return imageUrl(entry.category, entry.id, fileName);
+        });
+      }
     }
 
     // As a safety net, if images are empty or files missing, rebuild from disk
@@ -357,12 +446,52 @@ export async function deleteMedicine(req, res, next) {
     const idx = data.findIndex((m) => m.id === id);
     if (idx === -1) throw Object.assign(new Error('Not found'), { status: 404 });
 
-    const dir = resolveDiskFolder(data[idx].category, id);
-    await fsp.rm(dir, { recursive: true, force: true });
-
-    const removed = data.splice(idx, 1)[0];
+    // Soft delete: mark deletedAt; keep images for 7 days
+    const now = new Date().toISOString();
+    data[idx].deletedAt = now;
     await writeJson(data);
-    res.json({ removed });
+    res.json({ ok: true, deletedAt: now });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function restoreMedicine(req, res, next) {
+  try {
+    const { id } = req.params;
+    const data = await readJson();
+    const idx = data.findIndex((m) => m.id === id);
+    if (idx === -1) throw Object.assign(new Error('Not found'), { status: 404 });
+    data[idx].deletedAt = undefined;
+    await writeJson(data);
+    res.json(data[idx]);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function purgeDeleted(req, res, next) {
+  try {
+    const data = await readJson();
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const keep = [];
+    const removed = [];
+    for (const m of data) {
+      if (m.deletedAt) {
+        const when = Date.parse(m.deletedAt);
+        if (!Number.isNaN(when) && when < cutoff) {
+          try {
+            const dir = resolveDiskFolder(m.category, m.id);
+            await fsp.rm(dir, { recursive: true, force: true });
+          } catch {}
+          removed.push(m.id);
+          continue;
+        }
+      }
+      keep.push(m);
+    }
+    await writeJson(keep);
+    res.json({ ok: true, removed });
   } catch (err) {
     next(err);
   }

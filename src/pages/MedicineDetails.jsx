@@ -8,7 +8,10 @@ import { formatPrice } from '../utils/currency';
 
 export default function MedicineDetails() {
   const { id } = useParams();
-  const product = useMemo(() => data.find((m) => m.id === id), [id]);
+  const product = useMemo(() => {
+    const m = data.find((x) => x.id === id);
+    return m && !m.deletedAt ? m : null;
+  }, [id]);
   const { currency } = useCurrency();
   
   const CATEGORY_DESCRIPTIONS = {
@@ -30,9 +33,18 @@ export default function MedicineDetails() {
     'Gastrointestinal': 'Treatments for digestive issues and gastrointestinal disorders. Take as prescribed with appropriate dietary considerations.',
     'Uncategorized': 'General healthcare product.'
   };
+  const categoriesList = useMemo(() => {
+    if (!product) return [];
+    return Array.isArray(product.categories) && product.categories.length
+      ? product.categories
+      : [product.category].filter(Boolean);
+  }, [product]);
+
+  const primaryCategory = categoriesList[0] || 'Uncategorized';
+
   const categoryDescription = useMemo(() => {
     if (!product) return '';
-    const key = product.category;
+    const key = primaryCategory;
     const direct = CATEGORY_DESCRIPTIONS[key];
     if (direct) return direct;
     const normalized = key?.replace(/-/g, ' ');
@@ -115,7 +127,7 @@ export default function MedicineDetails() {
           className={`bg-sky-50/40 border-b border-gray-100 ${animationClasses.fadeUp(categoryVisible)}`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-5">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{product.category}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{categoriesList.join(', ')}</h2>
             <p className="mt-1 text-sm sm:text-base text-gray-600 max-w-3xl">{categoryDescription}</p>
           </div>
         </section>
@@ -192,7 +204,7 @@ export default function MedicineDetails() {
           >
             {/* Header with secondary buttons */}
             <div className="flex justify-between items-start mb-6">
-              <div className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2.5 py-1">{product.category}</div>
+              <div className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2.5 py-1">{primaryCategory}</div>
               
               {/* Secondary Action Buttons - Top Right */}
               <div className="flex gap-3">
@@ -211,7 +223,10 @@ export default function MedicineDetails() {
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900">{product.name}</h1>
-            <p className="mt-6 text-gray-600 max-w-2xl">{product.description}</p>
+            <div className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4">
+              <div className="text-sm uppercase tracking-wide text-emerald-700 mb-1">Overview</div>
+              <p className="mt-2 text-gray-700 max-w-2xl text-justify leading-7">{product.description}</p>
+            </div>
 
             <div className="mt-8 text-emerald-600 text-3xl font-extrabold" key={`price-${currency}`}>{formatPrice(product.price, currency)}</div>
 
@@ -231,7 +246,7 @@ export default function MedicineDetails() {
               </div>
               <div>
                 <div className="text-gray-500">Composition</div>
-                <div className="text-gray-800 font-medium">{product.composition}</div>
+                <div className="text-gray-800 font-medium">{product.composition || (Array.isArray(product.details) ? (product.details.find?.(r => r.label === 'Composition')?.value || '') : '')}</div>
               </div>
             </div>
 
@@ -311,34 +326,50 @@ export default function MedicineDetails() {
               </div>
             )}
             {tab === 'Details' && (
-              Array.isArray(product.details) && product.details.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm">
-                    <tbody className="divide-y divide-gray-100">
-                      {product.details.map((row, idx) => (
-                        <tr key={idx} className="odd:bg-gray-50/50">
-                          <th className="text-gray-600 font-medium text-left py-3 pr-6 w-48 align-top">{row.label}</th>
-                          <td className="text-gray-800 py-3">{row.value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p className="leading-7 whitespace-pre-line">{product.details || 'No additional details provided.'}</p>
-              )
+              (() => {
+                const base = Array.isArray(product.details) ? [...product.details] : [];
+                const labels = new Set(base.map((r) => r?.label));
+                const ensureRow = (label, value) => {
+                  if (!labels.has(label)) base.unshift({ label, value });
+                };
+                ensureRow('Brand Name', product.name || '');
+                ensureRow('Manufacturer', product.manufacturer || '');
+                ensureRow('Form', product.form || '');
+                // Show Treatment as primary category
+                ensureRow('Treatment', primaryCategory || '');
+
+                return base.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm">
+                      <tbody className="divide-y divide-gray-100">
+                        {base.map((row, idx) => (
+                          <tr key={`${row.label}-${idx}`} className="odd:bg-emerald-50 even:bg-white">
+                            <th className="text-gray-600 font-medium text-left py-3 pr-6 w-48 align-top">{row.label}</th>
+                            <td className="text-gray-800 py-3">{row.value}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="leading-7 whitespace-pre-line">No additional details provided.</p>
+                );
+              })()
             )}
           </div>
         </div>
 
         {/* Related products horizontal slider */}
-        {data.filter((m) => m.category === product.category && m.id !== product.id).length > 0 && (
+        {data.filter((m) => {
+            const mcats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];
+            return !m.deletedAt && m.id !== product.id && mcats?.includes(primaryCategory);
+          }).length > 0 && (
           <section
             ref={relatedRef}
             className={`mt-20 ${animationClasses.fadeUp(relatedVisible)}`}
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">You may also like in {product.category}</h3>
+              <h3 className="text-xl font-bold text-gray-900">You may also like in {primaryCategory}</h3>
               <div className="hidden sm:flex gap-2">
                 <button
                   onClick={() => scrollBy('prev')}
@@ -379,7 +410,10 @@ export default function MedicineDetails() {
                 className="overflow-x-auto scrollbar-hide -mx-1 px-1 flex gap-4 snap-x snap-mandatory pb-2"
               >
                 {data
-                  .filter((m) => m.category === product.category && m.id !== product.id)
+                  .filter((m) => {
+                    const mcats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];
+                    return !m.deletedAt && m.id !== product.id && mcats?.includes(primaryCategory);
+                  })
                   .map((m) => (
                     <div key={m.id} className="snap-start shrink-0 w-60">
                       <MedicineCard product={m} />

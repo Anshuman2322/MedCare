@@ -1,24 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { api } from '../api/axios.js';
 
-const CATS = [
-  'Antibiotics',
-  'Anti-Cancer',
-  'Anti-Malarial',
-  'Anti-Viral',
-  'Chronic-Cardiac',
-  'ED',
-  'Hormones-Steroids',
-  'Injections',
-  'Pain-Killers',
-  'Skin-Allergy-Asthma',
-  'Supplements-Vitamins-Hair'
-];
-
-export default function CategorySelect({ value, onChange }) {
+export default function CategorySelect({ value, onChange, multiple = false }) {
+  const [cats, setCats] = useState([]);
+  useEffect(() => {
+    api.get('/categories').then(({ data }) => setCats(data?.categories || [])).catch(() => setCats([]));
+  }, []);
   return (
-    <select className="border rounded-md px-3 py-2" value={value} onChange={(e) => onChange(e.target.value)}>
-      <option value="">Select category…</option>
-      {CATS.map((c) => (
+    <select
+      multiple={multiple}
+      className="border rounded-md px-3 py-2"
+      value={value}
+      onChange={(e) => {
+        if (multiple) {
+          const arr = Array.from(e.target.selectedOptions).map((o) => o.value);
+          onChange(arr);
+        } else {
+          onChange(e.target.value);
+        }
+      }}
+    >
+      {!multiple && <option value="">Select category…</option>}
+      {cats.map((c) => (
         <option key={c} value={c}>
           {c}
         </option>

@@ -15,6 +15,9 @@ async function main() {
   const raw = await fsp.readFile(DATA_JSON_PATH, 'utf-8');
   const list = JSON.parse(raw);
   let changed = 0;
+  const PREDEFINED = [
+    'Brand Name','Manufacturer','Strength','Composition','Form','Pack Size','Packaging Type','Tablets in a Strip','Shelf Life','Category','Medicine Type','Storage'
+  ];
   for (const m of list) {
     const id = slug(m.id || m.name || '');
     const dir = path.join(PUBLIC_MEDICINES_DIR, id);
@@ -37,6 +40,47 @@ async function main() {
       }
     } catch {
       // folder missing; skip
+    }
+    // Ensure categories array includes primary category
+    if (!Array.isArray(m.categories) || m.categories.length === 0) {
+      if (m.category) m.categories = [m.category];
+      else m.categories = [];
+      changed++;
+    }
+    // Ensure predefined details rows exist
+    const by = new Map();
+    for (const r of Array.isArray(m.details) ? m.details : []) {
+      if (r?.label) by.set(r.label, { label: r.label, value: String(r.value ?? '') });
+    }
+    const defaults = new Map([
+      ['Brand Name', m.name ?? ''],
+      ['Manufacturer', m.manufacturer ?? ''],
+      ['Strength', (by.get('Strength')?.value) || ''],
+      ['Composition', m.composition ?? by.get('Composition')?.value || ''],
+      ['Form', m.form ?? ''],
+      ['Pack Size', by.get('Pack Size')?.value || ''],
+      ['Packaging Type', by.get('Packaging Type')?.value || ''],
+      ['Tablets in a Strip', by.get('Tablets in a Strip')?.value || ''],
+      ['Shelf Life', by.get('Shelf Life')?.value || ''],
+      ['Category', m.category ?? ''],
+      ['Medicine Type', by.get('Medicine Type')?.value || ''],
+      ['Storage', by.get('Storage')?.value || '']
+    ]);
+    const merged = [];
+    for (const label of PREDEFINED) {
+      const val = (by.get(label)?.value) ?? (defaults.get(label) ?? '');
+      merged.push({ label, value: val });
+      by.delete(label);
+    }
+    for (const rest of by.values()) merged.push(rest);
+    if (JSON.stringify(merged) !== JSON.stringify(m.details || [])) {
+      m.details = merged;
+      changed++;
+    }
+    if (m.composition == null) {
+      const fromDetails = merged.find(r => r.label === 'Composition')?.value || '';
+      m.composition = fromDetails;
+      changed++;
     }
   }
   if (changed) {

@@ -1,76 +1,5 @@
 [
   {
-    "id": "azicip-500-mg-azithromycin-tablets",
-    "name": "Azicip 500 Mg Azithromycin Tablets",
-    "category": "Anti-Cancer",
-    "price": 16,
-    "form": "Tablet",
-    "image": "/medicines/azicip-500-mg-azithromycin-tablets/1unnamed.jpg",
-    "images": [
-      "/medicines/azicip-500-mg-azithromycin-tablets/1unnamed.jpg",
-      "/medicines/azicip-500-mg-azithromycin-tablets/2unnamed.jpg",
-      "/medicines/azicip-500-mg-azithromycin-tablets/3unnamed.jpg",
-      "/medicines/azicip-500-mg-azithromycin-tablets/4unnamed.jpg",
-      "/medicines/azicip-500-mg-azithromycin-tablets/5unnamed.jpg"
-    ],
-    "inStock": true,
-    "description": "Azipic 500 mg Tablet contains Azithromycin, an antibiotic used to manage various bacterial infections. It is commonly recommended for infections of the throat, lungs, sinuses, ear, skin, and eyes. It works by stopping the growth of bacteria when taken as advised.",
-    "manufacturer": "Cipla Ltd",
-    "requiresPrescription": true,
-    "dosage": "The usual suggested dose is 500 mg once daily, or as advised by a licensed healthcare provider.",
-    "usage": "Azipic 500 mg is commonly used to manage a wide range of bacterial infections. It is often recommended for respiratory tract issues, sinus and throat infections, ear infections, and various skin or soft tissue infections. It may also be prescribed for certain eye infections caused by bacteria and, in some cases, for specific bacterial STIs under medical guidance. The medicine works by slowing the growth of harmful bacteria, allowing the body to fight the infection more effectively.",
-    "details": [
-      {
-        "label": "Brand Name",
-        "value": "Azicip"
-      },
-      {
-        "label": "Manufacturer",
-        "value": "Cipla Ltd"
-      },
-      {
-        "label": "Strength",
-        "value": "500 mg"
-      },
-      {
-        "label": "Composition",
-        "value": "Azithromycin 500 mg"
-      },
-      {
-        "label": "Form",
-        "value": "20 × 3 Tablets"
-      },
-      {
-        "label": "Pack Size",
-        "value": "3"
-      },
-      {
-        "label": "Packaging Type",
-        "value": "36 months"
-      },
-      {
-        "label": "Tablets in a Strip",
-        "value": "Antibiotic Medicine"
-      },
-      {
-        "label": "Medicine Type",
-        "value": "Allopathic"
-      },
-      {
-        "label": "Treatment",
-        "value": "Bacterial Infections"
-      },
-      {
-        "label": "Shelf Life",
-        "value": "36 Months"
-      },
-      {
-        "label": "Storage",
-        "value": "Store in a cool, dry place, away from sunlight"
-      }
-    ]
-  },
-  {
     "id": "azikap-250-mg-azithromycin-tablets",
     "name": "Azikap 250 Mg Azithromycin Tablets",
     "category": "Antibiotics",
@@ -86,44 +15,7 @@
     "requiresPrescription": true,
     "dosage": "The usual suggested dose is 250 mg once daily, or as prescribed by a licensed healthcare professional.\r\nDo not exceed the recommended dose.",
     "usage": "Azikap 250 mg is commonly used to manage a wide variety of bacterial infections. It is often prescribed for respiratory tract infections, sinus and throat infections, skin and soft tissue infections, and urinary tract infections. It may also be used for certain stomach or intestinal infections, joint or bone infections, and specific bacterial STIs under medical supervision. The medicine works by slowing the growth of harmful bacteria, helping the body fight the infection more effectively.",
-    "details": [
-      {
-        "label": "Brand Name",
-        "value": "Azikap"
-      },
-      {
-        "label": "Manufacturer",
-        "value": "Kaps 3"
-      },
-      {
-        "label": "Strength",
-        "value": "250 mg"
-      },
-      {
-        "label": "Composition",
-        "value": "Azithromycin"
-      },
-      {
-        "label": "Pack Size",
-        "value": "10 × 10 Tablets"
-      },
-      {
-        "label": "Pack Type",
-        "value": "Box"
-      },
-      {
-        "label": "Shelf Life",
-        "value": "24 Months"
-      },
-      {
-        "label": "Category",
-        "value": "Antibiotic"
-      },
-      {
-        "label": "Storage",
-        "value": "Store in a cool, dry place away from moisture and sunlight."
-      }
-    ]
+    "details": "[{\"label\":\"Composition\",\"value\":\"dsc\"},{\"label\":\"Strength\",\"value\":\"dsa\"},{\"label\":\"Pack Size\",\"value\":\"asda\"},{\"label\":\"Packaging Type\",\"value\":\"das\"},{\"label\":\"Tablets in a Strip\",\"value\":\"dassa\"},{\"label\":\"Shelf Life\",\"value\":\"asdsad\"},{\"label\":\"Medicine Type\",\"value\":\"dsa\"},{\"label\":\"Storage\",\"value\":\"asd\"}]"
   },
   {
     "id": "cefixime-ofloxacin-tabletscefix-o-200-200-mg-cefixime-and-ofloxacin-tablets",
@@ -145,7 +37,7 @@
     "details": [
       {
         "label": "Brand Name",
-        "value": "Cefix-O"
+        "value": "Cefixime Ofloxacin TabletsCefix-O 200 + 200 Mg Cefixime & Ofloxacin Tablets"
       },
       {
         "label": "Manufacturer",
@@ -169,7 +61,7 @@
       },
       {
         "label": "Packaging Type",
-        "value": "Strip"
+        "value": "Strips"
       },
       {
         "label": "Tablets in a Strip",
@@ -181,7 +73,7 @@
       },
       {
         "label": "Category",
-        "value": "Antibiotic"
+        "value": "Antibiotics"
       },
       {
         "label": "Medicine Type",
@@ -190,8 +82,16 @@
       {
         "label": "Storage",
         "value": "Store in a cool, dry place away from sunlight."
+      },
+      {
+        "label": "Temp Field",
+        "value": "Row"
       }
-    ]
+    ],
+    "categories": [
+      "Antibiotics"
+    ],
+    "composition": "Cefixime + Ofloxacin"
   },
   {
     "id": "egaten-250-mg-triclabendazole-tablets",
@@ -407,12 +307,12 @@
     "category": "Antibiotics",
     "price": 16,
     "form": "Tablet",
-    "image": "/medicines/iverheal-12-mg-ivermectin-tablets/1unnamed.jpg",
+    "image": "/medicines/iverheal-12-mg-ivermectin-tablets/4unnamed.jpg",
     "images": [
+      "/medicines/iverheal-12-mg-ivermectin-tablets/4unnamed.jpg",
       "/medicines/iverheal-12-mg-ivermectin-tablets/1unnamed.jpg",
       "/medicines/iverheal-12-mg-ivermectin-tablets/2unnamed.jpg",
-      "/medicines/iverheal-12-mg-ivermectin-tablets/3unnamed.jpg",
-      "/medicines/iverheal-12-mg-ivermectin-tablets/4unnamed.jpg"
+      "/medicines/iverheal-12-mg-ivermectin-tablets/3unnamed.jpg"
     ],
     "inStock": true,
     "description": "Iverheal 12 mg Tablet contains Ivermectin, an antiparasitic medicine used for treating various intestinal, skin, and eye parasitic infections. It works by paralyzing the parasites, helping the body eliminate them effectively.",
@@ -6157,5 +6057,108 @@
         "value": "Store in a cool, dry place away from sunlight."
       }
     ]
+  },
+  {
+    "id": "cefixime-ofloxacin-tabletscefix-o-200-200-mg-cefixime-ofloxacin-tablets",
+    "name": "Cefixime Ofloxacin TabletsCefix-O 200 + 200 Mg Cefixime & Ofloxacin Tablets",
+    "category": "Antibiotics",
+    "categories": [
+      "Antibiotics",
+      "Anti-Cancer"
+    ],
+    "price": 10,
+    "form": "Tablet",
+    "image": "/medicines/cefixime-ofloxacin-tabletscefix-o-200-200-mg-cefixime-ofloxacin-tablets/1.jpg",
+    "images": [
+      "/medicines/cefixime-ofloxacin-tabletscefix-o-200-200-mg-cefixime-ofloxacin-tablets/1.jpg",
+      "/medicines/cefixime-ofloxacin-tabletscefix-o-200-200-mg-cefixime-ofloxacin-tablets/2.jpg"
+    ],
+    "inStock": true,
+    "description": "sjkdcn",
+    "manufacturer": "Generic",
+    "composition": "sdjhbj",
+    "requiresPrescription": true,
+    "dosage": "kcsjbdc",
+    "usage": "jsbca",
+    "details": "[{\"label\":\"Composition\",\"value\":\"sdjhbj\"},{\"label\":\"Strength\",\"value\":\"sdca\"},{\"label\":\"Pack Size\",\"value\":\"sadasda\"},{\"label\":\"Packaging Type\",\"value\":\"asd\"},{\"label\":\"Tablets in a Strip\",\"value\":\"sada\"},{\"label\":\"Shelf Life\",\"value\":\"sad\"},{\"label\":\"Medicine Type\",\"value\":\"sad\"},{\"label\":\"Storage\",\"value\":\"asc\"}]",
+    "deletedAt": "2025-12-19T18:49:48.082Z"
+  },
+  {
+    "id": "temp",
+    "name": "Temp",
+    "category": "Antibiotics",
+    "categories": [
+      "Antibiotics",
+      "Anti-Cancer"
+    ],
+    "price": 10,
+    "form": "Tablet",
+    "image": "/medicines/temp/1.png",
+    "images": [
+      "/medicines/temp/1.png",
+      "/medicines/temp/2.png"
+    ],
+    "inStock": true,
+    "description": "abcd",
+    "manufacturer": "Generic",
+    "composition": "122",
+    "requiresPrescription": true,
+    "dosage": "sdf",
+    "usage": "sdf",
+    "details": [
+      {
+        "label": "Brand Name",
+        "value": "Temp"
+      },
+      {
+        "label": "Manufacturer",
+        "value": "Generic"
+      },
+      {
+        "label": "Strength",
+        "value": "222"
+      },
+      {
+        "label": "Composition",
+        "value": "122"
+      },
+      {
+        "label": "Form",
+        "value": "Tablet"
+      },
+      {
+        "label": "Pack Size",
+        "value": "1212"
+      },
+      {
+        "label": "Packaging Type",
+        "value": "dfsf"
+      },
+      {
+        "label": "Tablets in a Strip",
+        "value": "12"
+      },
+      {
+        "label": "Shelf Life",
+        "value": "3"
+      },
+      {
+        "label": "Category",
+        "value": "Antibiotics"
+      },
+      {
+        "label": "Medicine Type",
+        "value": "fds"
+      },
+      {
+        "label": "Storage",
+        "value": "4"
+      },
+      {
+        "label": "new filed",
+        "value": "sdfs"
+      }
+    ],
+    "deletedAt": "2025-12-19T18:40:34.758Z"
   }
 ]
