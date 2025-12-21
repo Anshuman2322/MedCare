@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import medicinesRouter from './routes/medicines.js';
 import uploadRouter from './routes/upload.js';
+import categoriesRouter from './routes/categories.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,6 +24,7 @@ app.use('/medicines', express.static(path.join(PUBLIC_DIR, 'medicines')));
 // API routes
 app.use('/api', medicinesRouter);
 app.use('/api', uploadRouter);
+app.use('/api', categoriesRouter);
 
 // Health
 app.get('/api/health', (_req, res) => res.json({ ok: true }));

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import medicinesData from '../data/medicines.json';
+import categoriesData from '../data/categories.json';
 import MedicineCard from '../components/MedicineCard';
 import Navbar from '../components/Navbar';
 import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
@@ -27,12 +28,40 @@ export default function ShopByCategory() {
   const [productsRef] = useScrollAnimation(0.1, 400);
 
   // Derive filter values dynamically from data
+  const LEGACY_CATEGORY_MAP = useMemo(() => new Map([
+    ['Anti Cancer', 'Anti-Cancer'],
+    ['Anti Malarial', 'Anti-Malarial'],
+    ['Anti Viral', 'Anti-Viral'],
+    ['Chronic / Cardiac', 'Chronic-Cardiac'],
+    ['Erectile Dysfunction', 'ED'],
+    ['Hormones & Steroids', 'Hormones-Steroids'],
+    ['Pain Relief', 'Pain-Killers'],
+    ['Skin / Allergy / Asthma', 'Skin-Allergy-Asthma'],
+    ['Supplements & Hair', 'Supplements-Vitamins-Hair'],
+  ]), []);
+  const toLabel = (c) => {
+    const s = typeof c === 'string' ? c : (c?.label ?? c?.name ?? '');
+    return String(s).trim();
+  };
+  const normalizeCategory = (label) => LEGACY_CATEGORY_MAP.get(label) || label;
   const categories = useMemo(() => {
     const set = new Set();
+    // From medicines present in data
     for (const m of medicinesData) {
       const cats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];
-      cats.filter(Boolean).forEach(c => set.add(c));
+      cats
+        .map(toLabel)
+        .filter(Boolean)
+        .map(normalizeCategory)
+        .forEach(c => set.add(c));
     }
+    // From categories.json managed via admin
+    const catArr = Array.isArray(categoriesData) ? categoriesData : [];
+    catArr
+      .map(toLabel)
+      .filter(Boolean)
+      .map(normalizeCategory)
+      .forEach(c => set.add(c));
     return Array.from(set).sort();
   }, []);
   const manufacturers = useMemo(() => {
@@ -46,7 +75,8 @@ export default function ShopByCategory() {
     let list = medicinesData.filter(m => !m.deletedAt).slice();
     if (selectedCategory) list = list.filter(m => {
       const cats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];
-      return cats.includes(selectedCategory);
+      const normalizedCats = cats.filter(Boolean).map(normalizeCategory);
+      return normalizedCats.includes(selectedCategory);
     });
     if (selectedManufacturer) list = list.filter(m => m.manufacturer === selectedManufacturer);
     if (selectedForm) list = list.filter(m => m.form === selectedForm);
@@ -187,7 +217,7 @@ export default function ShopByCategory() {
               <div className="filter-section">
                 <div className="filter-title">Category</div>
                 {categories.map(cat => (
-                  <label className="filter-row" key={cat}>
+                  <label className="filter-row" key={String(cat)}>
                     <input type="radio" name="category" checked={selectedCategory === cat} onChange={() => {
                       setSelectedCategory(cat);
                       if (window.innerWidth <= 768) setTimeout(() => setShowFilters(false), 300);
