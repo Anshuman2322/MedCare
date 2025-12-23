@@ -137,13 +137,7 @@ export default function Contact() {
                     Chandauli-232109, Uttar Pradesh, India
                   </div>
                   <div className="mt-2">
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('00, Belwani, OD 660343, Mathela, Common Service Centre, Sakaldiha, Chandauli-232109, Uttar Pradesh, India')}`}
-                      target="_blank" rel="noreferrer"
-                      className="inline-flex items-center justify-center px-3 py-1.5 rounded-md border border-emerald-300 text-emerald-700 text-xs hover:bg-emerald-50"
-                    >
-                      Get Directions
-                    </a>
+                    {/* Removed Get Directions feature as requested */}
                   </div>
                 </div>
               </div>

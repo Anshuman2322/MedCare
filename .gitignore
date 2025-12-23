@@ -55,6 +55,8 @@ lerna-debug.log*
 .env.production
 .env.staging
 *.local
+admin/.env*
+backend/.env*
 
 # Editor directories and files
 .vscode/*
@@ -78,6 +80,8 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+*.zip
+*.rar
 
 # Testing
 coverage/
@@ -199,6 +203,7 @@ admin/dist/
 admin/.vite/
 admin/.parcel-cache/
 admin/.eslintcache
+admin/.env*
 
 # Backend temp/uploads/cache and dependencies
 backend/node_modules/
@@ -207,3 +212,25 @@ backend/dist/
 backend/*.log
 backend/.eslintcache
 backend/.env*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.coverage
+coverage.xml
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.sphinx/
+*.egg
+*.egg-info/
+.eggs/

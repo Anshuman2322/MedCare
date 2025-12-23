@@ -40,6 +40,9 @@ CureNeed is a comprehensive, responsive healthcare e-commerce platform built wit
 - Featured Medicines now loads 6 real items from `src/data/medicines.json` and includes a “View More” button to `/shop`
 - Unified, global `Footer` rendered on every page for consistent branding
 - About page enhancements: much larger team photo and a Business Details section with GST highlight + copy button
+- Admin UX: Added an "Update Success" modal after saving a medicine; the primary action is labeled "Yes, Update" to return to the list
+- Admin UX: Replaced native browser alerts with in‑app toast notifications for validation and errors
+- Main Site: Added content protection (blocks right‑click, copy/cut, drag, and common devtools shortcuts) – see "Content Protection" below
 
 ## Tech Stack
 
@@ -100,9 +103,15 @@ npm run lint         # Run ESLint
 ### **Environment Setup**
 Create a `.env.local` file for local development:
 ```env
-VITE_API_BASE_URL=http://localhost:5050/api
+VITE_API_BASE=http://localhost:5050/api
 VITE_CURRENCY_API_KEY=your_api_key_here
 VITE_ANALYTICS_ID=your_analytics_id
+```
+Backend (optional) environment:
+```env
+# Override the path to the medicines JSON used by the API
+# Defaults to ./src/data/medicines.json at repo root
+DATA_JSON_PATH=src/data/medicines.json
 ```
 
 ## Project structure
@@ -176,7 +185,7 @@ MedCare/
 - Admin dashboard (React + Vite + Tailwind) lives in `admin/` on `http://localhost:5174` by default.
 - Both integrate with the main site using the SAME data and images:
 	- JSON: `src/data/medicines.json`
-	- Images root: `public/medicines/` (stored on disk as `public/medicines/<category>/<id>/<n>.jpg`)
+	- Images root: `public/medicines/` (stored on disk as `public/medicines/<id>/<n>.jpg`)
 - Image URLs written to JSON follow the main site’s existing flat pattern: `/medicines/<id>/<n>.jpg`.
 
 ### Run locally (Windows PowerShell)
@@ -190,14 +199,34 @@ Set-Location "s:\MedCare\admin"; npm install; npm run dev
 ```
 
 Key endpoints:
+- `GET /api/categories` – list allowed categories
 - `GET /api/medicines` – list all medicines
+- `GET /api/medicines?deleted=true` – list soft‑deleted medicines (Recycle Bin)
 - `POST /api/medicines` – create medicine (multipart, field: images[])
 - `PUT /api/medicines/:id` – update medicine (supports additional images)
 - `DELETE /api/medicines/:id` – delete medicine and its folder
 - `POST /api/medicines/:id/images` – add images (multipart)
 - `DELETE /api/medicines/:id/images` – remove one image `{ url }`
+- `PUT /api/medicines/:id/restore` – restore a soft‑deleted medicine
+- `POST /api/medicines/purge` – permanently delete items deleted more than 7 days ago
+- `PUT /api/medicines/:id/images/order` – reorder a medicine’s images `{ order: string[] }`
 
 Allowed categories (validated): Antibiotics, Anti-Cancer, Anti-Malarial, Anti-Viral, Chronic-Cardiac, ED, Hormones-Steroids, Injections, Pain-Killers, Skin-Allergy-Asthma, Supplements-Vitamins-Hair.
+
+Notes:
+- Requests that modify images use multipart form data with `images` as the field name.
+- `details` can be provided as a JSON string array of `{ label, value }`. The backend normalizes predefined fields (Brand Name, Manufacturer, Strength, Composition, Form, Pack Size, Packaging Type, Tablets in a Strip, Shelf Life, Category, Medicine Type, Storage).
+- When renaming (changing `name`), the backend will attempt to move the image folder from `/public/medicines/<oldId>` to `/public/medicines/<newId>` and update image URLs accordingly.
+
+### Content Protection
+
+The main site includes light content‑protection to deter casual copying and asset downloads:
+- Blocks right‑click, copy/cut, drag, and common devtools shortcuts (F12, Ctrl+Shift+I/J/C, Ctrl+U/S/P)
+- Disables image context menus and dragging; sets `controlsList="nodownload"` on media
+- Text selection is disabled by default but allowed for inputs/textareas/selects and elements with `.allow-select`
+
+Disable temporarily (for development/troubleshooting):
+- Comment out the `enableContentProtection()` call in `src/main.jsx` and remove `oncontextmenu="return false"` on `<body>` in `index.html`
 
 ## Contributing
 

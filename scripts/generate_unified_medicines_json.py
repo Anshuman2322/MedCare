@@ -198,6 +198,8 @@ def build_entry(cat_folder: str, med_folder: str, display_category: str, medicin
         "category": display_category,
         "price": base_price,
         "form": form,
+        # Populate strength from parsed dosage (if available)
+        "strength": dosage or "",
         "image": image_rel,
         "images": images_rel,
         "inStock": True,
@@ -213,6 +215,7 @@ def main() -> None:
     parser.add_argument("--public-dir", default=os.path.join(os.getcwd(), "public"), help="Path to public directory")
     parser.add_argument("--output", default=os.path.join(os.getcwd(), "src", "data", "medicines.json"), help="Output JSON file path")
     parser.add_argument("--copy-images", action="store_true", help="Copy images to public directory")
+    parser.add_argument("--preserve-existing", action="store_true", help="Merge with existing output JSON, preserving existing entries and details")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be done without writing files")
     
     args = parser.parse_args()
@@ -221,6 +224,7 @@ def main() -> None:
     public_dir = args.public_dir
     output_path = args.output
     copy_images = args.copy_images
+    preserve_existing = args.preserve_existing
     dry_run = args.dry_run
 
     if not os.path.isdir(medicines_dir):
@@ -277,10 +281,48 @@ def main() -> None:
     print(f"  Categories: {len(categories_found)} - {', '.join(sorted(categories_found))}")
 
     if not dry_run and medicines:
+        # If preserving existing, merge instead of replacing
+        merged: List[Dict] = []
+        if preserve_existing and os.path.isfile(output_path):
+            try:
+                with open(output_path, "r", encoding="utf-8") as f:
+                    existing = json.load(f)
+                    if not isinstance(existing, list):
+                        existing = []
+            except Exception:
+                existing = []
+
+            by_id: Dict[str, Dict] = {str(e.get("id")): e for e in existing if isinstance(e, dict) and e.get("id")}
+            new_by_id: Dict[str, Dict] = {str(e.get("id")): e for e in medicines if isinstance(e, dict) and e.get("id")}
+
+            # Start with existing entries, optionally augment images
+            for eid, e in by_id.items():
+                updated = dict(e)
+                if eid in new_by_id:
+                    new_e = new_by_id[eid]
+                    # Merge images: keep existing order, append any new ones
+                    existing_imgs = list(updated.get("images") or [])
+                    new_imgs = [u for u in (new_e.get("images") or []) if u not in existing_imgs]
+                    updated["images"] = existing_imgs + new_imgs
+                    # Set primary image if missing
+                    if not updated.get("image") and updated["images"]:
+                        updated["image"] = updated["images"][0]
+                    # Do not override other fields (preserve details, price, description, etc.)
+                merged.append(updated)
+
+            # Add any brand-new entries not present in existing
+            for eid, e in new_by_id.items():
+                if eid not in by_id:
+                    merged.append(e)
+
+            out_arr = merged
+        else:
+            out_arr = medicines
+
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
-            json.dump(medicines, f, indent=2, ensure_ascii=False)
-        print(f"  Wrote: {output_path} ({len(medicines)} entries)")
+            json.dump(out_arr, f, indent=2, ensure_ascii=False)
+        print(f"  Wrote: {output_path} ({len(out_arr)} entries)")
     elif dry_run:
         print("  NOTE: This was a dry run. Use --copy-images to actually process files.")
 

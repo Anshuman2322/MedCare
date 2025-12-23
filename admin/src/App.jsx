@@ -4,6 +4,7 @@ import AddMedicine from './pages/AddMedicine.jsx';
 import EditMedicine from './pages/EditMedicine.jsx';
 import ManageCategories from './pages/ManageCategories.jsx';
 import { api } from './api/axios.js';
+import { ToastProvider } from './components/ToastProvider.jsx';
 
 export default function App() {
   const [page, setPage] = useState('list');
@@ -52,6 +53,7 @@ export default function App() {
   }, [page]);
 
   return (
+    <ToastProvider>
     <div className="min-h-screen bg-slate-50">
       <header className="sticky top-0 bg-white border-b">
         <div className="max-w-6xl mx-auto p-4 flex gap-3 items-center">
@@ -139,5 +141,6 @@ export default function App() {
         {page === 'cats' && <ManageCategories />}
       </main>
     </div>
+    </ToastProvider>
   );
 }

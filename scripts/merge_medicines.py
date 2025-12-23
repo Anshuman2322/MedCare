@@ -131,39 +131,40 @@ def merge_medicines(source_dirs: List[str], medicines_dir: str, dry_run: bool = 
     return stats
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Merge medicines from final_web and final_web_2 into a single medicines directory.")
-    parser.add_argument("--medicines-dir", default="medicines", help="Name of the unified medicines directory")
+    parser = argparse.ArgumentParser(description="Merge medicines from source directories into a single medicines directory.")
+    parser.add_argument("--medicines-dir", default="medicines", help="Path (relative or absolute) to the unified medicines directory")
+    parser.add_argument("--source-dir", action="append", dest="source_dirs", help="Source directory to merge from (can be specified multiple times)")
     parser.add_argument("--dry-run", action="store_true", help="Preview actions without moving folders")
-    
+
     args = parser.parse_args()
-    
-    medicines_dir = os.path.join(os.getcwd(), args.medicines_dir)
+
+    medicines_dir = os.path.join(os.getcwd(), args.medicines_dir) if not os.path.isabs(args.medicines_dir) else args.medicines_dir
     dry_run = args.dry_run
-    
-    # Define source directories
-    source_dirs = [
+
+    # Default source directories if none provided
+    source_dirs = args.source_dirs if args.source_dirs else [
         os.path.join(os.getcwd(), "final_web"),
-        os.path.join(os.getcwd(), "final_web_2", "final_web_2")
+        os.path.join(os.getcwd(), "final_web_2", "final_web_2"),
     ]
-    
+
     print(f"Merging medicines into: {medicines_dir}")
     print(f"Source directories:")
-    for i, src in enumerate(source_dirs):
+    for src in source_dirs:
         exists = "✓" if os.path.isdir(src) else "✗"
         print(f"  {exists} {src}")
-    
+
     if not dry_run:
         os.makedirs(medicines_dir, exist_ok=True)
-    
-    # Merge medicines from both directories
+
+    # Merge medicines from directories
     stats = merge_medicines(source_dirs, medicines_dir, dry_run)
-    
+
     print(f"\nMerge Summary:")
     print(f"  Total medicines processed: {stats['total_processed']}")
     print(f"  Successfully moved: {stats['total_moved']}")
     print(f"  Duplicates renamed: {stats['duplicates_renamed']}")
     print(f"  Errors: {stats['errors']}")
-    
+
     if dry_run:
         print("\nNote: This was a dry run. Re-run without --dry-run to apply changes.")
     else:

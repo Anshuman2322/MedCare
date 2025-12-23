@@ -2,8 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import CategorySelect from './CategorySelect.jsx';
 import ImagePreview from './ImagePreview.jsx';
 import { slugify } from '../utils/slugify.js';
+import { useToast } from './ToastProvider.jsx';
 
 export default function MedicineForm({ initial = {}, onSubmit, submitLabel = 'Save' }) {
+  const { showToast } = useToast();
   const [name, setName] = useState(initial.name || '');
   const [id, setId] = useState(initial.id || '');
   const [categories, setCategories] = useState(() => Array.isArray(initial.categories) && initial.categories.length ? initial.categories : (initial.category ? [initial.category] : []));
@@ -115,8 +117,47 @@ export default function MedicineForm({ initial = {}, onSubmit, submitLabel = 'Sa
       // Basic validation: custom rows must have a label if value present
       const invalid = details.some((r) => (String(r?.value ?? '').trim() && !String(r?.label || '').trim()));
       if (invalid) {
-        alert('Please provide a label for each custom detail.');
+        showToast('Please provide a label for each custom detail.', { type: 'warning' });
         return;
+      }
+      // Change detection: do not submit if nothing changed
+      if (initial && initial.id) {
+        const trim = (v) => String(v ?? '').trim();
+        const normArr = (arr) => (Array.isArray(arr) ? arr.map(trim).filter(Boolean).sort() : []);
+        const getDetail = (obj, label) => {
+          const row = (obj?.details || []).find?.((r) => r.label === label);
+          return trim(row?.value ?? '');
+        };
+        const initialCategories = Array.isArray(initial.categories) && initial.categories.length ? initial.categories : (initial.category ? [initial.category] : []);
+        const categoriesChanged = JSON.stringify(normArr(categories)) !== JSON.stringify(normArr(initialCategories));
+        const nameChanged = trim(name) !== trim(initial.name);
+        const priceChanged = Number(price ?? 0) !== Number(initial.price ?? 0);
+        const formChanged = trim(form) !== trim(initial.form);
+        const descChanged = trim(description) !== trim(initial.description);
+        const manufChanged = trim(manufacturer) !== trim(initial.manufacturer);
+        const compInitial = trim(initial.composition ?? getDetail(initial, 'Composition'));
+        const compChanged = trim(composition) !== compInitial;
+        const strengthChanged = trim(strength) !== getDetail(initial, 'Strength');
+        const packSizeChanged = trim(packSize) !== getDetail(initial, 'Pack Size');
+        const packTypeInitial = getDetail(initial, 'Packaging Type') || getDetail(initial, 'Pack Type');
+        const packTypeChanged = trim(packType) !== trim(packTypeInitial);
+        const tabletsChanged = trim(tabletsInStrip) !== getDetail(initial, 'Tablets in a Strip');
+        const shelfChanged = trim(shelfLife) !== getDetail(initial, 'Shelf Life');
+        const medTypeChanged = trim(medicineType) !== getDetail(initial, 'Medicine Type');
+        const storageChanged = trim(storage) !== getDetail(initial, 'Storage');
+        const rxChanged = Boolean(requiresPrescription) !== Boolean(initial.requiresPrescription);
+        const stockChanged = Boolean(inStock) !== Boolean(initial.inStock);
+        const dosageChanged = trim(dosage) !== trim(initial.dosage);
+        const usageChanged = trim(usage) !== trim(initial.usage);
+        const predefined = new Set(['Brand Name','Manufacturer','Strength','Composition','Form','Pack Size','Packaging Type','Tablets in a Strip','Shelf Life','Category','Medicine Type','Storage']);
+        const toPairs = (rows) => (Array.isArray(rows) ? rows.filter((r) => r && r.label && !predefined.has(r.label)).map((r) => [trim(r.label), trim(r.value)]).sort((a,b)=> (a[0]+a[1]).localeCompare(b[0]+b[1])) : []);
+        const customChanged = JSON.stringify(toPairs(details)) !== JSON.stringify(toPairs(initial.details));
+        const imagesChanged = (files?.length || 0) > 0;
+        const hasChanges = categoriesChanged || nameChanged || priceChanged || formChanged || descChanged || manufChanged || compChanged || strengthChanged || packSizeChanged || packTypeChanged || tabletsChanged || shelfChanged || medTypeChanged || storageChanged || rxChanged || stockChanged || dosageChanged || usageChanged || customChanged || imagesChanged;
+        if (!hasChanges) {
+          showToast('No changes to update. Please modify a field before updating.', { type: 'info' });
+          return;
+        }
       }
       onSubmit(formData); 
     }}>
@@ -274,8 +315,8 @@ export default function MedicineForm({ initial = {}, onSubmit, submitLabel = 'Sa
         <ImagePreview files={files} onRemove={removeFile} />
       </div>
 
-      <div className="flex justify-end">
-        <button className="px-3 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700" type="submit">{submitLabel}</button>
+      <div className="flex justify-center">
+        <button className="px-4 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700" type="submit">{submitLabel}</button>
       </div>
     </form>
   );

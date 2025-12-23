@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { api } from '../api/axios.js';
+import { useToast } from '../components/ToastProvider.jsx';
 
 export default function ManageMedicines({
   onEdit,
@@ -12,6 +13,7 @@ export default function ManageMedicines({
   const [confirmId, setConfirmId] = useState(null);
   const [internalShowDeleted, setInternalShowDeleted] = useState(false);
   const [binCount, setBinCount] = useState(0);
+  const { showToast } = useToast();
   const showDeleted =
     typeof showDeletedProp === 'boolean' ? showDeletedProp : internalShowDeleted;
 
@@ -63,7 +65,7 @@ export default function ManageMedicines({
       setConfirmId(null);
       await load();
     } catch (e) {
-      alert(e?.response?.data?.error || e.message || 'Failed to delete');
+      showToast(e?.response?.data?.error || e.message || 'Failed to delete', { type: 'error' });
     }
   }
   async function restore(id) {
@@ -71,7 +73,7 @@ export default function ManageMedicines({
       await api.put(`/medicines/${id}/restore`);
       await load();
     } catch (e) {
-      alert(e?.response?.data?.error || e.message || 'Failed to restore');
+      showToast(e?.response?.data?.error || e.message || 'Failed to restore', { type: 'error' });
     }
   }
 

@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api/axios.js';
 import MedicineForm from '../components/MedicineForm.jsx';
 import ExistingImages from '../components/ExistingImages.jsx';
+import UpdateSuccessModal from '../components/UpdateSuccessModal.jsx';
+import { useToast } from '../components/ToastProvider.jsx';
 
 export default function EditMedicine({ id, onDone }) {
   const [initial, setInitial] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [updatedItem, setUpdatedItem] = useState(null);
+  const [showUpdatedModal, setShowUpdatedModal] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     let active = true;
@@ -14,10 +19,10 @@ export default function EditMedicine({ id, onDone }) {
       .catch((e) => {
         const msg = e?.response?.data?.error || e.message;
         if (e?.response?.status === 404) {
-          alert('This item was renamed or removed. Returning to list.');
+          showToast('This item was renamed or removed. Returning to list.', { type: 'warning' });
           onDone?.();
         } else {
-          alert(msg || 'Failed to load item');
+          showToast(msg || 'Failed to load item', { type: 'error' });
         }
       });
     return () => { active = false; };
@@ -28,14 +33,23 @@ export default function EditMedicine({ id, onDone }) {
       const { data: updated } = await api.put(`/medicines/${id}`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       // If ID changed due to rename, avoid refetch to old id; go back to list
       if (updated?.id && updated.id !== id) {
-        alert('Item renamed successfully. Returning to list.');
+        showToast('Item renamed successfully. Returning to list.', { type: 'success' });
         onDone?.();
         return;
       }
-      setInitial(updated);
-      onDone?.();
+      setInitial(updated || initial);
+      setUpdatedItem(updated || initial);
+      setShowUpdatedModal(true);
+      // Refresh with latest from server to ensure modal shows accurate data
+      try {
+        const { data } = await api.get(`/medicines/${id}`);
+        setInitial(data);
+        setUpdatedItem(data);
+      } catch {
+        // ignore refetch errors; keep optimistic data
+      }
     } catch (e) {
-      alert(e?.response?.data?.error || e.message || 'Failed to update');
+      showToast(e?.response?.data?.error || e.message || 'Failed to update', { type: 'error' });
     }
   }
 
@@ -45,7 +59,7 @@ export default function EditMedicine({ id, onDone }) {
       const { data } = await api.get(`/medicines/${id}`);
       setInitial(data);
     } catch (e) {
-      alert(e?.response?.data?.error || e.message || 'Failed to remove image');
+      showToast(e?.response?.data?.error || e.message || 'Failed to remove image', { type: 'error' });
     }
   }
 
@@ -55,7 +69,7 @@ export default function EditMedicine({ id, onDone }) {
       setConfirmOpen(false);
       onDone?.();
     } catch (e) {
-      alert(e?.response?.data?.error || e.message || 'Failed to delete');
+      showToast(e?.response?.data?.error || e.message || 'Failed to delete', { type: 'error' });
     }
   }
 
@@ -83,6 +97,17 @@ export default function EditMedicine({ id, onDone }) {
       )}
       <ExistingImages id={id} images={initial.images} onRemove={removeExisting} />
       <MedicineForm initial={initial} onSubmit={handleSubmit} submitLabel="Update" />
+
+      {showUpdatedModal && (
+        <UpdateSuccessModal
+          item={updatedItem || initial}
+          onClose={() => setShowUpdatedModal(false)}
+          onBack={() => {
+            setShowUpdatedModal(false);
+            onDone?.();
+          }}
+        />
+      )}
     </div>
   );
 }
