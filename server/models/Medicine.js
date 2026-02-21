@@ -4,6 +4,7 @@ const medicineSchema = new mongoose.Schema(
   {
     slug: { type: String, required: true, unique: true, index: true, trim: true },
     name: { type: String, required: true, trim: true },
+    brand: { type: String, default: '' },
     category: { type: String, default: '', trim: true },
     price: { type: Number, required: true, min: 0 },
     form: { type: String, default: '' },
