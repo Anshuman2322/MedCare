@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../api/axios.js';
 import Badge from '../components/ui/Badge.jsx';
 import Modal from '../components/ui/Modal.jsx';
@@ -11,10 +11,19 @@ export default function Medicines() {
   const [search, setSearch] = useState('');
   const [confirmId, setConfirmId] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     fetchMedicines();
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const categoryFilter = params.get('category');
+    if (categoryFilter) {
+      setSearch(categoryFilter);
+    }
+  }, [location.search]);
 
   async function fetchMedicines() {
     try {

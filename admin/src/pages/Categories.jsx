@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import api from '../api/axios.js';
+import { useNavigate } from 'react-router-dom';
+import { getCategoriesWithCount, createCategory as apiCreateCategory, deleteCategory as apiDeleteCategory } from '../api/categoryApi.js';
 import Modal from '../components/ui/Modal.jsx';
 
 export default function Categories() {
@@ -8,6 +9,7 @@ export default function Categories() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [confirmId, setConfirmId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     load();
@@ -16,7 +18,7 @@ export default function Categories() {
   async function load() {
     try {
       setLoading(true);
-      const { data } = await api.get('/categories');
+      const { data } = await getCategoriesWithCount();
       setCategories(data || []);
       setError('');
     } catch (err) {
@@ -30,8 +32,8 @@ export default function Categories() {
     e.preventDefault();
     if (!name.trim()) return;
     try {
-      const { data } = await api.post('/categories', { name: name.trim() });
-      setCategories((prev) => [...prev, data]);
+      await apiCreateCategory({ name: name.trim() });
+      await load();
       setName('');
       setError('');
     } catch (err) {
@@ -41,13 +43,18 @@ export default function Categories() {
 
   async function deleteCategory(id) {
     try {
-      await api.delete(`/categories/${id}`);
+      await apiDeleteCategory(id);
       setCategories((prev) => prev.filter((c) => c._id !== id));
       setConfirmId(null);
     } catch (err) {
       setError('Delete failed.');
     }
   }
+
+  const handleCountClick = (categoryName) => {
+    if (!categoryName) return;
+    navigate(`/medicines?category=${encodeURIComponent(categoryName)}`);
+  };
 
   return (
     <div className="space-y-4">
@@ -76,24 +83,52 @@ export default function Categories() {
         <div className="border-t border-slate-100 pt-3">
           {loading && <div className="text-sm text-slate-500">Loading...</div>}
           {!loading && categories.length === 0 && <div className="text-sm text-slate-500">No categories yet.</div>}
-          {!loading && (
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
-              {categories.map((c) => (
-                <li key={c._id} className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
-                  <div>
-                    <div className="font-semibold text-slate-900">{c.name}</div>
-                    <div className="text-xs text-slate-500">{c.slug}</div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setConfirmId(c._id)}
-                    className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100"
-                  >
-                    Delete
-                  </button>
-                </li>
-              ))}
-            </ul>
+          {!loading && categories.length > 0 && (
+            <div className="overflow-x-auto mt-2">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="text-left text-slate-600">
+                    <th className="pb-3 pr-4">Category</th>
+                    <th className="pb-3 pr-4">Products</th>
+                    <th className="pb-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {categories.map((c) => (
+                    <tr key={c._id} className="align-middle">
+                      <td className="py-3 pr-4">
+                        <div className="font-semibold text-slate-900">{c.name}</div>
+                        <div className="text-xs text-slate-500">{c.slug}</div>
+                      </td>
+                      <td className="py-3 pr-4">
+                        <button
+                          type="button"
+                          onClick={() => handleCountClick(c.name)}
+                          className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                            c.productCount > 0
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
+                              : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+                          }`}
+                        >
+                          {c.productCount ?? 0}
+                        </button>
+                      </td>
+                      <td className="py-3">
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setConfirmId(c._id)}
+                            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>

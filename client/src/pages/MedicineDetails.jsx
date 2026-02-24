@@ -152,19 +152,20 @@ export default function MedicineDetails() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <Link to="/shop" className="inline-flex items-center text-sm text-emerald-700 hover:text-emerald-900 mb-4">
-          <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
-          Back to Medicines
-        </Link>
+        <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-8 lg:p-10 space-y-10">
+          <Link to="/shop" className="inline-flex items-center text-sm text-emerald-700 hover:text-emerald-900">
+            <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+            Back to Medicines
+          </Link>
 
-        <div className="flex flex-col lg:flex-row gap-12 items-start">
+          <div className="flex flex-col lg:flex-row gap-12 items-start">
           <div className="lg:w-[420px]" ref={imageRef}>
-            <div className={`border rounded-2xl bg-white p-5 relative ${animationClasses.fadeLeft(imageVisible)}`}>
+            <div className={`rounded-2xl bg-white p-5 relative shadow-md border border-gray-100 ${animationClasses.fadeLeft(imageVisible)}`}>
               {mainImage ? (
                 <img
                   src={mainImage}
                   alt={medicine?.name || ''}
-                  className="w-full h-auto object-contain"
+                  className="w-full h-auto object-contain rounded-xl bg-gray-50"
                   loading="lazy"
                 />
               ) : (
@@ -200,10 +201,14 @@ export default function MedicineDetails() {
                     <button
                       key={`${src}-${i}`}
                       onClick={() => setImgIndex(i)}
-                      className={`h-16 w-16 shrink-0 rounded-lg border overflow-hidden ${i === imgIndex ? 'ring-2 ring-emerald-500 border-emerald-200' : 'border-gray-200 hover:border-gray-300'}`}
+                      className={`h-16 w-16 shrink-0 rounded-lg overflow-hidden transition-all duration-150 shadow-sm ${
+                        i === imgIndex
+                          ? 'ring-2 ring-emerald-500 border border-emerald-200'
+                          : 'border border-gray-100 hover:border-emerald-200'
+                      }`}
                       aria-label={`Show image ${i + 1}`}
                     >
-                      <img src={src} alt={`thumb ${i + 1}`} className="h-full w-full object-cover" loading="lazy" />
+                      <img src={src} alt={`thumb ${i + 1}`} className="h-full w-full object-cover bg-white" loading="lazy" />
                     </button>
                   ))}
                 </div>
@@ -212,20 +217,20 @@ export default function MedicineDetails() {
           </div>
 
           <div ref={contentRef} className={`flex-1 space-y-5 ${animationClasses.fadeRight(contentVisible)}`}>
-            <div className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2.5 py-1 self-start">{primaryCategory}</div>
+            <div className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 rounded-full px-2.5 py-1 self-start">{primaryCategory}</div>
 
             <div className="flex flex-col gap-2">
               <h1 className="text-2xl font-semibold text-gray-900 leading-tight">{medicine?.name}</h1>
-              <div className="rounded-xl border bg-white p-4 shadow-sm">
-                <div className="text-sm uppercase tracking-wide text-gray-500 mb-1">Overview</div>
-                <p className="text-gray-700 leading-7">{medicine?.description}</p>
+              <div className="rounded-xl bg-gray-50 p-5">
+                <div className="text-sm uppercase tracking-wide text-gray-500 mb-2">Overview</div>
+                <p className="text-gray-800 leading-7">{medicine?.description}</p>
               </div>
               <div className="text-3xl font-bold text-emerald-600" key={`price-${currency}`}>
                 {formatPrice(medicine?.price, currency)}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8 pt-4 border-t border-gray-200 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8 pt-6 text-sm">
               {medicine?.manufacturer && (
                 <div>
                   <div className="text-xs text-gray-500 uppercase tracking-wide">Manufacturer</div>
@@ -272,10 +277,10 @@ export default function MedicineDetails() {
             </div>
 
             <div className="flex items-center gap-3 pt-4 flex-wrap">
-              <div className="inline-flex items-center overflow-hidden rounded-lg border border-gray-200">
+              <div className="inline-flex items-center overflow-hidden rounded-xl bg-gray-100 shadow-inner">
                 <button
                   aria-label="Decrease quantity"
-                  className={`h-11 w-10 text-gray-700 hover:bg-gray-50 ${qty === 1 ? 'text-gray-300 cursor-not-allowed' : ''}`}
+                  className={`h-11 w-10 text-gray-700 hover:bg-gray-200/60 ${qty === 1 ? 'text-gray-300 cursor-not-allowed' : ''}`}
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
                   disabled={qty === 1}
                 >
@@ -286,7 +291,7 @@ export default function MedicineDetails() {
                 </div>
                 <button
                   aria-label="Increase quantity"
-                  className="h-11 w-10 text-gray-700 hover:bg-gray-50"
+                  className="h-11 w-10 text-gray-700 hover:bg-gray-200/60"
                   onClick={() => setQty((q) => q + 1)}
                 >
                   +
@@ -309,7 +314,7 @@ export default function MedicineDetails() {
           </div>
         </div>
 
-        <div ref={tabsRef} className={`mt-8 ${animationClasses.fadeUp(tabsVisible)}`}>
+        <div ref={tabsRef} className={`mt-2 ${animationClasses.fadeUp(tabsVisible)}`}>
           <div className="inline-flex rounded-lg bg-gray-100 p-1 gap-2">
             {['Dosage', 'Usage', 'Details'].map((t) => (
               <button
@@ -321,25 +326,25 @@ export default function MedicineDetails() {
               </button>
             ))}
           </div>
-          <div className="mt-4 rounded-xl border bg-white p-6 text-gray-700">
+          <div className="mt-4 space-y-6 text-gray-700">
             {tab === 'Dosage' && (
-              <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
-                <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+              <div className="rounded-xl bg-gray-50 p-5 space-y-3 shadow-sm">
+                <div className="flex items-center gap-3">
                   <div className="w-1 h-5 rounded bg-emerald-500"></div>
                   <div className="text-lg font-semibold text-gray-900">Recommended Dosage</div>
                 </div>
-                <div className="px-5 py-4 text-sm leading-7 text-gray-800 whitespace-pre-line">
+                <div className="text-sm leading-7 text-gray-800 whitespace-pre-line">
                   {medicine?.dosage || 'Information will be available soon.'}
                 </div>
               </div>
             )}
             {tab === 'Usage' && (
-              <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
-                <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+              <div className="rounded-xl bg-gray-50 p-5 space-y-3 shadow-sm">
+                <div className="flex items-center gap-3">
                   <div className="w-1 h-5 rounded bg-sky-500"></div>
                   <div className="text-lg font-semibold text-gray-900">Usage Guidelines</div>
                 </div>
-                <div className="px-5 py-4 text-sm leading-7 text-gray-800 whitespace-pre-line">
+                <div className="text-sm leading-7 text-gray-800 whitespace-pre-line">
                   {medicine?.usage || 'Information will be available soon.'}
                 </div>
               </div>
@@ -406,12 +411,12 @@ export default function MedicineDetails() {
                       if (!items.length) return null;
 
                       return (
-                        <div key={`${section.title}-${sectionIndex}`} className="rounded-xl border bg-white p-6">
-                          <div className="flex items-center gap-2 mb-4">
+                        <div key={`${section.title}-${sectionIndex}`} className="rounded-xl bg-gray-50 p-6 space-y-2 shadow-sm">
+                          <div className="flex items-center gap-2 mb-2">
                             <div className={`w-1 h-5 rounded ${section.accent}`}></div>
                             <h3 className="text-lg font-semibold text-gray-900">{section.title}</h3>
                           </div>
-                          <div className="divide-y divide-gray-100">
+                          <div className="divide-y divide-gray-200">
                             {items.map((row, idx) => (
                               <div
                                 key={`${row.label}-${idx}`}
@@ -498,5 +503,6 @@ export default function MedicineDetails() {
         )}
       </div>
     </div>
+  </div>
   );
 }

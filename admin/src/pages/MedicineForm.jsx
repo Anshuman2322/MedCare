@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api/axios.js';
 import { slugify } from '../utils/slugify.js';
+import ImageUploader from '../components/ImageUploader.jsx';
 
 const initialForm = {
   name: '',
   slug: '',
-  brand: '',
   category: '',
   price: '',
   form: '',
   manufacturer: '',
+  brand: '',
   strength: '',
   composition: '',
   usage: '',
@@ -22,21 +23,46 @@ const initialForm = {
   packagingType: '',
   shelfLife: '',
   image: '',
-  imagesText: '',
+  images: [],
   inStock: true,
   description: '',
+  metaTitle: '',
+  metaDescription: '',
+  keywords: '',
+  customFields: [],
 };
+
+const customFieldSections = ['Basic Info', 'Medical Info', 'Packaging', 'SEO'];
+
+const sectionIcons = {
+  'Basic Info': '💊',
+  'Medical Info': '🩺',
+  Packaging: '📦',
+  Media: '🖼️',
+  SEO: '📈',
+};
+
+const inputClasses = 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100';
+
+const makeId = () => Math.random().toString(36).slice(2, 10);
 
 export default function MedicineForm({ mode }) {
   const isEdit = mode === 'edit';
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [form, setForm] = useState(initialForm);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [userEditedSlug, setUserEditedSlug] = useState(false);
+
+  const pageTitle = isEdit ? 'Edit Medicine' : 'Add Medicine';
+  const pageSubtitle = isEdit
+    ? 'Update catalog entry with structured sections and live preview.'
+    : 'Structured, schema-safe entry with live preview.';
 
   useEffect(() => {
     loadCategories();
@@ -47,11 +73,16 @@ export default function MedicineForm({ mode }) {
     (async () => {
       try {
         const { data } = await api.get(`/medicines/${id}`);
+        const incomingCustomFields = Array.isArray(data.customFields)
+          ? data.customFields.map((field) => ({ ...field, id: makeId() }))
+          : [];
+
         setForm({
           ...initialForm,
           ...data,
-          imagesText: Array.isArray(data.images) ? data.images.join('\n') : '',
           price: data.price ?? '',
+          images: Array.isArray(data.images) ? data.images : [],
+          customFields: incomingCustomFields,
         });
       } catch (err) {
         setError('Unable to load medicine.');
@@ -72,25 +103,79 @@ export default function MedicineForm({ mode }) {
 
   function handleChange(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: '' }));
   }
 
   function handleNameChange(value) {
     const nextSlug = userEditedSlug ? form.slug : slugify(value);
     setForm((prev) => ({ ...prev, name: value, slug: nextSlug }));
+    setErrors((prev) => ({ ...prev, name: '' }));
+  }
+
+  function handleSlugChange(value) {
+    setUserEditedSlug(true);
+    setForm((prev) => ({ ...prev, slug: slugify(value) }));
+    setErrors((prev) => ({ ...prev, slug: '' }));
+  }
+
+  function updateImages(nextImages) {
+    setForm((prev) => ({
+      ...prev,
+      images: nextImages,
+      image: nextImages?.[0] || '',
+    }));
+  }
+
+  function addCustomField(section) {
+    setForm((prev) => ({
+      ...prev,
+      customFields: [...prev.customFields, { id: makeId(), section, label: '', value: '' }],
+    }));
+  }
+
+  function updateCustomField(id, key, value) {
+    setForm((prev) => ({
+      ...prev,
+      customFields: prev.customFields.map((field) => (field.id === id ? { ...field, [key]: value } : field)),
+    }));
+  }
+
+  function removeCustomField(id) {
+    setForm((prev) => ({
+      ...prev,
+      customFields: prev.customFields.filter((field) => field.id !== id),
+    }));
+  }
+
+  function validateForm() {
+    const nextErrors = {};
+    if (!form.name.trim()) nextErrors.name = 'Name is required';
+    if (!form.category.trim()) nextErrors.category = 'Category is required';
+    if (!form.form.trim()) nextErrors.form = 'Form is required';
+    const priceValue = Number(form.price);
+    if (form.price === '' || Number.isNaN(priceValue) || priceValue < 0) nextErrors.price = 'Valid price is required';
+    if (!form.slug.trim()) nextErrors.slug = 'Slug is required';
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!validateForm()) return;
+
     setSaving(true);
     setError('');
+
+    const customFieldsPayload = form.customFields
+      .filter((field) => field.section && (field.label.trim() || field.value.trim()))
+      .map((field) => ({ section: field.section, label: field.label.trim(), value: field.value.trim() }));
 
     const payload = {
       ...form,
       price: form.price === '' ? 0 : Number(form.price),
-      images: form.imagesText
-        .split(/\r?\n/)
-        .map((x) => x.trim())
-        .filter(Boolean),
+      image: form.images?.[0] || form.image || '',
+      images: form.images,
+      customFields: customFieldsPayload,
     };
 
     try {
@@ -107,268 +192,539 @@ export default function MedicineForm({ mode }) {
     }
   }
 
+  const customFieldsBySection = useMemo(() => {
+    return customFieldSections.reduce((acc, section) => {
+      acc[section] = (form.customFields || []).filter((field) => field.section === section);
+      return acc;
+    }, {});
+  }, [form.customFields]);
+
+  const previewImage = form.image || form.images?.[0] || '';
+  const previewDescription = (form.description || form.usage || '').slice(0, 100);
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="section-title">Medicine</div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="card p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Basic Info</h2>
-            <label className="text-xs font-semibold text-slate-600">
-              In stock
-              <input
-                type="checkbox"
-                checked={form.inStock}
-                onChange={(e) => handleChange('inStock', e.target.checked)}
-                className="ml-2 align-middle h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-              />
-            </label>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3">
-            <label className="text-sm font-semibold text-slate-700">
-              Name
-              <input
-                type="text"
-                required
-                value={form.name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-              />
-            </label>
-            <label className="text-sm font-semibold text-slate-700">
-              Slug
-              <input
-                type="text"
-                required
-                value={form.slug}
-                onChange={(e) => {
-                  setUserEditedSlug(true);
-                  handleChange('slug', slugify(e.target.value));
-                }}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-              />
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <label className="text-sm font-semibold text-slate-700">
-                Category
-                <select
-                  value={form.category}
-                  onChange={(e) => handleChange('category', e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 bg-white"
-                >
-                  <option value="">Select category</option>
-                  {categories.map((c) => (
-                    <option key={c._id} value={c.name}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="text-sm font-semibold text-slate-700">
-                Form
-                <input
-                  type="text"
-                  value={form.form}
-                  onChange={(e) => handleChange('form', e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-                  placeholder="Tablet, Syrup, Injection"
-                />
-              </label>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <label className="text-sm font-semibold text-slate-700">
-                Price
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  required
-                  value={form.price}
-                  onChange={(e) => handleChange('price', e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-                />
-              </label>
-              <label className="text-sm font-semibold text-slate-700">
-                Manufacturer
-                <input
-                  type="text"
-                  value={form.manufacturer}
-                  onChange={(e) => handleChange('manufacturer', e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-                />
-              </label>
-            </div>
-            <label className="text-sm font-semibold text-slate-700">
-              Brand
-              <input
-                type="text"
-                value={form.brand}
-                onChange={(e) => handleChange('brand', e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-              />
-            </label>
-          </div>
+    <div className="space-y-5">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="section-title">Medicine</div>
+          <h1 className="text-2xl font-semibold text-slate-900">{pageTitle}</h1>
+          <p className="text-sm text-slate-600">{pageSubtitle}</p>
         </div>
-
-        <div className="card p-5 space-y-4">
-          <h2 className="text-lg font-semibold">Medical Info</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label className="text-sm font-semibold text-slate-700">
-              Strength
-              <input
-                type="text"
-                value={form.strength}
-                onChange={(e) => handleChange('strength', e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-              />
-            </label>
-            <label className="text-sm font-semibold text-slate-700">
-              Composition
-              <input
-                type="text"
-                value={form.composition}
-                onChange={(e) => handleChange('composition', e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-              />
-            </label>
-          </div>
-          <label className="text-sm font-semibold text-slate-700">
-            Usage
-            <textarea
-              value={form.usage}
-              onChange={(e) => handleChange('usage', e.target.value)}
-              rows={2}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-            />
-          </label>
-          <label className="text-sm font-semibold text-slate-700">
-            Dosage
-            <textarea
-              value={form.dosage}
-              onChange={(e) => handleChange('dosage', e.target.value)}
-              rows={2}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-            />
-          </label>
-          <label className="text-sm font-semibold text-slate-700">
-            Precautions
-            <textarea
-              value={form.precautions}
-              onChange={(e) => handleChange('precautions', e.target.value)}
-              rows={2}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-            />
-          </label>
-          <label className="text-sm font-semibold text-slate-700">
-            Storage
-            <input
-              type="text"
-              value={form.storage}
-              onChange={(e) => handleChange('storage', e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-            />
-          </label>
-          <label className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700">
-            <input
-              type="checkbox"
-              checked={form.requiresPrescription}
-              onChange={(e) => handleChange('requiresPrescription', e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-            />
-            Requires prescription
-          </label>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="card p-5 space-y-4">
-          <h2 className="text-lg font-semibold">Packaging</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label className="text-sm font-semibold text-slate-700">
-              Pack size
-              <input
-                type="text"
-                value={form.packSize}
-                onChange={(e) => handleChange('packSize', e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-              />
-            </label>
-            <label className="text-sm font-semibold text-slate-700">
-              Packaging type
-              <input
-                type="text"
-                value={form.packagingType}
-                onChange={(e) => handleChange('packagingType', e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-              />
-            </label>
-          </div>
-          <label className="text-sm font-semibold text-slate-700">
-            Shelf life
-            <input
-              type="text"
-              value={form.shelfLife}
-              onChange={(e) => handleChange('shelfLife', e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-            />
-          </label>
-        </div>
-
-        <div className="card p-5 space-y-4">
-          <h2 className="text-lg font-semibold">Media</h2>
-          <label className="text-sm font-semibold text-slate-700">
-            Primary image URL
-            <input
-              type="url"
-              value={form.image}
-              onChange={(e) => handleChange('image', e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-              placeholder="https://..."
-            />
-          </label>
-          <label className="text-sm font-semibold text-slate-700">
-            Gallery image URLs (one per line)
-            <textarea
-              rows={4}
-              value={form.imagesText}
-              onChange={(e) => handleChange('imagesText', e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-              placeholder="https://cdn.example.com/image1.webp\nhttps://cdn.example.com/image2.webp"
-            />
-          </label>
-          <label className="text-sm font-semibold text-slate-700">
-            Description
-            <textarea
-              rows={3}
-              value={form.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-            />
-          </label>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => navigate('/medicines')}
+            className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={saving}
+            className="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-card hover:bg-emerald-700 disabled:opacity-60"
+          >
+            {saving ? 'Saving...' : isEdit ? 'Update medicine' : 'Create medicine'}
+          </button>
         </div>
       </div>
 
       {error && <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700">{error}</div>}
 
-      <div className="flex items-center gap-3">
-        <button
-          type="submit"
-          disabled={saving}
-          className="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-card hover:bg-emerald-700 disabled:opacity-60"
-        >
-          {saving ? 'Saving...' : isEdit ? 'Update medicine' : 'Create medicine'}
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate('/medicines')}
-          className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-        >
-          Cancel
-        </button>
+      <div className="grid lg:grid-cols-[2fr_1fr] gap-8 items-start">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <SectionCard
+            title="Basic Info"
+            icon={sectionIcons['Basic Info']}
+            hint="Core catalog attributes with auto slug."
+            action={
+              <label className="flex items-center gap-2 text-xs font-semibold text-emerald-700">
+                <input
+                  type="checkbox"
+                  checked={form.inStock}
+                  onChange={(e) => handleChange('inStock', e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                />
+                In stock
+              </label>
+            }
+            onAddCustom={() => addCustomField('Basic Info')}
+          >
+            <div className="grid grid-cols-1 gap-3">
+              <Field label="Name" required error={errors.name}>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => handleNameChange(e.target.value)}
+                  className={inputClasses}
+                  placeholder="Azithromycin Tablet"
+                />
+              </Field>
+              <Field label="Slug" required error={errors.slug}>
+                <input
+                  type="text"
+                  value={form.slug}
+                  onChange={(e) => handleSlugChange(e.target.value)}
+                  className={inputClasses}
+                  placeholder="azithromycin-tablet"
+                />
+              </Field>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Field label="Category" required error={errors.category}>
+                  <select
+                    value={form.category}
+                    onChange={(e) => handleChange('category', e.target.value)}
+                    className={`${inputClasses} bg-white`}
+                  >
+                    <option value="">Select category</option>
+                    {categories.map((c) => (
+                      <option key={c._id} value={c.name}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Form" required error={errors.form}>
+                  <input
+                    type="text"
+                    value={form.form}
+                    onChange={(e) => handleChange('form', e.target.value)}
+                    className={inputClasses}
+                    placeholder="Tablet, Syrup, Injection"
+                  />
+                </Field>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Field label="Price" required error={errors.price}>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.price}
+                    onChange={(e) => handleChange('price', e.target.value)}
+                    className={inputClasses}
+                  />
+                </Field>
+                <Field label="Manufacturer">
+                  <input
+                    type="text"
+                    value={form.manufacturer}
+                    onChange={(e) => handleChange('manufacturer', e.target.value)}
+                    className={inputClasses}
+                  />
+                </Field>
+              </div>
+              <Field label="Brand">
+                <input
+                  type="text"
+                  value={form.brand}
+                  onChange={(e) => handleChange('brand', e.target.value)}
+                  className={inputClasses}
+                />
+              </Field>
+              <Field label="Short description">
+                <textarea
+                  rows={3}
+                  value={form.description}
+                  onChange={(e) => handleChange('description', e.target.value)}
+                  className={inputClasses}
+                  placeholder="Concise summary for quick preview"
+                />
+              </Field>
+            </div>
+            <CustomFields
+              section="Basic Info"
+              fields={customFieldsBySection['Basic Info']}
+              onChange={updateCustomField}
+              onRemove={removeCustomField}
+            />
+          </SectionCard>
+
+          <SectionCard
+            title="Medical Info"
+            icon={sectionIcons['Medical Info']}
+            hint="Clinical usage and safety details."
+            onAddCustom={() => addCustomField('Medical Info')}
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="Strength">
+                <input
+                  type="text"
+                  value={form.strength}
+                  onChange={(e) => handleChange('strength', e.target.value)}
+                  className={inputClasses}
+                  placeholder="500mg"
+                />
+              </Field>
+              <Field label="Composition">
+                <input
+                  type="text"
+                  value={form.composition}
+                  onChange={(e) => handleChange('composition', e.target.value)}
+                  className={inputClasses}
+                  placeholder="Azithromycin"
+                />
+              </Field>
+            </div>
+            <Field label="Usage">
+              <textarea
+                rows={2}
+                value={form.usage}
+                onChange={(e) => handleChange('usage', e.target.value)}
+                className={inputClasses}
+                placeholder="Indications and guidance"
+              />
+            </Field>
+            <Field label="Dosage">
+              <textarea
+                rows={2}
+                value={form.dosage}
+                onChange={(e) => handleChange('dosage', e.target.value)}
+                className={inputClasses}
+                placeholder="Dosage instructions"
+              />
+            </Field>
+            <Field label="Precautions">
+              <textarea
+                rows={2}
+                value={form.precautions}
+                onChange={(e) => handleChange('precautions', e.target.value)}
+                className={inputClasses}
+                placeholder="Warnings and precautions"
+              />
+            </Field>
+            <Field label="Storage">
+              <input
+                type="text"
+                value={form.storage}
+                onChange={(e) => handleChange('storage', e.target.value)}
+                className={inputClasses}
+                placeholder="Store below 25°C"
+              />
+            </Field>
+            <label className="inline-flex w-fit items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700">
+              <input
+                type="checkbox"
+                checked={form.requiresPrescription}
+                onChange={(e) => handleChange('requiresPrescription', e.target.checked)}
+                className="h-4 w-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+              />
+              Requires prescription
+            </label>
+            <CustomFields
+              section="Medical Info"
+              fields={customFieldsBySection['Medical Info']}
+              onChange={updateCustomField}
+              onRemove={removeCustomField}
+            />
+          </SectionCard>
+
+          <SectionCard
+            title="Packaging"
+            icon={sectionIcons.Packaging}
+            hint="Commercial presentation details."
+            onAddCustom={() => addCustomField('Packaging')}
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="Pack size">
+                <input
+                  type="text"
+                  value={form.packSize}
+                  onChange={(e) => handleChange('packSize', e.target.value)}
+                  className={inputClasses}
+                  placeholder="10 tablets"
+                />
+              </Field>
+              <Field label="Packaging type">
+                <input
+                  type="text"
+                  value={form.packagingType}
+                  onChange={(e) => handleChange('packagingType', e.target.value)}
+                  className={inputClasses}
+                  placeholder="Blister pack"
+                />
+              </Field>
+            </div>
+            <Field label="Shelf life">
+              <input
+                type="text"
+                value={form.shelfLife}
+                onChange={(e) => handleChange('shelfLife', e.target.value)}
+                className={inputClasses}
+                placeholder="24 months"
+              />
+            </Field>
+            <CustomFields
+              section="Packaging"
+              fields={customFieldsBySection.Packaging}
+              onChange={updateCustomField}
+              onRemove={removeCustomField}
+            />
+          </SectionCard>
+
+          <SectionCard title="Media" icon={sectionIcons.Media} hint="Primary and gallery media.">
+            <ImageUploader images={form.images} onChange={updateImages} />
+          </SectionCard>
+
+          <SectionCard
+            title="SEO (Optional)"
+            icon={sectionIcons.SEO}
+            hint="Metadata for search and marketing."
+            onAddCustom={() => addCustomField('SEO')}
+          >
+            <Field label="Meta title">
+              <input
+                type="text"
+                value={form.metaTitle}
+                onChange={(e) => handleChange('metaTitle', e.target.value)}
+                className={inputClasses}
+              />
+            </Field>
+            <Field label="Meta description">
+              <textarea
+                rows={2}
+                value={form.metaDescription}
+                onChange={(e) => handleChange('metaDescription', e.target.value)}
+                className={inputClasses}
+              />
+            </Field>
+            <Field label="Keywords" helper="Comma-separated">
+              <input
+                type="text"
+                value={form.keywords}
+                onChange={(e) => handleChange('keywords', e.target.value)}
+                className={inputClasses}
+                placeholder="antibiotic, infection, azithromycin"
+              />
+            </Field>
+            <CustomFields
+              section="SEO"
+              fields={customFieldsBySection.SEO}
+              onChange={updateCustomField}
+              onRemove={removeCustomField}
+            />
+          </SectionCard>
+          <button type="submit" className="sr-only" aria-hidden="true">Submit</button>
+        </form>
+
+        <div className="sticky top-6">
+          <LivePreview
+            form={form}
+            previewImage={previewImage}
+            previewDescription={previewDescription}
+            customFieldsBySection={customFieldsBySection}
+          />
+        </div>
       </div>
 
       {loading && <div className="text-sm text-slate-500">Loading...</div>}
-    </form>
+    </div>
   );
 }
+
+function SectionCard({ title, icon, hint, children, action, onAddCustom }) {
+  return (
+    <div className="card space-y-4 rounded-2xl border border-slate-100 bg-white p-5 shadow-card">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-lg">{icon}</span>
+            {title}
+          </div>
+          {hint && <p className="text-xs text-slate-500">{hint}</p>}
+        </div>
+        {(action || onAddCustom) && (
+          <div className="flex items-center gap-3 text-xs font-semibold text-emerald-700">
+            {action}
+            {onAddCustom && (
+              <button
+                type="button"
+                onClick={onAddCustom}
+                className="text-sm font-semibold text-emerald-600 hover:underline"
+              >
+                + Add field
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function Field({ label, helper, error, required, children }) {
+  return (
+    <label className="flex flex-col gap-1 text-sm font-semibold text-slate-800">
+      <div className="flex items-center gap-2">
+        <span>{label}</span>
+        {required && <span className="text-rose-500">*</span>}
+      </div>
+      {children}
+      {helper && <span className="text-xs font-normal text-slate-500">{helper}</span>}
+      {error && <span className="text-xs font-medium text-rose-600">{error}</span>}
+    </label>
+  );
+}
+
+function CustomFields({ section, fields, onChange, onRemove }) {
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Custom Fields</p>
+      {fields?.length === 0 && <div className="rounded-lg border border-dashed border-slate-200 px-3 py-2 text-xs text-slate-500">No custom fields yet.</div>}
+      {fields?.map((field) => (
+        <div key={field.id} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-3 rounded-xl border border-slate-100 bg-slate-50/60 px-3 py-3">
+          <input
+            type="text"
+            value={field.label}
+            onChange={(e) => onChange(field.id, 'label', e.target.value)}
+            className={inputClasses}
+            placeholder="Label"
+          />
+          <input
+            type="text"
+            value={field.value}
+            onChange={(e) => onChange(field.id, 'value', e.target.value)}
+            className={inputClasses}
+            placeholder="Value"
+          />
+          <button
+            type="button"
+            onClick={() => onRemove(field.id)}
+            className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50"
+          >
+            Delete
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function LivePreview({ form, previewImage, previewDescription, customFieldsBySection }) {
+  const grouped = useMemo(() => {
+    return customFieldSections.reduce((acc, section) => {
+      const entries = (customFieldsBySection[section] || [])
+        .filter((field) => field.label?.trim() || field.value?.trim())
+        .map((field) => ({ label: field.label.trim(), value: field.value.trim() }));
+      if (entries.length) acc.push({ section, entries });
+      return acc;
+    }, []);
+  }, [customFieldsBySection]);
+
+  const priceLabel = form.price !== '' && !Number.isNaN(Number(form.price)) ? `₹${Number(form.price).toFixed(2)}` : '₹0.00';
+
+  return (
+    <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">Live Preview</p>
+          <h3 className="text-lg font-semibold text-slate-900">Medicine Card</h3>
+        </div>
+        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Real-time</span>
+      </div>
+
+      <div className="space-y-4">
+        <div className="aspect-square w-full max-h-[240px] rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100">
+          {previewImage ? (
+            <img src={previewImage} alt={form.name || 'Preview image'} className="max-h-[200px] w-full object-contain" />
+          ) : (
+            <div className="flex flex-col items-center justify-center text-gray-400">
+              <span className="text-3xl">🖼️</span>
+              <span className="text-xs">Image preview</span>
+            </div>
+          )}
+        </div>
+
+        {form.images?.length > 1 && (
+          <div className="flex flex-wrap gap-2">
+            {form.images.slice(0, 6).map((img, idx) => (
+              <div key={`${img}-${idx}`} className={`h-14 w-14 overflow-hidden rounded-lg border ${idx === 0 ? 'border-emerald-400' : 'border-slate-200'}`}>
+                <img src={img} alt={`thumb-${idx}`} className="h-full w-full object-cover" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h4 className="text-lg font-semibold text-slate-900">{form.name || 'Medicine name'}</h4>
+              <p className="text-xs text-slate-500">{form.manufacturer || 'Manufacturer'}</p>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">{form.category || 'Category'}</span>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${form.inStock ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                {form.inStock ? 'In Stock' : 'Out of Stock'}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700">{form.form || 'Form'}</span>
+            <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700">{form.strength || 'Strength'}</span>
+            <span className="rounded-full bg-emerald-50 px-3 py-1 font-semibold text-emerald-700">{priceLabel}</span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 text-sm text-slate-700">
+            <InfoRowCompact label="Manufacturer" value={form.manufacturer} />
+            <InfoRowCompact label="Form" value={form.form} />
+            <InfoRowCompact label="Strength" value={form.strength} />
+            <InfoRowCompact label="Composition" value={form.composition} />
+            <InfoRowCompact label="Pack Size" value={form.packSize} />
+            <InfoRowCompact label="Packaging" value={form.packagingType} />
+            <InfoRowCompact label="Shelf Life" value={form.shelfLife} />
+          </div>
+
+          <div className="space-y-2 text-sm text-slate-700">
+            <p className="font-semibold">Description</p>
+            <p className="text-slate-600">{previewDescription || 'Short description will appear here (first 100 characters).'}</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2 text-sm text-slate-700">
+            <InfoRowBlock label="Usage" value={form.usage} />
+            <InfoRowBlock label="Dosage" value={form.dosage} />
+          </div>
+
+          {grouped.length > 0 && (
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Custom fields</p>
+              {grouped.map((group) => (
+                <div key={group.section} className="rounded-lg border border-slate-100 bg-slate-50/60 p-3">
+                  <p className="text-xs font-semibold text-slate-600">{group.section}</p>
+                  <div className="mt-2 grid grid-cols-1 gap-1 text-sm text-slate-800">
+                    {group.entries.map((entry, idx) => (
+                      <div key={`${group.section}-${idx}`} className="flex justify-between gap-2">
+                        <span className="font-medium">{entry.label}</span>
+                        <span className="text-slate-600">{entry.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InfoRowCompact({ label, value }) {
+  return (
+    <div className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
+      <p className="text-[11px] uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="text-sm font-semibold text-slate-800">{value || '—'}</p>
+    </div>
+  );
+}
+
+function InfoRowBlock({ label, value }) {
+  return (
+    <div className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
+      <p className="text-[11px] uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="text-sm font-semibold text-slate-800">{value || '—'}</p>
+    </div>
+  );
+}
+

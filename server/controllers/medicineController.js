@@ -1,4 +1,5 @@
 import Medicine from '../models/Medicine.js';
+import Category from '../models/Category.js';
 import mongoose from 'mongoose';
 
 export async function createMedicine(req, res, next) {
@@ -25,10 +26,21 @@ export async function createMedicine(req, res, next) {
       packSize,
       packagingType,
       shelfLife,
+      customFields,
+      metaTitle,
+      metaDescription,
+      keywords,
     } = req.body || {};
 
     if (!slug || !name || price === undefined) {
       return res.status(400).json({ error: 'slug, name and price are required' });
+    }
+
+    if (category) {
+      const exists = await Category.findOne({ name: category, isActive: true });
+      if (!exists) {
+        return res.status(400).json({ error: 'Category does not exist' });
+      }
     }
 
     const existing = await Medicine.findOne({ slug });
@@ -58,6 +70,10 @@ export async function createMedicine(req, res, next) {
       packSize,
       packagingType,
       shelfLife,
+      customFields,
+      metaTitle,
+      metaDescription,
+      keywords,
     });
 
     res.status(201).json(medicine);
@@ -114,6 +130,13 @@ export async function updateMedicineById(req, res, next) {
   try {
     const { id } = req.params;
     const update = req.body || {};
+
+    if (update.category) {
+      const exists = await Category.findOne({ name: update.category, isActive: true });
+      if (!exists) {
+        return res.status(400).json({ error: 'Category does not exist' });
+      }
+    }
 
     const medicine = await Medicine.findByIdAndUpdate(id, update, { new: true });
     if (!medicine) {
