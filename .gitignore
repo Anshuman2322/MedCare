@@ -200,6 +200,10 @@ common/temp/
 # Admin app build/cache/node_modules
 admin/node_modules/
 admin/dist/
+admin/.env
+admin/.env.*
+admin/node_modules/
+admin/dist/
 admin/.vite/
 admin/.parcel-cache/
 admin/.eslintcache

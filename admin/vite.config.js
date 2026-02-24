@@ -17,8 +17,7 @@ export default defineConfig({
       port: PORT
     },
     proxy: {
-      '/api': 'http://localhost:5050',
-      '/medicines': 'http://localhost:5050'
+      '/api': 'http://localhost:5000'
     }
   },
   plugins: [react()]

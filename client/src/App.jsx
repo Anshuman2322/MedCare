@@ -16,6 +16,7 @@ import Contact from "./pages/Contact";
 import "./App.css";
 
 {/*Temporary comment*/}
+
 function App() {
   return (
     <CurrencyProvider>

@@ -1,5 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
+:root {
+	color-scheme: light;
+}
+
+body {
+	@apply bg-slate-50 text-slate-900 font-sans antialiased;
+}
+
+#root {
+	min-height: 100vh;
+}
+
+.card {
+	@apply bg-white rounded-xl shadow-card border border-emerald-50/60;
+}
+
+.section-title {
+	@apply text-sm font-semibold uppercase tracking-wide text-emerald-700;
+}

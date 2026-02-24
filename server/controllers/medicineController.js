@@ -6,6 +6,7 @@ export async function createMedicine(req, res, next) {
     const {
       slug,
       name,
+      brand,
       category,
       price,
       form,
@@ -41,6 +42,7 @@ export async function createMedicine(req, res, next) {
       category,
       price,
       form,
+      brand: brand || '',
       image: image || '',
       images: Array.isArray(images) ? images : [],
       inStock,
