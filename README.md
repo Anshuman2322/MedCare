@@ -6,6 +6,19 @@
 
 CureNeed is a B2C pharmacy showcase built on the MERN stack. Users browse medicines, submit inquiries (no cart/checkout), and admins receive alerts via Resend. An admin SaaS panel manages medicines, categories, and assets.
 
+## Table of Contents
+- [Project Title](#project-title)
+- [Short Description](#short-description)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Folder Structure (top-level)](#folder-structure-top-level)
+- [Environment Variables](#environment-variables)
+- [Local Setup](#local-setup)
+- [Inquiry Flow](#inquiry-flow)
+- [Roadmap](#roadmap)
+- [Author](#author)
+- [Legacy Reference (previous e-commerce build)](#legacy-reference-previous-e-commerce-build)
+
 ## Project Title
 CureNeed – MERN Pharmacy Showcase Platform
 
@@ -77,6 +90,9 @@ User clicks “Yes I am interested” → fills inquiry form → backend saves i
 
 ## Author
 - Add developer name here
+
+## Legacy Reference (previous e-commerce build)
+The following sections are retained from an earlier e-commerce oriented README. They include duplicate headings (Key Features, Tech Stack, etc.) but are kept for historical context and backward compatibility. Use the top sections for the current inquiry-first CureNeed platform; use this legacy section only if you need details from the earlier cart/checkout implementation.
 
 ## Key Features
 
