@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import Medicines from './pages/Medicines.jsx';
 import MedicineForm from './pages/MedicineForm.jsx';
 import Categories from './pages/Categories.jsx';
+import Inquiries from './pages/Inquiries.jsx';
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
       { path: 'medicines/add', element: <MedicineForm mode="create" /> },
       { path: 'medicines/edit/:id', element: <MedicineForm mode="edit" /> },
       { path: 'categories', element: <Categories /> },
+      { path: 'inquiries', element: <Inquiries /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
   },

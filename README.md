@@ -1,10 +1,82 @@
-# CureNeed – Advanced Healthcare E-Commerce Platform
+# CureNeed – MERN Pharmacy Showcase Platform
 
 [![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.1.7-646CFF?logo=vite)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.1.16-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
 
-CureNeed is a comprehensive, responsive healthcare e-commerce platform built with cutting-edge technologies. Featuring real-time currency conversion, advanced search functionality, IndiaMART certifications, and a polished user experience optimized for pharmaceutical and medical product sales.
+CureNeed is a B2C pharmacy showcase built on the MERN stack. Users browse medicines, submit inquiries (no cart/checkout), and admins receive alerts via Resend. An admin SaaS panel manages medicines, categories, and assets.
+
+## Project Title
+CureNeed – MERN Pharmacy Showcase Platform
+
+## Short Description
+- B2C medicine browsing with an inquiry-first flow (no cart/checkout)
+- Users send inquiries; backend saves them and triggers Resend email alerts
+- Admin SaaS panel for medicine and category management
+- Modern UI with Vite + Tailwind and production-ready Node/Express API
+
+## Features
+- Medicine listing and category filtering
+- Medicine detail pages with rich metadata
+- Inquiry system with email alerts (Resend)
+- Admin dashboard for catalog management
+- Image upload via Cloudinary
+- Modern, responsive UI
+
+## Tech Stack
+- Frontend: React + Vite + Tailwind CSS
+- Backend: Node.js + Express
+- Database: MongoDB Atlas
+- Email: Resend
+- Images: Cloudinary
+
+## Folder Structure (top-level)
+- /client – customer-facing React app (Vite, Tailwind)
+- /admin – React admin panel
+- /server – Node/Express API (MongoDB, Resend, Cloudinary)
+
+## Environment Variables
+Server (.env) example:
+```
+RESEND_API_KEY=
+ADMIN_EMAIL=
+MONGO_URI=
+CLOUDINARY_URL=
+```
+
+## Local Setup
+```bash
+git clone <repo-url>
+cd MedCare
+
+# Server
+cd server
+npm install
+npm run dev
+
+# Client
+cd ../client
+npm install
+npm run dev
+
+# Admin
+cd ../admin
+npm install
+npm run dev
+```
+
+## Inquiry Flow
+User clicks “Yes I am interested” → fills inquiry form → backend saves inquiry → Resend sends email to admin.
+
+## Roadmap
+- WhatsApp alerts
+- Admin CRM panel
+- Deployment and hosting
+- Domain setup and branded email
+- SEO improvements
+
+## Author
+- Add developer name here
 
 ## Key Features
 
@@ -43,6 +115,7 @@ CureNeed is a comprehensive, responsive healthcare e-commerce platform built wit
 - Admin UX: Added an "Update Success" modal after saving a medicine; the primary action is labeled "Yes, Update" to return to the list
 - Admin UX: Replaced native browser alerts with in‑app toast notifications for validation and errors
 - Main Site: Added content protection (blocks right‑click, copy/cut, drag, and common devtools shortcuts) – see "Content Protection" below
+- Admin: Categories page now shows product counts per category with badges; dashboard includes a "Products per Category" top-5 widget backed by the new aggregation endpoint
 
 ## Tech Stack
 
@@ -202,6 +275,7 @@ Key endpoints:
 - `GET /api/categories` – list allowed categories
 - `GET /api/medicines` – list all medicines
 - `GET /api/medicines?deleted=true` – list soft‑deleted medicines (Recycle Bin)
+- `GET /api/admin/categories/with-count` – categories with product counts (aggregation)
 - `POST /api/medicines` – create medicine (multipart, field: images[])
 - `PUT /api/medicines/:id` – update medicine (supports additional images)
 - `DELETE /api/medicines/:id` – delete medicine and its folder

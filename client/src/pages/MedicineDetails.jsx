@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import MedicineCard from '../components/MedicineCard';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 import { useCurrency } from '../store/useStore.jsx';
-import { formatPrice } from '../utils/currency';
+import InquiryModal from '../components/InquiryModal.jsx';
 
 export default function MedicineDetails() {
   const { slug } = useParams();
@@ -14,6 +14,8 @@ export default function MedicineDetails() {
   const [qty, setQty] = useState(1);
   const [imgIndex, setImgIndex] = useState(0);
   const [tab, setTab] = useState('Dosage');
+  const [showInquiry, setShowInquiry] = useState(false);
+  const [toast, setToast] = useState(null);
   const { currency } = useCurrency();
 
   const [imageRef, imageVisible] = useScrollAnimation(0.1, 80);
@@ -132,6 +134,24 @@ export default function MedicineDetails() {
     setImgIndex((i) => (i + 1) % images.length);
   };
 
+  const openInquiry = () => {
+    setShowInquiry(true);
+  };
+
+  useEffect(() => {
+    if (!toast) return undefined;
+    const timer = setTimeout(() => setToast(null), 3200);
+    return () => clearTimeout(timer);
+  }, [toast]);
+
+  const handleInquirySuccess = () => {
+    setToast({ type: 'success', message: 'Inquiry sent. We will contact you shortly.' });
+  };
+
+  const handleInquiryError = (message) => {
+    setToast({ type: 'error', message: message || 'Unable to send inquiry right now.' });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-600">
@@ -151,6 +171,13 @@ export default function MedicineDetails() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 z-50 rounded-lg px-4 py-3 shadow-lg text-sm text-white ${toast.type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'}`}
+        >
+          {toast.message}
+        </div>
+      )}
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-8 lg:p-10 space-y-10">
           <Link to="/shop" className="inline-flex items-center text-sm text-emerald-700 hover:text-emerald-900">
@@ -225,8 +252,8 @@ export default function MedicineDetails() {
                 <div className="text-sm uppercase tracking-wide text-gray-500 mb-2">Overview</div>
                 <p className="text-gray-800 leading-7">{medicine?.description}</p>
               </div>
-              <div className="text-3xl font-bold text-emerald-600" key={`price-${currency}`}>
-                {formatPrice(medicine?.price, currency)}
+              <div className="text-2xl font-semibold text-emerald-700" key={`price-${currency}`}>
+                Price on request
               </div>
             </div>
 
@@ -298,7 +325,11 @@ export default function MedicineDetails() {
                 </button>
               </div>
 
-              <button className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-emerald-600 text-white text-base font-medium shadow-sm hover:bg-emerald-700 transition-colors">
+              <button
+                type="button"
+                onClick={openInquiry}
+                className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-emerald-600 text-white text-base font-medium shadow-sm hover:bg-emerald-700 transition-colors"
+              >
                 <svg
                   className="w-5 h-5 shrink-0"
                   fill="none"
@@ -308,7 +339,7 @@ export default function MedicineDetails() {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                Yes! I am Interested
+                Send Inquiry
               </button>
             </div>
           </div>
@@ -438,6 +469,17 @@ export default function MedicineDetails() {
             )}
           </div>
         </div>
+
+        <InquiryModal
+          isOpen={showInquiry}
+          onClose={() => setShowInquiry(false)}
+          medicineName={medicine?.name}
+          quantity={qty}
+          medicineId={medicine?._id}
+          slug={medicine?.slug}
+          onSuccess={handleInquirySuccess}
+          onError={handleInquiryError}
+        />
 
         {related.filter((m) => {
           const mcats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];

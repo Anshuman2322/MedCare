@@ -6,6 +6,7 @@ const navItems = [
   { to: '/medicines', label: 'Medicines' },
   { to: '/medicines/add', label: 'Add Medicine' },
   { to: '/categories', label: 'Categories' },
+  { to: '/inquiries', label: 'Inquiries' },
 ];
 
 export default function Sidebar() {

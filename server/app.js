@@ -8,6 +8,8 @@ import orderRoutes from './routes/orderRoutes.js';
 import uploadRoute from './routes/uploadRoute.js';
 import adminRoutes from './routes/adminRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
+import inquiryRoutes from './routes/inquiryRoutes.js';
+import testRoutes from './routes/test.routes.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,6 +25,9 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoute);
 app.use('/api/admin', adminRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/inquiries', inquiryRoutes);
+app.use('/api/inquiry', inquiryRoutes);
+app.use('/api/test', testRoutes);
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
