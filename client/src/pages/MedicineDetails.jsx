@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import MedicineCard from '../components/MedicineCard';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 import { useCurrency } from '../store/useStore.jsx';
+import { formatPrice } from '../utils/currency';
 import InquiryModal from '../components/InquiryModal.jsx';
 
 export default function MedicineDetails() {
@@ -12,10 +13,12 @@ export default function MedicineDetails() {
   const [error, setError] = useState('');
   const [related, setRelated] = useState([]);
   const [qty, setQty] = useState(1);
+  const [selectedStrength, setSelectedStrength] = useState('');
+  const [filteredVariants, setFilteredVariants] = useState([]);
+  const [selectedVariant, setSelectedVariant] = useState(null);
   const [imgIndex, setImgIndex] = useState(0);
   const [tab, setTab] = useState('Dosage');
   const [showInquiry, setShowInquiry] = useState(false);
-  const [toast, setToast] = useState(null);
   const { currency } = useCurrency();
 
   const [imageRef, imageVisible] = useScrollAnimation(0.1, 80);
@@ -59,6 +62,79 @@ export default function MedicineDetails() {
     if (!medicine) return '';
     return CATEGORY_DESCRIPTIONS[primaryCategory] || CATEGORY_DESCRIPTIONS.Uncategorized;
   }, [medicine, primaryCategory]);
+
+  const variants = useMemo(() => {
+    const normalizeVariant = (v = {}) => ({
+      ...v,
+      strength: v.strength || '',
+      form: v.form || '',
+      packSize: v.packSize || '',
+      packagingType: v.packagingType || '',
+      price: v.price ?? null,
+      sku: v.sku || v.SKU || '',
+      stock: v.stock ?? (v.inStock ? 1 : null),
+    });
+
+    if (Array.isArray(medicine?.variants) && medicine.variants.length) {
+      return medicine.variants.map(normalizeVariant);
+    }
+    if (!medicine) return [];
+    const legacyVariant = normalizeVariant({
+      strength: medicine.strength || '',
+      form: medicine.form || '',
+      packSize: medicine.packSize || '',
+      packagingType: medicine.packagingType || '',
+      price: medicine.price ?? undefined,
+      stock: medicine.inStock ? 1 : 0,
+      sku: medicine.sku || '',
+    });
+    const hasLegacy = Object.values(legacyVariant).some((value) => value !== '' && value !== undefined && value !== null);
+    return hasLegacy ? [legacyVariant] : [];
+  }, [medicine]);
+
+  const strengthOptions = useMemo(
+    () => Array.from(new Set((variants || []).map((v) => (v?.strength || '').trim()).filter(Boolean))),
+    [variants]
+  );
+
+  const packSizeOptions = useMemo(
+    () => Array.from(new Set((filteredVariants || []).map((v) => (v?.packSize || '').trim()).filter(Boolean))),
+    [filteredVariants]
+  );
+
+  useEffect(() => {
+    if (!variants.length) {
+      setSelectedStrength('');
+      setFilteredVariants([]);
+      setSelectedVariant(null);
+      return;
+    }
+
+    setSelectedStrength((prev) => {
+      if (prev && strengthOptions.includes(prev)) return prev;
+      return strengthOptions[0] || variants[0].strength || '';
+    });
+  }, [variants, strengthOptions]);
+
+  useEffect(() => {
+    if (!variants.length) {
+      setFilteredVariants([]);
+      setSelectedVariant(null);
+      return;
+    }
+
+    const filtered = selectedStrength
+      ? variants.filter((v) => v.strength === selectedStrength)
+      : variants;
+    setFilteredVariants(filtered);
+    setSelectedVariant(filtered[0] || null);
+  }, [selectedStrength, variants]);
+
+  const handlePackSizeChange = (packSize) => {
+    if (!filteredVariants.length) return;
+    const variant = filteredVariants.find((v) => v.packSize === packSize);
+    setSelectedVariant(variant || filteredVariants[0] || null);
+  };
 
   const images = useMemo(() => {
     const arr = [];
@@ -134,23 +210,14 @@ export default function MedicineDetails() {
     setImgIndex((i) => (i + 1) % images.length);
   };
 
-  const openInquiry = () => {
-    setShowInquiry(true);
-  };
+  const openInquiry = () => setShowInquiry(true);
+  const closeInquiry = () => setShowInquiry(false);
 
-  useEffect(() => {
-    if (!toast) return undefined;
-    const timer = setTimeout(() => setToast(null), 3200);
-    return () => clearTimeout(timer);
-  }, [toast]);
-
-  const handleInquirySuccess = () => {
-    setToast({ type: 'success', message: 'Inquiry sent. We will contact you shortly.' });
-  };
-
-  const handleInquiryError = (message) => {
-    setToast({ type: 'error', message: message || 'Unable to send inquiry right now.' });
-  };
+  const resolvedPrice = selectedVariant?.price ?? null;
+  const priceLabel = resolvedPrice !== null && resolvedPrice !== undefined ? formatPrice(resolvedPrice, currency) : 'Price on request';
+  const variantStockValue = Number.isFinite(Number(selectedVariant?.stock)) ? Number(selectedVariant?.stock) : null;
+  const available = variantStockValue !== null ? variantStockValue > 0 : Boolean(medicine?.inStock);
+  const showVariantSelectors = variants.length > 1 && (strengthOptions.length || packSizeOptions.length);
 
   if (loading) {
     return (
@@ -169,16 +236,18 @@ export default function MedicineDetails() {
     );
   }
 
+  if (!variants.length) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center text-center px-4">
+        <p className="text-gray-700 mb-4">No variants available for this medicine.</p>
+        <Link to="/shop" className="text-emerald-600 font-semibold hover:underline">Back to shop</Link>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {toast && (
-        <div
-          className={`fixed top-4 right-4 z-50 rounded-lg px-4 py-3 shadow-lg text-sm text-white ${toast.type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'}`}
-        >
-          {toast.message}
-        </div>
-      )}
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
         <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-8 lg:p-10 space-y-10">
           <Link to="/shop" className="inline-flex items-center text-sm text-emerald-700 hover:text-emerald-900">
             <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
@@ -186,161 +255,199 @@ export default function MedicineDetails() {
           </Link>
 
           <div className="flex flex-col lg:flex-row gap-12 items-start">
-          <div className="lg:w-[420px]" ref={imageRef}>
-            <div className={`rounded-2xl bg-white p-5 relative shadow-md border border-gray-100 ${animationClasses.fadeLeft(imageVisible)}`}>
-              {mainImage ? (
-                <img
-                  src={mainImage}
-                  alt={medicine?.name || ''}
-                  className="w-full h-auto object-contain rounded-xl bg-gray-50"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="text-gray-400 text-center py-12">No image</div>
-              )}
+            <div className="lg:w-[420px]" ref={imageRef}>
+              <div className={`rounded-2xl bg-white p-5 relative shadow-md border border-gray-100 ${animationClasses.fadeLeft(imageVisible)}`}>
+                {mainImage ? (
+                  <img
+                    src={mainImage}
+                    alt={medicine?.name || ''}
+                    className="w-full h-auto object-contain rounded-xl bg-gray-50"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="text-gray-400 text-center py-12">No image</div>
+                )}
+
+                {images.length > 1 && (
+                  <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-3">
+                    <button
+                      type="button"
+                      onClick={prevImage}
+                      aria-label="Previous image"
+                      className="h-9 w-9 rounded-full bg-white/90 backdrop-blur border border-gray-200 shadow-sm flex items-center justify-center hover:bg-white"
+                    >
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={nextImage}
+                      aria-label="Next image"
+                      className="h-9 w-9 rounded-full bg-white/90 backdrop-blur border border-gray-200 shadow-sm flex items-center justify-center hover:bg-white"
+                    >
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 6l6 6-6 6" /></svg>
+                    </button>
+                  </div>
+                )}
+              </div>
 
               {images.length > 1 && (
-                <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-3">
+                <div className="mt-3 overflow-x-auto -mx-1 px-1">
+                  <div className="flex gap-3">
+                    {images.map((src, i) => (
+                      <button
+                        key={`${src}-${i}`}
+                        onClick={() => setImgIndex(i)}
+                        className={`h-16 w-16 shrink-0 rounded-lg overflow-hidden transition-all duration-150 shadow-sm ${
+                          i === imgIndex
+                            ? 'ring-2 ring-emerald-500 border border-emerald-200'
+                            : 'border border-gray-100 hover:border-emerald-200'
+                        }`}
+                        aria-label={`Show image ${i + 1}`}
+                      >
+                        <img src={src} alt={`thumb ${i + 1}`} className="h-full w-full object-cover bg-white" loading="lazy" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div ref={contentRef} className={`flex-1 space-y-5 ${animationClasses.fadeRight(contentVisible)}`}>
+              <div className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 rounded-full px-2.5 py-1 self-start">{primaryCategory}</div>
+
+              <div className="flex flex-col gap-2">
+                <h1 className="text-2xl font-semibold text-gray-900 leading-tight">{medicine?.name}</h1>
+                <div className="rounded-xl bg-gray-50 p-5">
+                  <div className="text-sm uppercase tracking-wide text-gray-500 mb-2">Overview</div>
+                  <p className="text-gray-800 leading-7">{medicine?.description}</p>
+                </div>
+                <div className="text-2xl font-semibold text-emerald-700" key={`price-${currency}`}>
+                  {priceLabel}
+                </div>
+                <div className="text-sm text-gray-600">Stock: {selectedVariant?.stock ?? 'N/A'}</div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8 pt-6 text-sm">
+                {medicine?.manufacturer && (
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Manufacturer</div>
+                    <div className="text-sm font-semibold text-gray-900">{medicine?.manufacturer}</div>
+                  </div>
+                )}
+                {(selectedVariant?.form || medicine?.form) && (
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Form</div>
+                    <div className="text-sm font-semibold text-gray-900">{selectedVariant?.form || medicine?.form}</div>
+                  </div>
+                )}
+                {(selectedVariant?.strength || medicine?.strength) && (
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Strength</div>
+                    <div className="text-sm font-semibold text-gray-900">{selectedVariant?.strength || medicine?.strength}</div>
+                  </div>
+                )}
+                {(selectedVariant?.packSize || medicine?.packSize) && (
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Pack Size</div>
+                    <div className="text-sm font-semibold text-gray-900">{selectedVariant?.packSize || medicine?.packSize}</div>
+                  </div>
+                )}
+                {(medicine?.composition || (Array.isArray(medicine?.details) ? (medicine?.details.find?.((r) => r.label === 'Composition')?.value || '') : '')) && (
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Composition</div>
+                    <div className="text-sm font-semibold text-gray-900">{medicine?.composition || (Array.isArray(medicine?.details) ? (medicine?.details.find?.((r) => r.label === 'Composition')?.value || '') : '')}</div>
+                  </div>
+                )}
+                {(selectedVariant?.packagingType || medicine?.packagingType) && (
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Packaging Type</div>
+                    <div className="text-sm font-semibold text-gray-900">{selectedVariant?.packagingType || medicine?.packagingType}</div>
+                  </div>
+                )}
+                <div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide">Availability</div>
+                  <div className="text-sm font-semibold text-gray-900 inline-flex items-center gap-2">
+                    <span className={`h-2 w-2 rounded-full ${available ? 'bg-emerald-500' : 'bg-red-400'}`}></span>
+                    {available ? 'In Stock' : 'Out of Stock'}
+                  </div>
+                </div>
+              </div>
+
+              {showVariantSelectors && (
+                <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-3">
+                  <div className="text-xs uppercase tracking-wide text-gray-500">Choose Variant</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {strengthOptions.length > 0 && (
+                      <label className="text-xs font-semibold text-gray-700 space-y-1">
+                        <span>Strength</span>
+                        <select
+                          value={selectedStrength}
+                          onChange={(e) => setSelectedStrength(e.target.value)}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                        >
+                          {strengthOptions.map((option) => (
+                            <option key={option} value={option}>{option}</option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
+                    {packSizeOptions.length > 0 && (
+                      <label className="text-xs font-semibold text-gray-700 space-y-1">
+                        <span>Pack Size</span>
+                        <select
+                          value={selectedVariant?.packSize || ''}
+                          onChange={(e) => handlePackSizeChange(e.target.value)}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                        >
+                          {packSizeOptions.map((option) => (
+                            <option key={option} value={option}>{option}</option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 pt-4 flex-wrap">
+                <div className="inline-flex items-center overflow-hidden rounded-xl bg-gray-100 shadow-inner">
                   <button
-                    type="button"
-                    onClick={prevImage}
-                    aria-label="Previous image"
-                    className="h-9 w-9 rounded-full bg-white/90 backdrop-blur border border-gray-200 shadow-sm flex items-center justify-center hover:bg-white"
+                    aria-label="Decrease quantity"
+                    className={`h-11 w-10 text-gray-700 hover:bg-gray-200/60 ${qty === 1 ? 'text-gray-300 cursor-not-allowed' : ''}`}
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                    disabled={qty === 1}
                   >
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+                    −
                   </button>
+                  <div className="h-11 min-w-11 px-3 inline-flex items-center justify-center text-gray-900 font-medium select-none">
+                    {qty}
+                  </div>
                   <button
-                    type="button"
-                    onClick={nextImage}
-                    aria-label="Next image"
-                    className="h-9 w-9 rounded-full bg-white/90 backdrop-blur border border-gray-200 shadow-sm flex items-center justify-center hover:bg-white"
+                    aria-label="Increase quantity"
+                    className="h-11 w-10 text-gray-700 hover:bg-gray-200/60"
+                    onClick={() => setQty((q) => q + 1)}
                   >
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 6l6 6-6 6" /></svg>
+                    +
                   </button>
                 </div>
-              )}
-            </div>
 
-            {images.length > 1 && (
-              <div className="mt-3 overflow-x-auto -mx-1 px-1">
-                <div className="flex gap-3">
-                  {images.map((src, i) => (
-                    <button
-                      key={`${src}-${i}`}
-                      onClick={() => setImgIndex(i)}
-                      className={`h-16 w-16 shrink-0 rounded-lg overflow-hidden transition-all duration-150 shadow-sm ${
-                        i === imgIndex
-                          ? 'ring-2 ring-emerald-500 border border-emerald-200'
-                          : 'border border-gray-100 hover:border-emerald-200'
-                      }`}
-                      aria-label={`Show image ${i + 1}`}
-                    >
-                      <img src={src} alt={`thumb ${i + 1}`} className="h-full w-full object-cover bg-white" loading="lazy" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div ref={contentRef} className={`flex-1 space-y-5 ${animationClasses.fadeRight(contentVisible)}`}>
-            <div className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 rounded-full px-2.5 py-1 self-start">{primaryCategory}</div>
-
-            <div className="flex flex-col gap-2">
-              <h1 className="text-2xl font-semibold text-gray-900 leading-tight">{medicine?.name}</h1>
-              <div className="rounded-xl bg-gray-50 p-5">
-                <div className="text-sm uppercase tracking-wide text-gray-500 mb-2">Overview</div>
-                <p className="text-gray-800 leading-7">{medicine?.description}</p>
-              </div>
-              <div className="text-2xl font-semibold text-emerald-700" key={`price-${currency}`}>
-                Price on request
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8 pt-6 text-sm">
-              {medicine?.manufacturer && (
-                <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide">Manufacturer</div>
-                  <div className="text-sm font-semibold text-gray-900">{medicine?.manufacturer}</div>
-                </div>
-              )}
-              {medicine?.form && (
-                <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide">Form</div>
-                  <div className="text-sm font-semibold text-gray-900">{medicine?.form}</div>
-                </div>
-              )}
-              {medicine?.strength && (
-                <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide">Strength</div>
-                  <div className="text-sm font-semibold text-gray-900">{medicine?.strength}</div>
-                </div>
-              )}
-              {medicine?.packSize && (
-                <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide">Pack Size</div>
-                  <div className="text-sm font-semibold text-gray-900">{medicine?.packSize}</div>
-                </div>
-              )}
-              {(medicine?.composition || (Array.isArray(medicine?.details) ? (medicine?.details.find?.((r) => r.label === 'Composition')?.value || '') : '')) && (
-                <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide">Composition</div>
-                  <div className="text-sm font-semibold text-gray-900">{medicine?.composition || (Array.isArray(medicine?.details) ? (medicine?.details.find?.((r) => r.label === 'Composition')?.value || '') : '')}</div>
-                </div>
-              )}
-              {medicine?.packagingType && (
-                <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wide">Packaging Type</div>
-                  <div className="text-sm font-semibold text-gray-900">{medicine?.packagingType}</div>
-                </div>
-              )}
-              <div>
-                <div className="text-xs text-gray-500 uppercase tracking-wide">Availability</div>
-                <div className="text-sm font-semibold text-gray-900 inline-flex items-center gap-2">
-                  <span className={`h-2 w-2 rounded-full ${medicine?.inStock ? 'bg-emerald-500' : 'bg-red-400'}`}></span>
-                  {medicine?.inStock ? 'In Stock' : 'Out of Stock'}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 pt-4 flex-wrap">
-              <div className="inline-flex items-center overflow-hidden rounded-xl bg-gray-100 shadow-inner">
                 <button
-                  aria-label="Decrease quantity"
-                  className={`h-11 w-10 text-gray-700 hover:bg-gray-200/60 ${qty === 1 ? 'text-gray-300 cursor-not-allowed' : ''}`}
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  disabled={qty === 1}
+                  type="button"
+                  onClick={openInquiry}
+                  className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-emerald-600 text-white text-base font-medium shadow-sm hover:bg-emerald-700 transition-colors"
                 >
-                  −
-                </button>
-                <div className="h-11 min-w-11 px-3 inline-flex items-center justify-center text-gray-900 font-medium select-none">
-                  {qty}
-                </div>
-                <button
-                  aria-label="Increase quantity"
-                  className="h-11 w-10 text-gray-700 hover:bg-gray-200/60"
-                  onClick={() => setQty((q) => q + 1)}
-                >
-                  +
+                  <svg
+                    className="w-5 h-5 shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  Send Inquiry
                 </button>
               </div>
-
-              <button
-                type="button"
-                onClick={openInquiry}
-                className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-emerald-600 text-white text-base font-medium shadow-sm hover:bg-emerald-700 transition-colors"
-              >
-                <svg
-                  className="w-5 h-5 shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                Send Inquiry
-              </button>
             </div>
           </div>
         </div>
@@ -387,6 +494,11 @@ export default function MedicineDetails() {
                   return v !== undefined && v !== null;
                 };
 
+                const strengthValue = selectedVariant?.strength || medicine?.strength;
+                const formValue = selectedVariant?.form || medicine?.form;
+                const packSizeValue = selectedVariant?.packSize || medicine?.packSize;
+                const packagingValue = selectedVariant?.packagingType || medicine?.packagingType;
+
                 const sections = [
                   {
                     title: 'Basic Info',
@@ -394,8 +506,8 @@ export default function MedicineDetails() {
                     rows: [
                       { label: 'Brand Name', value: medicine?.name },
                       { label: 'Composition', value: medicine?.composition },
-                      { label: 'Strength', value: medicine?.strength },
-                      { label: 'Form', value: medicine?.form },
+                      { label: 'Strength', value: strengthValue },
+                      { label: 'Form', value: formValue },
                       { label: 'Category / Treatment', value: medicine?.category },
                     ],
                   },
@@ -404,8 +516,8 @@ export default function MedicineDetails() {
                     accent: 'bg-sky-500',
                     rows: [
                       { label: 'Manufacturer', value: medicine?.manufacturer },
-                      { label: 'Pack Size', value: medicine?.packSize },
-                      { label: 'Packaging Type', value: medicine?.packagingType },
+                      { label: 'Pack Size', value: packSizeValue },
+                      { label: 'Packaging Type', value: packagingValue },
                       { label: 'Shelf Life', value: medicine?.shelfLife },
                     ],
                   },
@@ -470,25 +582,11 @@ export default function MedicineDetails() {
           </div>
         </div>
 
-        <InquiryModal
-          isOpen={showInquiry}
-          onClose={() => setShowInquiry(false)}
-          medicineName={medicine?.name}
-          quantity={qty}
-          medicineId={medicine?._id}
-          slug={medicine?.slug}
-          onSuccess={handleInquirySuccess}
-          onError={handleInquiryError}
-        />
-
         {related.filter((m) => {
           const mcats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];
           return mcats?.includes(primaryCategory);
         }).length > 0 && (
-          <section
-            ref={relatedRef}
-            className={`mt-20 ${animationClasses.fadeUp(relatedVisible)}`}
-          >
+          <section ref={relatedRef} className={`mt-20 ${animationClasses.fadeUp(relatedVisible)}`}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-gray-900">You may also like in {primaryCategory}</h3>
               <div className="hidden sm:flex gap-2">
@@ -510,6 +608,7 @@ export default function MedicineDetails() {
                 </button>
               </div>
             </div>
+
             <div className="relative">
               <button
                 onClick={() => scrollBy('prev')}
@@ -525,6 +624,7 @@ export default function MedicineDetails() {
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 6l6 6-6 6" /></svg>
               </button>
+
               <div
                 ref={sliderRef}
                 className="overflow-x-auto scrollbar-hide -mx-1 px-1 flex gap-4 snap-x snap-mandatory pb-2"
@@ -544,7 +644,15 @@ export default function MedicineDetails() {
           </section>
         )}
       </div>
+
+      {showInquiry && (
+        <InquiryModal
+          isOpen={showInquiry}
+          onClose={closeInquiry}
+          medicine={medicine}
+          currency={currency}
+        />
+      )}
     </div>
-  </div>
   );
 }

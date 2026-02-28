@@ -13,32 +13,72 @@ export async function createInquiry(req, res, next) {
   try {
     const {
       customerName = '',
+      firstName = '',
+      lastName = '',
       phone = '',
       email = '',
       quantity = 1,
       message = '',
+      additionalNotes = '',
+      brandPreference = '',
+      city = '',
+      state = '',
       medicineId = '',
       medicineName = '',
       slug = '',
+      selectedVariant,
     } = req.body || {};
 
-    const trimmedName = customerName.trim();
+    const trimmedFirst = firstName.trim();
+    const trimmedLast = lastName.trim();
+    const trimmedLegacyName = customerName.trim();
     const trimmedPhone = phone.trim();
     const trimmedMedicine = medicineName.trim();
+    const trimmedEmail = typeof email === 'string' ? email.trim() : '';
+    const trimmedCity = city.trim();
+    const trimmedState = state.trim();
 
-    if (!trimmedName || !trimmedPhone || !trimmedMedicine) {
-      return res.status(400).json({ error: 'Name, phone, and medicine name are required.' });
+    const isLegacyPayload = trimmedLegacyName && !trimmedFirst && !trimmedLast;
+
+    if (!isLegacyPayload) {
+      if (!trimmedFirst || !trimmedLast) {
+        return res.status(400).json({ error: 'First and last name are required.' });
+      }
+      if (!trimmedEmail) {
+        return res.status(400).json({ error: 'Email is required.' });
+      }
+      if (!trimmedCity || !trimmedState) {
+        return res.status(400).json({ error: 'City and state are required.' });
+      }
+    }
+    if (!trimmedPhone) {
+      return res.status(400).json({ error: 'Phone is required.' });
+    }
+    if (!trimmedMedicine) {
+      return res.status(400).json({ error: 'Medicine name is required.' });
     }
 
+    const referenceId = await generateReferenceId();
+    const normalizedVariant = normalizeVariantSelection(selectedVariant || req.body.variant || {});
+    const displayName = `${trimmedFirst} ${trimmedLast}`.trim() || trimmedLegacyName;
+
     const inquiry = await Inquiry.create({
-      customerName: trimmedName,
+      customerName: displayName,
+      firstName: trimmedFirst,
+      lastName: trimmedLast,
       phone: trimmedPhone,
-      email: typeof email === 'string' ? email.trim() : '',
+      email: trimmedEmail,
+      city: trimmedCity,
+      state: trimmedState,
+      brandPreference: typeof brandPreference === 'string' ? brandPreference.trim() : '',
+      additionalNotes: typeof additionalNotes === 'string' ? additionalNotes.trim() : '',
       quantity: normalizeQuantity(quantity),
       message: typeof message === 'string' ? message.trim() : '',
       medicineId: typeof medicineId === 'string' ? medicineId.trim() : medicineId,
       medicineName: trimmedMedicine,
       slug,
+      selectedVariant: normalizedVariant,
+      referenceId,
     });
 
     Promise.allSettled([
@@ -46,7 +86,7 @@ export async function createInquiry(req, res, next) {
       sendWhatsappNotification({ inquiry }),
     ]).catch(() => {});
 
-    res.status(201).json({ success: true, message: 'Inquiry sent', inquiryId: inquiry._id });
+    res.status(201).json({ success: true, message: 'Inquiry sent', inquiryId: inquiry._id, referenceId });
   } catch (error) {
     next(error);
   }
@@ -65,7 +105,7 @@ async function sendEmailNotification({ inquiry }) {
   try {
     const html = buildInquiryEmailHtml(inquiry);
     await sendEmail({
-      subject: 'New Medicine Inquiry - CureNeed',
+      subject: 'New Inquiry — CureNeed',
       html,
       replyTo: inquiry.email,
     });
@@ -76,11 +116,18 @@ async function sendEmailNotification({ inquiry }) {
 
 async function sendWhatsappNotification({ inquiry }) {
   if (!twilioClient || !process.env.TWILIO_WHATSAPP_FROM || !whatsappTo) return;
-  const { customerName, medicineName, quantity, phone } = inquiry;
-  const body = `New inquiry from ${customerName}
+  const { customerName, medicineName, quantity, phone, selectedVariant, referenceId, city, state } = inquiry;
+  const variantLine = selectedVariant?.strength || selectedVariant?.form || selectedVariant?.packSize
+    ? `Variant: ${buildVariantLabel(selectedVariant)}`
+    : 'Variant: n/a';
+  const priceLine = Number.isFinite(selectedVariant?.price) ? `Price: ${selectedVariant.price}` : 'Price: n/a';
+  const body = `New inquiry ${referenceId || ''} from ${customerName}
 Medicine: ${medicineName || 'N/A'}
+${variantLine}
+${priceLine}
 Qty: ${quantity || 1}
-Phone: ${phone}`;
+ Phone: ${phone}
+ City/State: ${[city, state].filter(Boolean).join(', ')}`;
   await twilioClient.messages.create({
     from: `whatsapp:${process.env.TWILIO_WHATSAPP_FROM}`,
     to: `whatsapp:${whatsappTo}`,
@@ -109,11 +156,19 @@ function formatDate(dateValue) {
 }
 
 function buildInquiryEmailHtml(inquiry) {
+  const variantLabel = buildVariantLabel(inquiry.selectedVariant || {});
+  const locationLine = [inquiry.city, inquiry.state].filter(Boolean).join(', ');
   const fields = [
+    ['Reference ID', escapeHtml(inquiry.referenceId || 'Pending')],
     ['Customer Name', escapeHtml(inquiry.customerName)],
-    ['Phone', escapeHtml(inquiry.phone)],
     ['Email', inquiry.email ? escapeHtml(inquiry.email) : 'Not provided'],
+    ['Phone', escapeHtml(inquiry.phone)],
+    ['Location', escapeHtml(locationLine || 'Not provided')],
+    ['Brand Preference', inquiry.brandPreference ? escapeHtml(inquiry.brandPreference) : 'Not provided'],
+    ['Additional Notes', inquiry.additionalNotes ? escapeHtml(inquiry.additionalNotes) : 'No additional notes'],
     ['Medicine Name', escapeHtml(inquiry.medicineName)],
+    ['Selected Variant', variantLabel || 'Not specified'],
+    ['Variant Price', Number.isFinite(inquiry?.selectedVariant?.price) ? escapeHtml(String(inquiry.selectedVariant.price)) : 'Not provided'],
     ['Quantity', escapeHtml(String(inquiry.quantity || 1))],
     ['Message', inquiry.message ? escapeHtml(inquiry.message) : 'No additional message'],
     ['Date', escapeHtml(formatDate(inquiry.createdAt))],
@@ -148,4 +203,31 @@ function buildInquiryEmailHtml(inquiry) {
       </div>
     </div>
   `;
+}
+
+async function generateReferenceId() {
+  const year = new Date().getFullYear();
+  const prefix = `CN-${year}-`;
+  const count = await Inquiry.countDocuments({ referenceId: { $regex: `^${prefix}\d{4}$` } });
+  const nextSeq = count + 1;
+  const padded = String(nextSeq).padStart(4, '0');
+  return `${prefix}${padded}`;
+}
+
+function normalizeVariantSelection(variant = {}) {
+  return {
+    strength: typeof variant.strength === 'string' ? variant.strength.trim() : '',
+    form: typeof variant.form === 'string' ? variant.form.trim() : '',
+    packSize: typeof variant.packSize === 'string' ? variant.packSize.trim() : '',
+    packagingType: typeof variant.packagingType === 'string' ? variant.packagingType.trim() : '',
+    price: Number.isFinite(Number(variant.price)) ? Number(variant.price) : undefined,
+    sku: typeof variant.sku === 'string' ? variant.sku.trim() : '',
+  };
+}
+
+function buildVariantLabel(variant = {}) {
+  const parts = [variant.strength, variant.form, variant.packSize, variant.packagingType]
+    .filter((v) => typeof v === 'string' && v.trim())
+    .map((v) => v.trim());
+  return parts.join(' | ');
 }

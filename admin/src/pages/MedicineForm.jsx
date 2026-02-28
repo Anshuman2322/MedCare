@@ -4,23 +4,30 @@ import api from '../api/axios.js';
 import { slugify } from '../utils/slugify.js';
 import ImageUploader from '../components/ImageUploader.jsx';
 
+const makeId = () => Math.random().toString(36).slice(2, 10);
+const makeVariant = () => ({
+  id: makeId(),
+  strength: '',
+  form: '',
+  packSize: '',
+  packagingType: '',
+  price: '',
+  stock: '',
+  sku: '',
+});
+
 const initialForm = {
   name: '',
   slug: '',
   category: '',
-  price: '',
-  form: '',
   manufacturer: '',
   brand: '',
-  strength: '',
   composition: '',
   usage: '',
   dosage: '',
   precautions: '',
   storage: '',
   requiresPrescription: false,
-  packSize: '',
-  packagingType: '',
   shelfLife: '',
   image: '',
   images: [],
@@ -30,6 +37,7 @@ const initialForm = {
   metaDescription: '',
   keywords: '',
   customFields: [],
+  variants: [makeVariant()],
 };
 
 const customFieldSections = ['Basic Info', 'Medical Info', 'Packaging', 'SEO'];
@@ -42,9 +50,31 @@ const sectionIcons = {
   SEO: '📈',
 };
 
-const inputClasses = 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100';
+function mapIncomingVariants(data = {}) {
+  if (Array.isArray(data.variants) && data.variants.length) {
+    return data.variants.map((variant) => ({
+      ...makeVariant(),
+      ...variant,
+      price: variant.price ?? '',
+      stock: variant.stock ?? '',
+    }));
+  }
 
-const makeId = () => Math.random().toString(36).slice(2, 10);
+  return [
+    {
+      ...makeVariant(),
+      strength: data.strength || '',
+      form: data.form || '',
+      packSize: data.packSize || '',
+      packagingType: data.packagingType || '',
+      price: data.price ?? '',
+      stock: data.stock ?? (data.inStock ? 1 : 0),
+      sku: data.sku || '',
+    },
+  ];
+}
+
+const inputClasses = 'w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100';
 
 export default function MedicineForm({ mode }) {
   const isEdit = mode === 'edit';
@@ -76,13 +106,14 @@ export default function MedicineForm({ mode }) {
         const incomingCustomFields = Array.isArray(data.customFields)
           ? data.customFields.map((field) => ({ ...field, id: makeId() }))
           : [];
+        const incomingVariants = mapIncomingVariants(data);
 
         setForm({
           ...initialForm,
           ...data,
-          price: data.price ?? '',
           images: Array.isArray(data.images) ? data.images : [],
           customFields: incomingCustomFields,
+          variants: incomingVariants,
         });
       } catch (err) {
         setError('Unable to load medicine.');
@@ -147,14 +178,44 @@ export default function MedicineForm({ mode }) {
     }));
   }
 
+  function addVariantBlock() {
+    setForm((prev) => ({ ...prev, variants: [...(prev.variants || []), makeVariant()] }));
+    setErrors((prev) => ({ ...prev, variants: '' }));
+  }
+
+  function updateVariant(id, key, value) {
+    setForm((prev) => ({
+      ...prev,
+      variants: (prev.variants || []).map((variant) => (variant.id === id ? { ...variant, [key]: value } : variant)),
+    }));
+  }
+
+  function removeVariant(id) {
+    setForm((prev) => ({
+      ...prev,
+      variants: (prev.variants || []).filter((variant) => variant.id !== id),
+    }));
+  }
+
   function validateForm() {
     const nextErrors = {};
     if (!form.name.trim()) nextErrors.name = 'Name is required';
     if (!form.category.trim()) nextErrors.category = 'Category is required';
-    if (!form.form.trim()) nextErrors.form = 'Form is required';
-    const priceValue = Number(form.price);
-    if (form.price === '' || Number.isNaN(priceValue) || priceValue < 0) nextErrors.price = 'Valid price is required';
     if (!form.slug.trim()) nextErrors.slug = 'Slug is required';
+
+    const variantsValid = Array.isArray(form.variants) && form.variants.length > 0;
+    if (!variantsValid) {
+      nextErrors.variants = 'Add at least one variant with price and stock.';
+    } else {
+      const invalidVariant = form.variants.find(
+        (variant) =>
+          variant.price === '' || Number.isNaN(Number(variant.price)) || Number(variant.price) < 0 ||
+          variant.stock === '' || Number.isNaN(Number(variant.stock)) || Number(variant.stock) < 0
+      );
+      if (invalidVariant) {
+        nextErrors.variants = 'Each variant needs a valid price and stock.';
+      }
+    }
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   }
@@ -170,12 +231,40 @@ export default function MedicineForm({ mode }) {
       .filter((field) => field.section && (field.label.trim() || field.value.trim()))
       .map((field) => ({ section: field.section, label: field.label.trim(), value: field.value.trim() }));
 
+    const variantsPayload = (form.variants || [])
+      .map((variant) => ({
+        strength: variant.strength?.trim() || '',
+        form: variant.form?.trim() || '',
+        packSize: variant.packSize?.trim() || '',
+        packagingType: variant.packagingType?.trim() || '',
+        price: variant.price === '' ? null : Number(variant.price),
+        stock: variant.stock === '' ? null : Number(variant.stock),
+        sku: variant.sku?.trim() || '',
+      }))
+      .filter((variant) => variant.price !== null && !Number.isNaN(variant.price) && variant.stock !== null && !Number.isNaN(variant.stock));
+
+    if (!variantsPayload.length) {
+      setErrors((prev) => ({ ...prev, variants: 'At least one variant with price and stock is required.' }));
+      setSaving(false);
+      return;
+    }
+
+    const {
+      variants: _variants,
+      price: _legacyPrice,
+      strength: _legacyStrength,
+      form: _legacyForm,
+      packSize: _legacyPackSize,
+      packagingType: _legacyPackaging,
+      ...restForm
+    } = form;
+
     const payload = {
-      ...form,
-      price: form.price === '' ? 0 : Number(form.price),
+      ...restForm,
       image: form.images?.[0] || form.image || '',
       images: form.images,
       customFields: customFieldsPayload,
+      variants: variantsPayload,
     };
 
     try {
@@ -284,27 +373,6 @@ export default function MedicineForm({ mode }) {
                     ))}
                   </select>
                 </Field>
-                <Field label="Form" required error={errors.form}>
-                  <input
-                    type="text"
-                    value={form.form}
-                    onChange={(e) => handleChange('form', e.target.value)}
-                    className={inputClasses}
-                    placeholder="Tablet, Syrup, Injection"
-                  />
-                </Field>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Field label="Price" required error={errors.price}>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={form.price}
-                    onChange={(e) => handleChange('price', e.target.value)}
-                    className={inputClasses}
-                  />
-                </Field>
                 <Field label="Manufacturer">
                   <input
                     type="text"
@@ -341,31 +409,135 @@ export default function MedicineForm({ mode }) {
           </SectionCard>
 
           <SectionCard
+            title="Variants"
+            icon="🔀"
+            hint="Add one or more variants with pricing and stock."
+            action={
+              <button
+                type="button"
+                onClick={addVariantBlock}
+                className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+              >
+                + Add Variant
+              </button>
+            }
+          >
+            {errors.variants && (
+              <div className="mb-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+                {errors.variants}
+              </div>
+            )}
+            <div className="space-y-4">
+              {(form.variants || []).map((variant) => (
+                <div
+                  key={variant.id}
+                  className="rounded-xl border border-slate-100 bg-slate-50/60 p-4 space-y-3 shadow-inner"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="text-sm font-semibold text-slate-800">Variant</div>
+                    <button
+                      type="button"
+                      onClick={() => removeVariant(variant.id)}
+                      disabled={(form.variants || []).length === 1}
+                      className="text-xs font-semibold text-rose-600 disabled:opacity-40"
+                    >
+                      Remove
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Field label="Strength">
+                      <input
+                        type="text"
+                        value={variant.strength}
+                        onChange={(e) => updateVariant(variant.id, 'strength', e.target.value)}
+                        className={inputClasses}
+                        placeholder="500mg"
+                      />
+                    </Field>
+                    <Field label="Form">
+                      <input
+                        type="text"
+                        value={variant.form}
+                        onChange={(e) => updateVariant(variant.id, 'form', e.target.value)}
+                        className={inputClasses}
+                        placeholder="Tablet, Syrup, Injection"
+                      />
+                    </Field>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Field label="Pack Size">
+                      <input
+                        type="text"
+                        value={variant.packSize}
+                        onChange={(e) => updateVariant(variant.id, 'packSize', e.target.value)}
+                        className={inputClasses}
+                        placeholder="1x10"
+                      />
+                    </Field>
+                    <Field label="Packaging Type">
+                      <input
+                        type="text"
+                        value={variant.packagingType}
+                        onChange={(e) => updateVariant(variant.id, 'packagingType', e.target.value)}
+                        className={inputClasses}
+                        placeholder="Blister"
+                      />
+                    </Field>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <Field label="Price" required>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={variant.price}
+                        onChange={(e) => updateVariant(variant.id, 'price', e.target.value)}
+                        className={inputClasses}
+                      />
+                    </Field>
+                    <Field label="Stock" required>
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={variant.stock}
+                        onChange={(e) => updateVariant(variant.id, 'stock', e.target.value)}
+                        className={inputClasses}
+                      />
+                    </Field>
+                    <Field label="SKU (optional)">
+                      <input
+                        type="text"
+                        value={variant.sku}
+                        onChange={(e) => updateVariant(variant.id, 'sku', e.target.value)}
+                        className={inputClasses}
+                        placeholder="SKU-123"
+                      />
+                    </Field>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+
+          <SectionCard
             title="Medical Info"
             icon={sectionIcons['Medical Info']}
             hint="Clinical usage and safety details."
             onAddCustom={() => addCustomField('Medical Info')}
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Field label="Strength">
-                <input
-                  type="text"
-                  value={form.strength}
-                  onChange={(e) => handleChange('strength', e.target.value)}
-                  className={inputClasses}
-                  placeholder="500mg"
-                />
-              </Field>
-              <Field label="Composition">
-                <input
-                  type="text"
-                  value={form.composition}
-                  onChange={(e) => handleChange('composition', e.target.value)}
-                  className={inputClasses}
-                  placeholder="Azithromycin"
-                />
-              </Field>
-            </div>
+            <Field label="Composition">
+              <input
+                type="text"
+                value={form.composition}
+                onChange={(e) => handleChange('composition', e.target.value)}
+                className={inputClasses}
+                placeholder="Azithromycin"
+              />
+            </Field>
             <Field label="Usage">
               <textarea
                 rows={2}
@@ -425,26 +597,6 @@ export default function MedicineForm({ mode }) {
             hint="Commercial presentation details."
             onAddCustom={() => addCustomField('Packaging')}
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Field label="Pack size">
-                <input
-                  type="text"
-                  value={form.packSize}
-                  onChange={(e) => handleChange('packSize', e.target.value)}
-                  className={inputClasses}
-                  placeholder="10 tablets"
-                />
-              </Field>
-              <Field label="Packaging type">
-                <input
-                  type="text"
-                  value={form.packagingType}
-                  onChange={(e) => handleChange('packagingType', e.target.value)}
-                  className={inputClasses}
-                  placeholder="Blister pack"
-                />
-              </Field>
-            </div>
             <Field label="Shelf life">
               <input
                 type="text"
@@ -612,7 +764,10 @@ function LivePreview({ form, previewImage, previewDescription, customFieldsBySec
     }, []);
   }, [customFieldsBySection]);
 
-  const priceLabel = form.price !== '' && !Number.isNaN(Number(form.price)) ? `₹${Number(form.price).toFixed(2)}` : '₹0.00';
+  const primaryVariant = (form.variants && form.variants[0]) || {};
+  const priceLabel = primaryVariant.price !== '' && !Number.isNaN(Number(primaryVariant.price))
+    ? `₹${Number(primaryVariant.price).toFixed(2)}`
+    : '₹0.00';
 
   return (
     <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 space-y-4">
@@ -661,18 +816,18 @@ function LivePreview({ form, previewImage, previewDescription, customFieldsBySec
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700">{form.form || 'Form'}</span>
-            <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700">{form.strength || 'Strength'}</span>
+            <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700">{primaryVariant.form || 'Form'}</span>
+            <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700">{primaryVariant.strength || 'Strength'}</span>
             <span className="rounded-full bg-emerald-50 px-3 py-1 font-semibold text-emerald-700">{priceLabel}</span>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-sm text-slate-700">
             <InfoRowCompact label="Manufacturer" value={form.manufacturer} />
-            <InfoRowCompact label="Form" value={form.form} />
-            <InfoRowCompact label="Strength" value={form.strength} />
+            <InfoRowCompact label="Form" value={primaryVariant.form} />
+            <InfoRowCompact label="Strength" value={primaryVariant.strength} />
             <InfoRowCompact label="Composition" value={form.composition} />
-            <InfoRowCompact label="Pack Size" value={form.packSize} />
-            <InfoRowCompact label="Packaging" value={form.packagingType} />
+            <InfoRowCompact label="Pack Size" value={primaryVariant.packSize} />
+            <InfoRowCompact label="Packaging" value={primaryVariant.packagingType} />
             <InfoRowCompact label="Shelf Life" value={form.shelfLife} />
           </div>
 

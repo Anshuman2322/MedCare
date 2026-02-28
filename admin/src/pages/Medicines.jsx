@@ -122,6 +122,7 @@ export default function Medicines() {
               {!loading &&
                 filtered.map((med) => {
                   const id = med._id || med.id;
+                  const variantPrice = med?.variants?.[0]?.price ?? med.price;
                   return (
                     <tr key={id} className="align-middle">
                       <td className="py-3 pr-4">
@@ -135,7 +136,7 @@ export default function Medicines() {
                       </td>
                       <td className="py-3 pr-4 font-semibold text-slate-900">{med.name}</td>
                       <td className="py-3 pr-4 text-slate-700">{med.category || 'Uncategorized'}</td>
-                      <td className="py-3 pr-4 text-slate-700">${Number(med.price || 0).toFixed(2)}</td>
+                      <td className="py-3 pr-4 text-slate-700">${Number(variantPrice || 0).toFixed(2)}</td>
                       <td className="py-3 pr-4">
                         <Badge tone={med.inStock ? 'success' : 'danger'}>{med.inStock ? 'In stock' : 'Out of stock'}</Badge>
                       </td>

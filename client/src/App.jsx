@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import FloatingHomeButton from "./components/FloatingHomeButton";
 import ShopByCategory from "./pages/ShopByCategory";
 import MedicineDetails from "./pages/MedicineDetails";
+import InquiryWizardPage from "./pages/InquiryWizardPage";
 import { CurrencyProvider } from "./store/useStore.jsx";
 
 import About from "./pages/About";
@@ -36,6 +37,7 @@ function App() {
           />
           <Route path="/shop" element={<ShopByCategory />} />
           <Route path="/medicine/:slug" element={<MedicineDetails />} />
+          <Route path="/inquiry/:slug" element={<InquiryWizardPage />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>

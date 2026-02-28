@@ -9,31 +9,27 @@ export async function createMedicine(req, res, next) {
       name,
       brand,
       category,
-      price,
-      form,
       image,
       images,
       inStock,
       description,
       manufacturer,
       requiresPrescription,
-      strength,
       composition,
       usage,
       dosage,
       precautions,
       storage,
-      packSize,
-      packagingType,
       shelfLife,
       customFields,
       metaTitle,
       metaDescription,
       keywords,
+      variants,
     } = req.body || {};
 
-    if (!slug || !name || price === undefined) {
-      return res.status(400).json({ error: 'slug, name and price are required' });
+    if (!slug || !name) {
+      return res.status(400).json({ error: 'slug and name are required' });
     }
 
     if (category) {
@@ -48,28 +44,31 @@ export async function createMedicine(req, res, next) {
       return res.status(409).json({ error: 'Medicine with this slug already exists' });
     }
 
+    const normalizedVariants = buildVariants(variants, req.body);
+    if (!normalizedVariants.length) {
+      return res.status(400).json({ error: 'At least one valid variant with price and stock is required' });
+    }
+
+    const resolvedInStock = typeof inStock === 'boolean' ? inStock : deriveInStock(normalizedVariants);
+
     const medicine = await Medicine.create({
       slug,
       name,
       category,
-      price,
-      form,
       brand: brand || '',
       image: image || '',
       images: Array.isArray(images) ? images : [],
-      inStock,
+      inStock: resolvedInStock,
       description,
       manufacturer,
       requiresPrescription,
-      strength,
       composition,
       usage,
       dosage,
       precautions,
       storage,
-      packSize,
-      packagingType,
       shelfLife,
+      variants: normalizedVariants,
       customFields,
       metaTitle,
       metaDescription,
@@ -95,8 +94,8 @@ export async function getAllMedicines(req, res, next) {
     }
 
     let sortOption = { createdAt: -1 };
-    if (sort === 'price_asc') sortOption = { price: 1 };
-    if (sort === 'price_desc') sortOption = { price: -1 };
+    if (sort === 'price_asc') sortOption = { 'variants.price': 1 };
+    if (sort === 'price_desc') sortOption = { 'variants.price': -1 };
 
     const meds = await Medicine.find(filter).sort(sortOption);
     res.json(meds);
@@ -138,7 +137,30 @@ export async function updateMedicineById(req, res, next) {
       }
     }
 
-    const medicine = await Medicine.findByIdAndUpdate(id, update, { new: true });
+    const existing = await Medicine.findById(id);
+    if (!existing) {
+      return res.status(404).json({ error: 'Medicine not found' });
+    }
+
+    const normalizedVariants =
+      update.variants !== undefined
+        ? buildVariants(update.variants, { ...existing.toObject(), ...update })
+        : existing.variants;
+
+    if (!normalizedVariants.length) {
+      return res.status(400).json({ error: 'At least one valid variant with price and stock is required' });
+    }
+
+    const resolvedInStock =
+      typeof update.inStock === 'boolean'
+        ? update.inStock
+        : deriveInStock(normalizedVariants);
+
+    const medicine = await Medicine.findByIdAndUpdate(
+      id,
+      { ...update, variants: normalizedVariants, inStock: resolvedInStock },
+      { new: true, runValidators: true }
+    );
     if (!medicine) {
       return res.status(404).json({ error: 'Medicine not found' });
     }
@@ -147,6 +169,53 @@ export async function updateMedicineById(req, res, next) {
   } catch (error) {
     next(error);
   }
+}
+
+function buildVariants(rawVariants, legacy = {}) {
+  const candidates = Array.isArray(rawVariants) ? rawVariants : [];
+
+  const normalized = candidates
+    .map(normalizeVariant)
+    .filter(Boolean);
+
+  if (!normalized.length) {
+    const fallback = normalizeVariant({
+      strength: legacy.strength,
+      form: legacy.form,
+      packSize: legacy.packSize,
+      packagingType: legacy.packagingType,
+      price: legacy.price,
+      stock: legacy.stock ?? (legacy.inStock ? 1 : 0),
+      sku: legacy.sku,
+    });
+    if (fallback) normalized.push(fallback);
+  }
+
+  return normalized;
+}
+
+function normalizeVariant(variant) {
+  if (!variant) return null;
+
+  const price = Number(variant.price);
+  const stock = Number(variant.stock ?? variant.quantity ?? variant.qty ?? 0);
+
+  if (!Number.isFinite(price) || price < 0) return null;
+  if (!Number.isFinite(stock) || stock < 0) return null;
+
+  return {
+    strength: typeof variant.strength === 'string' ? variant.strength.trim() : '',
+    form: typeof variant.form === 'string' ? variant.form.trim() : '',
+    packSize: typeof variant.packSize === 'string' ? variant.packSize.trim() : '',
+    packagingType: typeof variant.packagingType === 'string' ? variant.packagingType.trim() : '',
+    price,
+    sku: typeof variant.sku === 'string' ? variant.sku.trim() : '',
+    stock: Math.round(stock),
+  };
+}
+
+function deriveInStock(variants = []) {
+  return variants.some((v) => Number(v?.stock) > 0);
 }
 
 export async function deleteMedicineById(req, res, next) {

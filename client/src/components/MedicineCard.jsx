@@ -23,7 +23,9 @@ export default function MedicineCard({ product }) {
       <div className="card-body">
         <div className="card-category">{Array.isArray(product.categories) && product.categories.length ? product.categories[0] : product.category}</div>
         <div className="card-title">{product.name}</div>
-        <div className="card-price" key={`price-${currency}`}>{formatPrice(product.price, currency)}</div>
+        <div className="card-price" key={`price-${currency}`}>
+          {formatPrice(product?.variants?.[0]?.price ?? product.price ?? 0, currency)}
+        </div>
         <button
           className="card-btn"
           type="button"

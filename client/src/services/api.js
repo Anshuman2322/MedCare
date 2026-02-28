@@ -20,3 +20,12 @@ export async function sendInquiry(payload) {
   });
   return handleResponse(res);
 }
+
+export async function createInquiry(payload) {
+  const res = await fetch(buildUrl('/api/inquiries'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+}
