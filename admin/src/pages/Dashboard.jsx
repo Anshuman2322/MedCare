@@ -2,8 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import api from '../api/axios.js';
 import StatCard from '../components/ui/StatCard.jsx';
 import Badge from '../components/ui/Badge.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Dashboard() {
+  const { admin } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -14,8 +16,8 @@ export default function Dashboard() {
     (async () => {
       try {
         const [dashRes, categoriesRes] = await Promise.all([
-          api.get('/admin/dashboard'),
-          api.get('/admin/categories/with-count'),
+          api.get('/api/admin/dashboard'),
+          api.get('/api/admin/categories/with-count'),
         ]);
         if (mounted) {
           setStats(dashRes.data);
@@ -43,6 +45,12 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      {admin?.role === 'super_admin' && (
+        <div className="inline-flex items-center gap-2 rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-700 border border-purple-100 shadow-sm">
+          👑 Owner Access Enabled
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard title="Total Medicines" value={loading ? '...' : stats?.totalMedicines ?? 0} />
         <StatCard title="In Stock" value={loading ? '...' : stats?.inStock ?? 0} accent={!loading ? 'ready to ship' : ''} />

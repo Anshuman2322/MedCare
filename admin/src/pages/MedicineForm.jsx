@@ -102,7 +102,7 @@ export default function MedicineForm({ mode }) {
     if (!isEdit || !id) return;
     (async () => {
       try {
-        const { data } = await api.get(`/medicines/${id}`);
+        const { data } = await api.get(`/api/medicines/${id}`);
         const incomingCustomFields = Array.isArray(data.customFields)
           ? data.customFields.map((field) => ({ ...field, id: makeId() }))
           : [];
@@ -125,7 +125,7 @@ export default function MedicineForm({ mode }) {
 
   async function loadCategories() {
     try {
-      const { data } = await api.get('/categories');
+      const { data } = await api.get('/api/categories');
       setCategories(data || []);
     } catch (err) {
       // categories are optional fallback
@@ -269,9 +269,9 @@ export default function MedicineForm({ mode }) {
 
     try {
       if (isEdit) {
-        await api.put(`/medicines/${id}`, payload);
+        await api.put(`/api/medicines/${id}`, payload);
       } else {
-        await api.post('/medicines', payload);
+        await api.post('/api/medicines', payload);
       }
       navigate('/medicines');
     } catch (err) {

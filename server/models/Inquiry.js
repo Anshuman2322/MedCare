@@ -7,7 +7,7 @@ const inquirySchema = new mongoose.Schema(
     // New contact fields
     firstName: { type: String, trim: true, default: '' },
     lastName: { type: String, trim: true, default: '' },
-    phone: { type: String, required: true, trim: true },
+    phone: { type: String, required: false, trim: true, default: '' },
     email: { type: String, default: '', trim: true },
     city: { type: String, default: '', trim: true },
     state: { type: String, default: '', trim: true },

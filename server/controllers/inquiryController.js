@@ -1,4 +1,5 @@
 import Inquiry from '../models/Inquiry.js';
+import Medicine from '../models/Medicine.js';
 import twilio from 'twilio';
 import { sendEmail } from '../utils/sendEmail.js';
 
@@ -9,76 +10,86 @@ if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
   twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 }
 
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || '');
+const isValidPhone = (phone) => /^[0-9+\-\s()]{7,20}$/.test(phone || '');
+
 export async function createInquiry(req, res, next) {
   try {
-    const {
-      customerName = '',
-      firstName = '',
-      lastName = '',
-      phone = '',
-      email = '',
-      quantity = 1,
-      message = '',
-      additionalNotes = '',
-      brandPreference = '',
-      city = '',
-      state = '',
-      medicineId = '',
-      medicineName = '',
-      slug = '',
-      selectedVariant,
-    } = req.body || {};
+    const { medicineId, customer = {}, product = {}, notes = '' } = req.body || {};
 
-    const trimmedFirst = firstName.trim();
-    const trimmedLast = lastName.trim();
-    const trimmedLegacyName = customerName.trim();
-    const trimmedPhone = phone.trim();
-    const trimmedMedicine = medicineName.trim();
-    const trimmedEmail = typeof email === 'string' ? email.trim() : '';
-    const trimmedCity = city.trim();
-    const trimmedState = state.trim();
+    const sanitize = (value) => (typeof value === 'string' ? value.trim() : '');
+    const toNumber = (value) => {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : NaN;
+    };
 
-    const isLegacyPayload = trimmedLegacyName && !trimmedFirst && !trimmedLast;
+    const trimmedMedicineId = sanitize(medicineId);
+    const sanitizedCustomer = {
+      name: sanitize(customer.name),
+      city: sanitize(customer.city),
+      email: sanitize(customer.email),
+      phone: sanitize(customer.phone),
+    };
+    const sanitizedProduct = {
+      quantity: toNumber(product.quantity),
+      packagingType: sanitize(product.packagingType).toLowerCase(),
+      strength: sanitize(product.strength),
+      brand: sanitize(product.brand),
+    };
+    const sanitizedNotes = sanitize(notes);
 
-    if (!isLegacyPayload) {
-      if (!trimmedFirst || !trimmedLast) {
-        return res.status(400).json({ error: 'First and last name are required.' });
-      }
-      if (!trimmedEmail) {
-        return res.status(400).json({ error: 'Email is required.' });
-      }
-      if (!trimmedCity || !trimmedState) {
-        return res.status(400).json({ error: 'City and state are required.' });
-      }
+    if (!trimmedMedicineId) {
+      return res.status(400).json({ error: 'Medicine ID is required.' });
     }
-    if (!trimmedPhone) {
-      return res.status(400).json({ error: 'Phone is required.' });
+    if (!sanitizedCustomer.name) {
+      return res.status(400).json({ error: 'Customer name is required.' });
     }
-    if (!trimmedMedicine) {
-      return res.status(400).json({ error: 'Medicine name is required.' });
+    if (!sanitizedCustomer.city) {
+      return res.status(400).json({ error: 'City is required.' });
+    }
+    if (!sanitizedProduct.quantity || sanitizedProduct.quantity < 1) {
+      return res.status(400).json({ error: 'Quantity must be at least 1.' });
+    }
+    if (!['box', 'strip'].includes(sanitizedProduct.packagingType)) {
+      return res.status(400).json({ error: 'Invalid packaging type.' });
+    }
+    if (sanitizedCustomer.email && !isValidEmail(sanitizedCustomer.email)) {
+      return res.status(400).json({ error: 'Invalid email format.' });
+    }
+    if (sanitizedCustomer.phone && !isValidPhone(sanitizedCustomer.phone)) {
+      return res.status(400).json({ error: 'Invalid phone number.' });
+    }
+
+    const medicine = await Medicine.findById(trimmedMedicineId).lean();
+    if (!medicine) {
+      return res.status(404).json({ error: 'Medicine not found.' });
     }
 
     const referenceId = await generateReferenceId();
-    const normalizedVariant = normalizeVariantSelection(selectedVariant || req.body.variant || {});
-    const displayName = `${trimmedFirst} ${trimmedLast}`.trim() || trimmedLegacyName;
+    const normalizedVariant = normalizeVariantSelection({
+      strength: sanitizedProduct.strength,
+      packagingType: sanitizedProduct.packagingType,
+      brand: sanitizedProduct.brand,
+    });
 
     const inquiry = await Inquiry.create({
-      customerName: displayName,
-      firstName: trimmedFirst,
-      lastName: trimmedLast,
-      phone: trimmedPhone,
-      email: trimmedEmail,
-      city: trimmedCity,
-      state: trimmedState,
-      brandPreference: typeof brandPreference === 'string' ? brandPreference.trim() : '',
-      additionalNotes: typeof additionalNotes === 'string' ? additionalNotes.trim() : '',
-      quantity: normalizeQuantity(quantity),
-      message: typeof message === 'string' ? message.trim() : '',
-      medicineId: typeof medicineId === 'string' ? medicineId.trim() : medicineId,
-      medicineName: trimmedMedicine,
-      slug,
+      customerName: sanitizedCustomer.name,
+      firstName: '',
+      lastName: '',
+      phone: sanitizedCustomer.phone,
+      email: sanitizedCustomer.email,
+      city: sanitizedCustomer.city,
+      state: '',
+      brandPreference: sanitizedProduct.brand,
+      additionalNotes: sanitizedNotes,
+      quantity: normalizeQuantity(sanitizedProduct.quantity),
+      message: '',
+      medicineId: trimmedMedicineId,
+      medicineName: sanitize(medicine.name) || 'Unknown medicine',
+      slug: sanitize(medicine.slug),
       selectedVariant: normalizedVariant,
       referenceId,
+      status: 'new',
     });
 
     Promise.allSettled([
@@ -86,7 +97,7 @@ export async function createInquiry(req, res, next) {
       sendWhatsappNotification({ inquiry }),
     ]).catch(() => {});
 
-    res.status(201).json({ success: true, message: 'Inquiry sent', inquiryId: inquiry._id, referenceId });
+    res.status(201).json({ success: true, message: 'Inquiry submitted successfully.', inquiryId: inquiry._id, referenceId });
   } catch (error) {
     next(error);
   }

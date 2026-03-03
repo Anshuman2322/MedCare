@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-
-const navItems = [
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/medicines', label: 'Medicines' },
-  { to: '/medicines/add', label: 'Add Medicine' },
-  { to: '/categories', label: 'Categories' },
-  { to: '/inquiries', label: 'Inquiries' },
-];
+import { useAuth } from '../../context/AuthContext.jsx';
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
+  const { admin } = useAuth();
+
+  const navItems = useMemo(() => {
+    const base = [
+      { to: '/dashboard', label: 'Dashboard' },
+      { to: '/medicines', label: 'Medicines' },
+      { to: '/medicines/add', label: 'Add Medicine' },
+      { to: '/categories', label: 'Categories' },
+      { to: '/inquiries', label: 'Inquiries' },
+    ];
+    if (admin?.role === 'super_admin') {
+      base.push({ to: '/admin-management', label: 'Admin Management' });
+    }
+    return base;
+  }, [admin?.role]);
 
   return (
     <>

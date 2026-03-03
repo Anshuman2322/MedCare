@@ -6,11 +6,19 @@ import Medicines from './pages/Medicines.jsx';
 import MedicineForm from './pages/MedicineForm.jsx';
 import Categories from './pages/Categories.jsx';
 import Inquiries from './pages/Inquiries.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+import Login from './pages/Login.jsx';
+import AdminManagement from './pages/AdminManagement.jsx';
 
 const router = createBrowserRouter([
+  { path: '/login', element: <Login /> },
   {
     path: '/',
-    element: <AdminLayout />,
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <Dashboard /> },
@@ -19,6 +27,7 @@ const router = createBrowserRouter([
       { path: 'medicines/edit/:id', element: <MedicineForm mode="edit" /> },
       { path: 'categories', element: <Categories /> },
       { path: 'inquiries', element: <Inquiries /> },
+      { path: 'admin-management', element: <AdminManagement /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
   },

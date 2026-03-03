@@ -5,6 +5,9 @@ import { connectDB } from './config/db.js';
 dotenv.config();
 const DEFAULT_PORT = Number(process.env.PORT) || 5000;
 
+// Temporary debug to confirm env loading; remove after verification
+console.log('Loaded JWT_SECRET:', process.env.JWT_SECRET);
+
 function startServer(port) {
   const server = app.listen(port, () => {
     console.log(`Server running on port ${port}`);

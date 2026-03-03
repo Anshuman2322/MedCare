@@ -28,7 +28,7 @@ export default function Medicines() {
   async function fetchMedicines() {
     try {
       setLoading(true);
-      const { data } = await api.get('/medicines');
+      const { data } = await api.get('/api/medicines');
       setMedicines(data || []);
       setError('');
     } catch (err) {
@@ -40,7 +40,7 @@ export default function Medicines() {
 
   async function handleDelete(id) {
     try {
-      await api.delete(`/medicines/${id}`);
+      await api.delete(`/api/medicines/${id}`);
       setMedicines((prev) => prev.filter((m) => (m._id || m.id) !== id));
       setConfirmId(null);
     } catch (err) {
