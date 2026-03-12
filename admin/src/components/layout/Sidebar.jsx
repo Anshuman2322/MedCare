@@ -7,18 +7,21 @@ export default function Sidebar() {
   const { admin } = useAuth();
 
   const navItems = useMemo(() => {
-    const base = [
-      { to: '/dashboard', label: 'Dashboard' },
-      { to: '/medicines', label: 'Medicines' },
-      { to: '/medicines/add', label: 'Add Medicine' },
-      { to: '/categories', label: 'Categories' },
-      { to: '/inquiries', label: 'Inquiries' },
-    ];
-    if (admin?.role === 'super_admin') {
-      base.push({ to: '/admin-management', label: 'Admin Management' });
+    const perms = admin?.permissions || {};
+    const isSuper = admin?.role === 'super_admin';
+    const can = (key) => (isSuper ? true : perms[key]);
+
+    const base = [];
+    if (can('dashboard')) base.push({ to: '/dashboard', label: 'Dashboard' });
+    if (can('medicines')) {
+      base.push({ to: '/medicines', label: 'Medicines' });
+      base.push({ to: '/medicines/add', label: 'Add Medicine' });
     }
+    if (can('categories')) base.push({ to: '/categories', label: 'Categories' });
+    if (can('inquiries')) base.push({ to: '/inquiries', label: 'Inquiries' });
+    if (isSuper) base.push({ to: '/manage-admins', label: 'Admin Management' });
     return base;
-  }, [admin?.role]);
+  }, [admin?.permissions, admin?.role]);
 
   return (
     <>

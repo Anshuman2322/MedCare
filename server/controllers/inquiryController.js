@@ -231,6 +231,7 @@ function normalizeVariantSelection(variant = {}) {
     form: typeof variant.form === 'string' ? variant.form.trim() : '',
     packSize: typeof variant.packSize === 'string' ? variant.packSize.trim() : '',
     packagingType: typeof variant.packagingType === 'string' ? variant.packagingType.trim() : '',
+    brand: typeof variant.brand === 'string' ? variant.brand.trim() : '',
     price: Number.isFinite(Number(variant.price)) ? Number(variant.price) : undefined,
     sku: typeof variant.sku === 'string' ? variant.sku.trim() : '',
   };

@@ -9,6 +9,8 @@ export async function listAdminInquiries(req, res, next) {
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 10, 1), 100);
     const status = (req.query.status || '').toLowerCase();
     const search = (req.query.search || '').trim().toLowerCase();
+    const name = (req.query.name || '').trim();
+    const email = (req.query.email || '').trim();
     const sortDirection = req.query.sort === 'asc' ? 1 : -1;
 
     const filter = {};
@@ -25,11 +27,25 @@ export async function listAdminInquiries(req, res, next) {
       ];
     }
 
+    if (name) {
+      filter.$or = filter.$or || [];
+      filter.$or.push(
+        { customerName: { $regex: name, $options: 'i' } },
+        { firstName: { $regex: name, $options: 'i' } },
+        { lastName: { $regex: name, $options: 'i' } }
+      );
+    }
+
+    if (email) {
+      filter.email = { $regex: email, $options: 'i' };
+    }
+
     const total = await Inquiry.countDocuments(filter);
     const inquiries = await Inquiry.find(filter)
       .sort({ createdAt: sortDirection })
       .skip((page - 1) * limit)
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
     res.json({ items: inquiries, total, page, limit, hasMore: page * limit < total });
   } catch (error) {

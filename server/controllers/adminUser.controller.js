@@ -21,6 +21,26 @@ function validatePassword(password) {
   return null;
 }
 
+function getDefaultPermissions(role = 'admin') {
+  const base = {
+    dashboard: true,
+    medicines: true,
+    categories: true,
+    inquiries: false,
+    adminManagement: false,
+  };
+  if (role === 'super_admin') {
+    return {
+      dashboard: true,
+      medicines: true,
+      categories: true,
+      inquiries: true,
+      adminManagement: true,
+    };
+  }
+  return base;
+}
+
 export async function listAdmins(_req, res, next) {
   try {
     const admins = await Admin.find().select('-password');
@@ -51,7 +71,7 @@ export async function createAdmin(req, res, next) {
     }
 
     // Creation by super_admin only; force role to admin to avoid accidental super_admin duplication
-    const admin = await Admin.create({ email: normalizedEmail, password, role: 'admin' });
+    const admin = await Admin.create({ email: normalizedEmail, password, role: 'admin', permissions: getDefaultPermissions('admin') });
     res.status(201).json({ success: true, admin: { id: admin.id, email: admin.email, role: admin.role } });
   } catch (error) {
     next(error);
@@ -99,12 +119,54 @@ export async function transferOwnership(req, res, next) {
 
     const session = await Admin.startSession();
     await session.withTransaction(async () => {
-      await Admin.updateMany({ role: 'super_admin' }, { role: 'admin' }, { session });
-      await Admin.findByIdAndUpdate(targetAdminId, { role: 'super_admin' }, { session });
+      await Admin.updateMany({ role: 'super_admin' }, { role: 'admin', permissions: getDefaultPermissions('admin') }, { session });
+      await Admin.findByIdAndUpdate(targetAdminId, { role: 'super_admin', permissions: getDefaultPermissions('super_admin') }, { session });
     });
     session.endSession();
 
     res.json({ success: true, newOwner: { id: target.id, email: target.email, role: 'super_admin' } });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateAdminRole(req, res, next) {
+  try {
+    const { id } = req.params;
+    const target = await Admin.findById(id);
+    if (!target) return res.status(404).json({ error: 'Admin not found' });
+
+    const role = (req.body?.role || '').toLowerCase();
+    if (!['admin', 'super_admin'].includes(role)) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+
+    if (target.id === req.admin.id && role !== 'super_admin') {
+      return res.status(400).json({ error: 'Transfer ownership before demoting yourself.' });
+    }
+
+    if (role === 'super_admin') {
+      const session = await Admin.startSession();
+      await session.withTransaction(async () => {
+        await Admin.updateMany({ role: 'super_admin' }, { role: 'admin', permissions: getDefaultPermissions('admin') }, { session });
+        await Admin.findByIdAndUpdate(id, { role: 'super_admin', permissions: getDefaultPermissions('super_admin') }, { session });
+      });
+      session.endSession();
+    } else {
+      // role === 'admin'
+      if (target.role === 'super_admin') {
+        const superCount = await Admin.countDocuments({ role: 'super_admin' });
+        if (superCount <= 1) {
+          return res.status(400).json({ error: 'There must be at least one super admin.' });
+        }
+      }
+      target.role = 'admin';
+      target.permissions = getDefaultPermissions('admin');
+      await target.save();
+    }
+
+    const updated = await Admin.findById(id).select('-password');
+    res.json({ success: true, admin: updated });
   } catch (error) {
     next(error);
   }

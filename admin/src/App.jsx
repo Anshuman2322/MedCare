@@ -21,13 +21,62 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: 'dashboard', element: <Dashboard /> },
-      { path: 'medicines', element: <Medicines /> },
-      { path: 'medicines/add', element: <MedicineForm mode="create" /> },
-      { path: 'medicines/edit/:id', element: <MedicineForm mode="edit" /> },
-      { path: 'categories', element: <Categories /> },
-      { path: 'inquiries', element: <Inquiries /> },
-      { path: 'admin-management', element: <AdminManagement /> },
+      {
+        path: 'dashboard',
+        element: (
+          <ProtectedRoute requiredPermission="dashboard">
+            <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'medicines',
+        element: (
+          <ProtectedRoute requiredPermission="medicines">
+            <Medicines />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'medicines/add',
+        element: (
+          <ProtectedRoute requiredPermission="medicines">
+            <MedicineForm mode="create" />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'medicines/edit/:id',
+        element: (
+          <ProtectedRoute requiredPermission="medicines">
+            <MedicineForm mode="edit" />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'categories',
+        element: (
+          <ProtectedRoute requiredPermission="categories">
+            <Categories />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'inquiries',
+        element: (
+          <ProtectedRoute requiredPermission="inquiries">
+            <Inquiries />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'manage-admins',
+        element: (
+          <ProtectedRoute requireSuperAdmin>
+            <AdminManagement />
+          </ProtectedRoute>
+        ),
+      },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
   },

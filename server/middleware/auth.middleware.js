@@ -35,3 +35,14 @@ export function requireRole(...roles) {
     next();
   };
 }
+
+export function requirePermission(permissionKey) {
+  return (req, res, next) => {
+    if (!req.admin) return res.status(401).json({ error: 'Not authorized' });
+    if (req.admin.role === 'super_admin') return next();
+    if (!req.admin.permissions || req.admin.permissions[permissionKey] !== true) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    return next();
+  };
+}

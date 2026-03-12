@@ -21,6 +21,13 @@ const adminSchema = new mongoose.Schema(
       default: 'admin',
       trim: true,
     },
+    permissions: {
+      dashboard: { type: Boolean, default: true },
+      medicines: { type: Boolean, default: true },
+      categories: { type: Boolean, default: true },
+      inquiries: { type: Boolean, default: false },
+      adminManagement: { type: Boolean, default: false },
+    },
   },
   { timestamps: true }
 );
@@ -44,6 +51,19 @@ adminSchema.pre('save', async function hashPassword(next) {
   } catch (error) {
     return next(error);
   }
+});
+
+adminSchema.pre('save', function enforcePermissions(next) {
+  if (this.role === 'super_admin') {
+    this.permissions = {
+      dashboard: true,
+      medicines: true,
+      categories: true,
+      inquiries: true,
+      adminManagement: true,
+    };
+  }
+  return next();
 });
 
 adminSchema.methods.comparePassword = async function comparePassword(candidate) {

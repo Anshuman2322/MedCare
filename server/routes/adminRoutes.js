@@ -2,9 +2,9 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import { getDashboardStats } from '../controllers/adminController.js';
 import { getCategoriesWithCount } from '../controllers/categoryController.js';
-import { listAdmins, createAdmin, deleteAdmin, transferOwnership } from '../controllers/adminUser.controller.js';
+import { listAdmins, createAdmin, deleteAdmin, transferOwnership, updateAdminRole } from '../controllers/adminUser.controller.js';
 import { listAdminInquiries, updateInquiryStatus } from '../controllers/adminInquiry.controller.js';
-import { protectAdmin, requireRole } from '../middleware/auth.middleware.js';
+import { protectAdmin, requireRole, requirePermission } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
@@ -36,13 +36,15 @@ router.post('/admins', protectAdmin, requireRole('super_admin'), [emailRules, pa
 router.post('/create', protectAdmin, requireRole('super_admin'), [emailRules, passwordRules], createAdmin);
 router.delete('/admins/:id', protectAdmin, requireRole('super_admin'), deleteAdmin);
 router.post('/admins/transfer-ownership', protectAdmin, requireRole('super_admin'), transferOwnership);
+router.put('/admins/:id/role', protectAdmin, requireRole('super_admin'), updateAdminRole);
 
-router.get('/dashboard', protectAdmin, getDashboardStats);
-router.get('/categories/with-count', protectAdmin, getCategoriesWithCount);
-router.get('/inquiries', protectAdmin, requireRole('admin', 'super_admin'), listAdminInquiries);
+router.get('/dashboard', protectAdmin, requirePermission('dashboard'), getDashboardStats);
+router.get('/categories/with-count', protectAdmin, requirePermission('categories'), getCategoriesWithCount);
+router.get('/inquiries', protectAdmin, requirePermission('inquiries'), requireRole('admin', 'super_admin'), listAdminInquiries);
 router.put(
 	'/inquiries/:id/status',
 	protectAdmin,
+	requirePermission('inquiries'),
 	requireRole('admin', 'super_admin'),
 	body('status').isString().trim(),
 	updateInquiryStatus
