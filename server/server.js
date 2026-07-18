@@ -5,9 +5,6 @@ import { connectDB } from './config/db.js';
 dotenv.config();
 const DEFAULT_PORT = Number(process.env.PORT) || 5000;
 
-// Temporary debug to confirm env loading; remove after verification
-console.log('Loaded JWT_SECRET:', process.env.JWT_SECRET);
-
 function startServer(port) {
   const server = app.listen(port, () => {
     console.log(`Server running on port ${port}`);
@@ -24,7 +21,10 @@ function startServer(port) {
 }
 
 async function start() {
-  await connectDB();
+  const databaseReady = await connectDB({ required: false });
+  if (!databaseReady) {
+    console.warn('Server is starting without a database connection. Database routes will be unavailable until MongoDB is fixed.');
+  }
   startServer(DEFAULT_PORT);
 }
 

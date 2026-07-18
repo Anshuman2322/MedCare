@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import Admin from '../models/Admin.js';
 
 function unauthorized(res) {
@@ -14,6 +15,28 @@ export async function protectAdmin(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (mongoose.connection.readyState !== 1) {
+      const fallbackEmail = (process.env.ADMIN_EMAIL || 'admin@cureneed.com').toLowerCase();
+      if (decoded.id === fallbackEmail) {
+        req.admin = {
+          id: fallbackEmail,
+          email: fallbackEmail,
+          role: 'super_admin',
+          permissions: {
+            dashboard: true,
+            medicines: true,
+            categories: true,
+            inquiries: true,
+            adminManagement: true,
+          },
+        };
+        return next();
+      }
+
+      return unauthorized(res);
+    }
+
     const admin = await Admin.findById(decoded.id).select('-password');
 
     if (!admin) {
