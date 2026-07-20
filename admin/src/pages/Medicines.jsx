@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../api/axios.js';
 import Badge from '../components/ui/Badge.jsx';
 import Modal from '../components/ui/Modal.jsx';
+import { resolveMedicineImageUrl } from '../utils/resolveMedicineImageUrl.js';
 
 export default function Medicines() {
   const [medicines, setMedicines] = useState([]);
@@ -127,7 +128,11 @@ export default function Medicines() {
                     <tr key={id} className="align-middle">
                       <td className="py-3 pr-4">
                         {med.image ? (
-                          <img src={med.image} alt={med.name} className="h-12 w-12 rounded-lg object-cover border border-slate-100" />
+                          <img
+                            src={resolveMedicineImageUrl(med.image)}
+                            alt={med.name}
+                            className="h-12 w-12 rounded-lg object-cover border border-slate-100"
+                          />
                         ) : (
                           <div className="h-12 w-12 rounded-lg border border-dashed border-slate-200 bg-slate-50 flex items-center justify-center text-xs text-slate-500">
                             No image

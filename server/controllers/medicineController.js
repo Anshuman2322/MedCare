@@ -1,7 +1,7 @@
 import Medicine from '../models/Medicine.js';
 import Category from '../models/Category.js';
 import mongoose from 'mongoose';
-import { readFile } from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -40,6 +40,22 @@ function normalizeFallbackMedicine(medicine) {
   const category = medicine.category || '';
   const description = medicine.description || '';
   const images = Array.isArray(medicine.images) ? medicine.images.filter(Boolean) : [];
+  const rawVariants = Array.isArray(medicine.variants) ? medicine.variants : [];
+  const normalizedVariants = rawVariants.map(normalizeVariant).filter(Boolean);
+
+  if (!normalizedVariants.length) {
+    normalizedVariants.push({
+      strength: medicine.strength || '',
+      form: medicine.form || '',
+      packSize: medicine.packSize || '',
+      packagingType: medicine.packagingType || '',
+      price: Number.isFinite(price) ? price : 0,
+      sku: medicine.sku || '',
+      stock,
+    });
+  }
+
+  const primaryVariant = normalizedVariants[0] || {};
 
   return {
     ...medicine,
@@ -55,24 +71,74 @@ function normalizeFallbackMedicine(medicine) {
     manufacturer: medicine.manufacturer || '',
     requiresPrescription: Boolean(medicine.requiresPrescription),
     price: Number.isFinite(price) ? price : null,
-    form: medicine.form || '',
-    strength: medicine.strength || '',
-    variants: [
-      {
-        strength: medicine.strength || '',
-        form: medicine.form || '',
-        packSize: medicine.packSize || '',
-        packagingType: medicine.packagingType || '',
-        price: Number.isFinite(price) ? price : 0,
-        sku: medicine.sku || '',
-        stock,
-      },
-    ],
+    form: primaryVariant.form || medicine.form || '',
+    strength: primaryVariant.strength || medicine.strength || '',
+    variants: normalizedVariants,
   };
 }
 
 async function getFallbackMedicineList() {
   return loadFallbackMedicines();
+}
+
+async function saveFallbackMedicines(medicines) {
+  const normalized = medicines.map(normalizeFallbackMedicine).filter(Boolean);
+  await writeFile(FALLBACK_MEDICINES_PATH, `${JSON.stringify(normalized, null, 2)}\n`, 'utf8');
+  fallbackMedicinesCache = normalized;
+  return normalized;
+}
+
+function findFallbackMedicineIndex(medicines, identifier) {
+  const target = String(identifier || '').trim();
+  if (!target) return -1;
+
+  return medicines.findIndex((medicine) => {
+    const candidateIds = [medicine.slug, medicine._id, medicine.id].filter(Boolean).map((value) => String(value));
+    return candidateIds.includes(target);
+  });
+}
+
+function buildFallbackMedicineRecord(base = {}, update = {}, normalizedVariants = []) {
+  const source = { ...base, ...update };
+  const primaryVariant = normalizedVariants[0] || source.variants?.[0] || {};
+  const images = Array.isArray(source.images) ? source.images.filter(Boolean) : [];
+  const image = source.image || images[0] || '';
+  const slugBase = source.slug || source.id || source._id || source.name || '';
+  const slug = String(slugBase)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  return {
+    ...source,
+    _id: source._id || source.id || slug,
+    id: source.id || slug,
+    slug,
+    name: source.name || '',
+    category: source.category || '',
+    brand: source.brand || '',
+    description: source.description || '',
+    manufacturer: source.manufacturer || '',
+    requiresPrescription: Boolean(source.requiresPrescription),
+    image,
+    images,
+    inStock: source.inStock !== false,
+    composition: source.composition || '',
+    usage: source.usage || '',
+    dosage: source.dosage || '',
+    precautions: source.precautions || '',
+    storage: source.storage || '',
+    shelfLife: source.shelfLife || '',
+    customFields: Array.isArray(source.customFields) ? source.customFields : [],
+    metaTitle: source.metaTitle || '',
+    metaDescription: source.metaDescription || '',
+    keywords: source.keywords || '',
+    variants: normalizedVariants.length ? normalizedVariants : Array.isArray(source.variants) ? source.variants : [],
+    price: Number.isFinite(Number(primaryVariant.price ?? source.price)) ? Number(primaryVariant.price ?? source.price) : null,
+    form: primaryVariant.form || source.form || '',
+    strength: primaryVariant.strength || source.strength || '',
+  };
 }
 
 function matchesFilter(medicine, search, category) {
@@ -139,10 +205,54 @@ export async function createMedicine(req, res, next) {
       return res.status(400).json({ error: 'slug and name are required' });
     }
 
+    if (mongoose.connection.readyState !== 1) {
+      const fallbackMedicines = await getFallbackMedicineList();
+      if (findFallbackMedicineIndex(fallbackMedicines, slug) >= 0) {
+        return res.status(409).json({ error: 'Medicine with this slug already exists' });
+      }
+
+      const medicine = buildFallbackMedicineRecord(
+        {
+          slug,
+          name,
+          brand: brand || '',
+          category,
+          image: image || '',
+          images: Array.isArray(images) ? images : [],
+          inStock: typeof inStock === 'boolean' ? inStock : deriveInStock(normalizedVariants),
+          description,
+          manufacturer,
+          requiresPrescription,
+          composition,
+          usage,
+          dosage,
+          precautions,
+          storage,
+          shelfLife,
+          customFields,
+          metaTitle,
+          metaDescription,
+          keywords,
+        },
+        {},
+        normalizedVariants
+      );
+
+      const savedMedicines = await saveFallbackMedicines([...fallbackMedicines, medicine]);
+      const saved = savedMedicines.find((item) => item.slug === slug) || medicine;
+      return res.status(201).json(saved);
+    }
+
     if (category) {
-      const exists = await Category.findOne({ name: category, isActive: true });
-      if (!exists) {
-        return res.status(400).json({ error: 'Category does not exist' });
+      try {
+        const exists = await Category.findOne({ name: category, isActive: true });
+        if (!exists) {
+          return res.status(400).json({ error: 'Category does not exist' });
+        }
+      } catch (error) {
+        if (error?.name !== 'MongooseError') {
+          throw error;
+        }
       }
     }
 
@@ -256,15 +366,58 @@ export async function updateMedicineById(req, res, next) {
   try {
     const { id } = req.params;
     const update = req.body || {};
+    const query = buildMedicineLookupQuery(id);
+
+    if (mongoose.connection.readyState !== 1) {
+      const fallbackMedicines = await getFallbackMedicineList();
+      const index = findFallbackMedicineIndex(fallbackMedicines, id);
+
+      if (index === -1) {
+        return res.status(404).json({ error: 'Medicine not found' });
+      }
+
+      const existing = fallbackMedicines[index];
+      const normalizedVariants =
+        update.variants !== undefined
+          ? buildVariants(update.variants, { ...existing, ...update })
+          : existing.variants || [];
+
+      if (!normalizedVariants.length) {
+        return res.status(400).json({ error: 'At least one valid variant with price and stock is required' });
+      }
+
+      const resolvedInStock =
+        typeof update.inStock === 'boolean'
+          ? update.inStock
+          : deriveInStock(normalizedVariants);
+
+      const medicine = buildFallbackMedicineRecord(
+        { ...existing, ...update, inStock: resolvedInStock },
+        {},
+        normalizedVariants
+      );
+
+      const nextMedicines = [...fallbackMedicines];
+      nextMedicines[index] = medicine;
+      const savedMedicines = await saveFallbackMedicines(nextMedicines);
+      const saved = savedMedicines[index] || medicine;
+      return res.json(saved);
+    }
 
     if (update.category) {
-      const exists = await Category.findOne({ name: update.category, isActive: true });
-      if (!exists) {
-        return res.status(400).json({ error: 'Category does not exist' });
+      try {
+        const exists = await Category.findOne({ name: update.category, isActive: true });
+        if (!exists) {
+          return res.status(400).json({ error: 'Category does not exist' });
+        }
+      } catch (error) {
+        if (error?.name !== 'MongooseError') {
+          throw error;
+        }
       }
     }
 
-    const existing = await Medicine.findById(id);
+    const existing = await Medicine.findOne(query);
     if (!existing) {
       return res.status(404).json({ error: 'Medicine not found' });
     }
@@ -283,8 +436,8 @@ export async function updateMedicineById(req, res, next) {
         ? update.inStock
         : deriveInStock(normalizedVariants);
 
-    const medicine = await Medicine.findByIdAndUpdate(
-      id,
+    const medicine = await Medicine.findOneAndUpdate(
+      query,
       { ...update, variants: normalizedVariants, inStock: resolvedInStock },
       { new: true, runValidators: true }
     );
@@ -348,7 +501,21 @@ function deriveInStock(variants = []) {
 export async function deleteMedicineById(req, res, next) {
   try {
     const { id } = req.params;
-    const deleted = await Medicine.findByIdAndDelete(id);
+
+    if (mongoose.connection.readyState !== 1) {
+      const fallbackMedicines = await getFallbackMedicineList();
+      const index = findFallbackMedicineIndex(fallbackMedicines, id);
+
+      if (index === -1) {
+        return res.status(404).json({ error: 'Medicine not found' });
+      }
+
+      const nextMedicines = fallbackMedicines.filter((_, itemIndex) => itemIndex !== index);
+      await saveFallbackMedicines(nextMedicines);
+      return res.json({ message: 'Medicine deleted successfully' });
+    }
+
+    const deleted = await Medicine.findOneAndDelete(buildMedicineLookupQuery(id));
 
     if (!deleted) {
       return res.status(404).json({ error: 'Medicine not found' });
@@ -358,4 +525,15 @@ export async function deleteMedicineById(req, res, next) {
   } catch (error) {
     next(error);
   }
+}
+
+function buildMedicineLookupQuery(identifier) {
+  const slug = String(identifier || '').trim();
+  const query = { slug };
+
+  if (mongoose.Types.ObjectId.isValid(slug)) {
+    return { $or: [{ slug }, { _id: slug }] };
+  }
+
+  return query;
 }

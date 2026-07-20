@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api/axios.js';
 import { slugify } from '../utils/slugify.js';
 import ImageUploader from '../components/ImageUploader.jsx';
+import { resolveMedicineImageUrl } from '../utils/resolveMedicineImageUrl.js';
 
 const makeId = () => Math.random().toString(36).slice(2, 10);
 const makeVariant = () => ({
@@ -782,7 +783,11 @@ function LivePreview({ form, previewImage, previewDescription, customFieldsBySec
       <div className="space-y-4">
         <div className="aspect-square w-full max-h-[240px] rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100">
           {previewImage ? (
-            <img src={previewImage} alt={form.name || 'Preview image'} className="max-h-[200px] w-full object-contain" />
+            <img
+              src={resolveMedicineImageUrl(previewImage)}
+              alt={form.name || 'Preview image'}
+              className="max-h-[200px] w-full object-contain"
+            />
           ) : (
             <div className="flex flex-col items-center justify-center text-gray-400">
               <span className="text-3xl">🖼️</span>
@@ -795,7 +800,11 @@ function LivePreview({ form, previewImage, previewDescription, customFieldsBySec
           <div className="flex flex-wrap gap-2">
             {form.images.slice(0, 6).map((img, idx) => (
               <div key={`${img}-${idx}`} className={`h-14 w-14 overflow-hidden rounded-lg border ${idx === 0 ? 'border-emerald-400' : 'border-slate-200'}`}>
-                <img src={img} alt={`thumb-${idx}`} className="h-full w-full object-cover" />
+                <img
+                  src={resolveMedicineImageUrl(img)}
+                  alt={`thumb-${idx}`}
+                  className="h-full w-full object-cover"
+                />
               </div>
             ))}
           </div>

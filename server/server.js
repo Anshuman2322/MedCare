@@ -1,8 +1,10 @@
 import dotenv from 'dotenv';
+import dns from 'node:dns';
 import app from './app.js';
 import { connectDB } from './config/db.js';
 
 dotenv.config();
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 const DEFAULT_PORT = Number(process.env.PORT) || 5000;
 
 function startServer(port) {

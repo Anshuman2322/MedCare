@@ -1,10 +1,15 @@
 import { validationResult } from 'express-validator';
 import Inquiry from '../models/Inquiry.js';
+import mongoose from 'mongoose';
 
 const ALLOWED_STATUSES = ['new', 'contacted', 'closed'];
 
 export async function listAdminInquiries(req, res, next) {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.json({ items: [], total: 0, page: 1, limit: 10, hasMore: false });
+    }
+
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 10, 1), 100);
     const status = (req.query.status || '').toLowerCase();

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import MedicineCard from '../components/MedicineCard';
 import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
+import { parseMedicinePrice } from '../utils/medicineDisplay.js';
 import './ShopByCategory.css';
 
 export default function ShopByCategory() {
@@ -13,7 +14,7 @@ export default function ShopByCategory() {
   const [selectedForm, setSelectedForm] = useState('');
   // Determine max price dynamically so newly added higher-priced items aren't hidden by default
   const maxPriceInData = useMemo(() => {
-    const values = medicines.map(m => Number(m.price) || 0);
+    const values = medicines.map((m) => parseMedicinePrice(m));
     const max = values.length ? Math.max(...values) : 50;
     return Math.max(50, Math.ceil(max));
   }, [medicines]);
@@ -27,7 +28,7 @@ export default function ShopByCategory() {
     const load = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch('http://localhost:5000/api/medicines', { cache: 'no-store' });
+        const res = await fetch('http://localhost:5002/api/medicines', { cache: 'no-store' });
         if (!res.ok) throw new Error('Failed to load');
         const meds = await res.json();
         if (!active) return;
@@ -107,16 +108,16 @@ export default function ShopByCategory() {
     });
     if (selectedManufacturer) list = list.filter(m => m.manufacturer === selectedManufacturer);
     if (selectedForm) list = list.filter(m => m.form === selectedForm);
-    list = list.filter(m => Number(m.price) <= Number(maxPrice));
+    list = list.filter((m) => parseMedicinePrice(m) <= Number(maxPrice));
     if (search) {
       const s = search.toLowerCase();
       list = list.filter(m => (m.name + ' ' + (m.description || '')).toLowerCase().includes(s));
     }
-    if (sort === 'Price: Low to High') list.sort((a, b) => a.price - b.price);
-    if (sort === 'Price: High to Low') list.sort((a, b) => b.price - a.price);
+    if (sort === 'Price: Low to High') list.sort((a, b) => parseMedicinePrice(a) - parseMedicinePrice(b));
+    if (sort === 'Price: High to Low') list.sort((a, b) => parseMedicinePrice(b) - parseMedicinePrice(a));
     if (sort === 'Name: A-Z') list.sort((a, b) => a.name.localeCompare(b.name));
     return list;
-  }, [selectedCategory, selectedManufacturer, selectedForm, maxPrice, search, sort]);
+  }, [medicines, selectedCategory, selectedManufacturer, selectedForm, maxPrice, search, sort]);
 
   // If NO filters/search applied, we want to show ALL products (already true) but animate them.
   // const isPristine = !selectedCategory && !selectedManufacturer && !selectedForm && !search && sort === 'Featured' && Number(maxPrice) === 50;

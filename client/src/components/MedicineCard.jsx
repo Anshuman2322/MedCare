@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCurrency } from '../store/useStore.jsx';
 import { formatPrice } from '../utils/currency';
+import { resolveMedicineImage } from '../utils/medicineDisplay.js';
 import './medicineCard.css';
 
 export default function MedicineCard({ product }) {
@@ -14,9 +15,10 @@ export default function MedicineCard({ product }) {
       <div className="card-image">
         {!loaded && <div className="img-skeleton" aria-hidden />}
         <img 
-          src={product.image} 
+          src={resolveMedicineImage(product)} 
           alt={product.name} 
           loading="lazy" 
+          onError={() => setLoaded(true)}
           onLoad={() => setLoaded(true)}
         />
       </div>
