@@ -151,14 +151,14 @@ export default function MedicineDetails() {
       try {
         setLoading(true);
         setError('');
-        const res = await fetch(`http://localhost:5002/api/medicines/${slug}`, { cache: 'no-store' });
+        const res = await fetch(`http://localhost:5000/api/medicines/${slug}`, { cache: 'no-store' });
         if (!res.ok) throw new Error('Failed to load medicine');
         const med = await res.json();
         if (!active) return;
         setMedicine(med);
         setImgIndex(0);
 
-        const relRes = await fetch(`http://localhost:5002/api/medicines?category=${encodeURIComponent(med?.category || '')}`, { cache: 'no-store' });
+        const relRes = await fetch(`http://localhost:5000/api/medicines?category=${encodeURIComponent(med?.category || '')}`, { cache: 'no-store' });
         if (relRes.ok) {
           const rel = await relRes.json();
           if (active) setRelated(Array.isArray(rel) ? rel.filter(r => (r.slug || r._id) !== (med.slug || med._id)) : []);

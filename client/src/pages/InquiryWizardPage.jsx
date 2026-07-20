@@ -42,7 +42,7 @@ export default function InquiryWizardPage() {
       try {
         setLoading(true);
         setError('');
-        const res = await fetch(`http://localhost:5002/api/medicines/${slug}`);
+        const res = await fetch(`http://localhost:5000/api/medicines/${slug}`);
         if (!res.ok) throw new Error('Failed to load medicine');
         const med = await res.json();
         if (!active) return;

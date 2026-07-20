@@ -28,7 +28,7 @@ export default function ShopByCategory() {
     const load = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch('http://localhost:5002/api/medicines', { cache: 'no-store' });
+        const res = await fetch('http://localhost:5000/api/medicines', { cache: 'no-store' });
         if (!res.ok) throw new Error('Failed to load');
         const meds = await res.json();
         if (!active) return;
