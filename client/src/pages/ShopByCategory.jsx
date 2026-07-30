@@ -297,7 +297,7 @@ export default function ShopByCategory() {
             ref={productsRef}
             className={`products`}
           >
-            <div className="grid">
+            <div className="shop-grid">
               {filtered.map((med, index) => (
                 <AnimatedCard key={med.slug || med._id} index={index} delay={0} stagger={false}>
                   <MedicineCard product={med} />

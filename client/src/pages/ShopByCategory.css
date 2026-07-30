@@ -46,7 +46,7 @@
 .controls { display:flex; gap: 12px; align-items:center; }
 .controls select { padding: 8px 10px; border-radius: 8px; border: 1px solid #e6edf2; }
 
-.grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.shop-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 
 /* Filter toggle button - hidden on desktop */
 .filter-toggle-btn {
@@ -94,7 +94,7 @@
   .page-header h1 { font-size: 28px; }
   .page-header .controls { flex-direction: column; align-items: flex-start; gap: 12px; }
   .page-header .controls .controls-left { align-self: stretch; justify-content: space-between; }
-  .grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .shop-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .filters-card { 
     padding: 16px;
     position: fixed;
@@ -130,5 +130,5 @@
   .container { padding: 16px 12px; }
   .page-header { margin: 16px auto 12px; padding: 0 12px; }
   .page-header h1 { font-size: 24px; }
-  .grid { grid-template-columns: 1fr; gap: 12px; }
+  .shop-grid { grid-template-columns: 1fr; gap: 12px; }
 }
