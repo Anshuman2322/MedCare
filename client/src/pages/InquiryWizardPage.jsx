@@ -5,6 +5,7 @@ import StepPreferences from '../components/inquiry/StepPreferences.jsx';
 import StepContact from '../components/inquiry/StepContact.jsx';
 import StepSuccess from '../components/inquiry/StepSuccess.jsx';
 import { createInquiry } from '../services/api';
+import { fetchMedicine } from '../api/medicines';
 
 const contactDefaults = {
   brandPreference: '',
@@ -42,9 +43,7 @@ export default function InquiryWizardPage() {
       try {
         setLoading(true);
         setError('');
-        const res = await fetch(`http://localhost:5000/api/medicines/${slug}`);
-        if (!res.ok) throw new Error('Failed to load medicine');
-        const med = await res.json();
+        const med = await fetchMedicine(slug);
         if (!active) return;
         setMedicine(med);
         const derived = deriveVariants(med);

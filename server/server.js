@@ -3,8 +3,10 @@ import dns from 'node:dns';
 import app from './app.js';
 import { connectDB } from './config/db.js';
 import { logger } from './config/logger.js';
+import { validateEnv } from './config/validateEnv.js';
 
 dotenv.config();
+validateEnv();
 
 // Workaround for environments where the default resolver can't reach Atlas's SRV
 // records; opt out with DNS_SERVERS=system if your host's resolver is fine.

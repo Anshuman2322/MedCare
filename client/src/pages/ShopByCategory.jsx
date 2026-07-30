@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import MedicineCard from '../components/MedicineCard';
 import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
 import { parseMedicinePrice } from '../utils/medicineDisplay.js';
+import { fetchMedicines } from '../api/medicines';
 import './ShopByCategory.css';
 
 export default function ShopByCategory() {
@@ -28,11 +29,8 @@ export default function ShopByCategory() {
     const load = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch('http://localhost:5000/api/medicines', { cache: 'no-store' });
-        if (!res.ok) throw new Error('Failed to load');
-        const meds = await res.json();
+        const meds = await fetchMedicines();
         if (!active) return;
-        console.log('Fetched medicines:', meds);
         setMedicines(Array.isArray(meds) ? meds : []);
         setError('');
       } catch (err) {

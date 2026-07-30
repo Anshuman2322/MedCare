@@ -5,6 +5,7 @@ import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 import { useCurrency } from '../store/useStore.jsx';
 import { formatPrice } from '../utils/currency';
 import InquiryModal from '../components/InquiryModal.jsx';
+import { fetchMedicine, fetchMedicines } from '../api/medicines';
 
 export default function MedicineDetails() {
   const { slug } = useParams();
@@ -151,17 +152,16 @@ export default function MedicineDetails() {
       try {
         setLoading(true);
         setError('');
-        const res = await fetch(`http://localhost:5000/api/medicines/${slug}`, { cache: 'no-store' });
-        if (!res.ok) throw new Error('Failed to load medicine');
-        const med = await res.json();
+        const med = await fetchMedicine(slug);
         if (!active) return;
         setMedicine(med);
         setImgIndex(0);
 
-        const relRes = await fetch(`http://localhost:5000/api/medicines?category=${encodeURIComponent(med?.category || '')}`, { cache: 'no-store' });
-        if (relRes.ok) {
-          const rel = await relRes.json();
+        try {
+          const rel = await fetchMedicines({ category: med?.category || '' });
           if (active) setRelated(Array.isArray(rel) ? rel.filter(r => (r.slug || r._id) !== (med.slug || med._id)) : []);
+        } catch (relErr) {
+          console.error('Failed to load related medicines', relErr);
         }
       } catch (err) {
         console.error('Failed to load medicine', err);
