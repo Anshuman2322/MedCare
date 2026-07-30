@@ -496,7 +496,7 @@ function Pill({ active, label, onClick }) {
       type="button"
       onClick={onClick}
       className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors border ${
-        active ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+        active ? 'bg-emerald-700 text-white border-emerald-700 shadow-sm' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
       }`}
     >
       {label}

@@ -18,12 +18,23 @@
 .filter-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: #374151; cursor: pointer; }
 .filter-row { position: relative; padding-left: 26px; }
 .filter-row input { position: absolute; left: 0; opacity: 0; width: 0; height: 0; }
-.filter-row::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; border-radius: 50%; background: transparent; border: 2px solid #10b981; }
-.filter-row input:checked::before { background: #10b981; }
-.filter-row::after { content: ''; position: absolute; left: 4px; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; border-radius: 50%; background: #fff; opacity: 0; transition: opacity 0.2s; }
-.filter-row input:checked + span::before { background: #10b981; }
-.filter-row:has(input:checked)::before { background: #10b981; }
-.filter-row:has(input:checked)::after { opacity: 1; }
+/* Checkbox indicator: rounded square, distinct from the old single-select radio look */
+.filter-row-checkbox::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; border-radius: 4px; background: transparent; border: 2px solid #10b981; }
+.filter-row-checkbox::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 45%;
+  width: 6px;
+  height: 3px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: translateY(-50%) rotate(-45deg);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.filter-row-checkbox:has(input:checked)::before { background: #10b981; }
+.filter-row-checkbox:has(input:checked)::after { opacity: 1; }
 .price-range { width: 100%; }
 .price-legend { display:flex; justify-content:space-between; font-size: 13px; color: #6b7280; margin-top: 6px; }
 .clear-btn { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e6edf2; background: #fff; margin-top: 8px; cursor: pointer; }

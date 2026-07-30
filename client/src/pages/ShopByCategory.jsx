@@ -9,10 +9,10 @@ export default function ShopByCategory() {
   const [medicines, setMedicines] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  // Filter states
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedManufacturer, setSelectedManufacturer] = useState('');
-  const [selectedForm, setSelectedForm] = useState('');
+  // Filter states — multi-select (checkbox) arrays
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedManufacturers, setSelectedManufacturers] = useState([]);
+  const [selectedForms, setSelectedForms] = useState([]);
   // Determine max price dynamically so newly added higher-priced items aren't hidden by default
   const maxPriceInData = useMemo(() => {
     const values = medicines.map((m) => parseMedicinePrice(m));
@@ -95,17 +95,17 @@ export default function ShopByCategory() {
 
   const filtered = useMemo(() => {
     let list = medicines.filter(m => !m.deletedAt).slice();
-    const selectedCategoryNorm = normalizeString(selectedCategory);
-    if (selectedCategory) list = list.filter(m => {
+    const selectedCategoriesNorm = selectedCategories.map(normalizeString);
+    if (selectedCategoriesNorm.length) list = list.filter(m => {
       const cats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];
       const normalizedCats = cats
         .filter(Boolean)
         .map(normalizeCategory)
         .map(normalizeString);
-      return normalizedCats.includes(selectedCategoryNorm);
+      return normalizedCats.some(c => selectedCategoriesNorm.includes(c));
     });
-    if (selectedManufacturer) list = list.filter(m => m.manufacturer === selectedManufacturer);
-    if (selectedForm) list = list.filter(m => m.form === selectedForm);
+    if (selectedManufacturers.length) list = list.filter(m => selectedManufacturers.includes(m.manufacturer));
+    if (selectedForms.length) list = list.filter(m => selectedForms.includes(m.form));
     list = list.filter((m) => parseMedicinePrice(m) <= Number(maxPrice));
     if (search) {
       const s = search.toLowerCase();
@@ -115,15 +115,19 @@ export default function ShopByCategory() {
     if (sort === 'Price: High to Low') list.sort((a, b) => parseMedicinePrice(b) - parseMedicinePrice(a));
     if (sort === 'Name: A-Z') list.sort((a, b) => a.name.localeCompare(b.name));
     return list;
-  }, [medicines, selectedCategory, selectedManufacturer, selectedForm, maxPrice, search, sort]);
+  }, [medicines, selectedCategories, selectedManufacturers, selectedForms, maxPrice, search, sort]);
 
-  // If NO filters/search applied, we want to show ALL products (already true) but animate them.
-  // const isPristine = !selectedCategory && !selectedManufacturer && !selectedForm && !search && sort === 'Featured' && Number(maxPrice) === 50;
+  const toggleInArray = (setter) => (value) => {
+    setter((prev) => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
+  };
+  const toggleCategory = toggleInArray(setSelectedCategories);
+  const toggleManufacturer = toggleInArray(setSelectedManufacturers);
+  const toggleForm = toggleInArray(setSelectedForms);
 
   const clearFilters = () => {
-    setSelectedCategory('');
-    setSelectedManufacturer('');
-    setSelectedForm('');
+    setSelectedCategories([]);
+    setSelectedManufacturers([]);
+    setSelectedForms([]);
     setMaxPrice(maxPriceInData);
     setSearch('');
     setSort('Featured');
@@ -249,11 +253,8 @@ export default function ShopByCategory() {
               <div className="filter-section">
                 <div className="filter-title">Category</div>
                 {categories.map(cat => (
-                  <label className="filter-row" key={String(cat)}>
-                    <input type="radio" name="category" checked={selectedCategory === cat} onChange={() => {
-                      setSelectedCategory(cat);
-                      if (window.innerWidth <= 768) setTimeout(() => setShowFilters(false), 300);
-                    }} />
+                  <label className="filter-row filter-row-checkbox" key={String(cat)}>
+                    <input type="checkbox" checked={selectedCategories.includes(cat)} onChange={() => toggleCategory(cat)} />
                     <span>{cat}</span>
                   </label>
                 ))}
@@ -262,11 +263,8 @@ export default function ShopByCategory() {
               <div className="filter-section">
                 <div className="filter-title">Manufacturer</div>
                 {manufacturers.map(m => (
-                  <label className="filter-row" key={m}>
-                    <input type="radio" name="manufacturer" checked={selectedManufacturer === m} onChange={() => {
-                      setSelectedManufacturer(m);
-                      if (window.innerWidth <= 768) setTimeout(() => setShowFilters(false), 300);
-                    }} />
+                  <label className="filter-row filter-row-checkbox" key={m}>
+                    <input type="checkbox" checked={selectedManufacturers.includes(m)} onChange={() => toggleManufacturer(m)} />
                     <span>{m}</span>
                   </label>
                 ))}
@@ -275,11 +273,8 @@ export default function ShopByCategory() {
               <div className="filter-section">
                 <div className="filter-title">Form</div>
                 {forms.map(f => (
-                  <label className="filter-row" key={f}>
-                    <input type="radio" name="form" checked={selectedForm === f} onChange={() => {
-                      setSelectedForm(f);
-                      if (window.innerWidth <= 768) setTimeout(() => setShowFilters(false), 300);
-                    }} />
+                  <label className="filter-row filter-row-checkbox" key={f}>
+                    <input type="checkbox" checked={selectedForms.includes(f)} onChange={() => toggleForm(f)} />
                     <span>{f}</span>
                   </label>
                 ))}

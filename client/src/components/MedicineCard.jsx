@@ -14,10 +14,13 @@ export default function MedicineCard({ product }) {
     <div className={`card ${loaded ? 'is-loaded' : 'is-loading'}`}>
       <div className="card-image">
         {!loaded && <div className="img-skeleton" aria-hidden />}
-        <img 
-          src={resolveMedicineImage(product)} 
-          alt={product.name} 
-          loading="lazy" 
+        {product.requiresPrescription && (
+          <span className="rx-badge" title="Prescription required">Rx Only</span>
+        )}
+        <img
+          src={resolveMedicineImage(product)}
+          alt={product.name}
+          loading="lazy"
           onError={() => setLoaded(true)}
           onLoad={() => setLoaded(true)}
         />
