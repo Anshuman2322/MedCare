@@ -20,5 +20,10 @@ export default defineConfig({
       '/api': 'http://localhost:5000'
     }
   },
-  plugins: [react()]
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/tests/setup.js'],
+    globals: true,
+  },
 });
