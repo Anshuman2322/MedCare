@@ -3,12 +3,31 @@ import Medicine from '../models/Medicine.js';
 import twilio from 'twilio';
 import { sendEmail } from '../utils/sendEmail.js';
 import { logger } from '../config/logger.js';
+import { escapeRegex } from '../utils/sanitize.js';
 
 const whatsappTo = process.env.ADMIN_WHATSAPP_TO;
 
+// A real Twilio Account SID always starts with "AC" followed by 32 hex chars — this
+// catches the placeholder value ("ACxxxxxxxx") shipped in .env.example / a fresh
+// .env before anyone's set up Twilio, so we don't try to authenticate with it and
+// fail silently on every inquiry.
+const looksLikeRealSid = /^AC[a-f0-9]{32}$/i.test(process.env.TWILIO_ACCOUNT_SID || '');
+const whatsappConfigured = Boolean(
+  looksLikeRealSid && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_WHATSAPP_FROM && whatsappTo
+);
+
 let twilioClient = null;
-if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+if (process.env.WHATSAPP_ALERTS_ENABLED === 'false') {
+  logger.info('[WhatsApp] Alerts disabled via WHATSAPP_ALERTS_ENABLED=false.');
+} else if (whatsappConfigured) {
   twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+  logger.info('[WhatsApp] Alerts enabled — inquiries will be forwarded via Twilio.');
+} else if (process.env.TWILIO_ACCOUNT_SID || process.env.TWILIO_AUTH_TOKEN) {
+  logger.warn(
+    '[WhatsApp] Twilio env vars are present but incomplete or look like placeholders — alerts disabled. Set TWILIO_ACCOUNT_SID (real "AC..." SID), TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM, and ADMIN_WHATSAPP_TO to enable.'
+  );
+} else {
+  logger.info('[WhatsApp] Twilio not configured — alerts disabled.');
 }
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || '');
@@ -127,24 +146,29 @@ async function sendEmailNotification({ inquiry }) {
 }
 
 async function sendWhatsappNotification({ inquiry }) {
-  if (!twilioClient || !process.env.TWILIO_WHATSAPP_FROM || !whatsappTo) return;
-  const { customerName, medicineName, quantity, phone, selectedVariant, referenceId, city, state } = inquiry;
-  const variantLine = selectedVariant?.strength || selectedVariant?.form || selectedVariant?.packSize
-    ? `Variant: ${buildVariantLabel(selectedVariant)}`
-    : 'Variant: n/a';
-  const priceLine = Number.isFinite(selectedVariant?.price) ? `Price: ${selectedVariant.price}` : 'Price: n/a';
-  const body = `New inquiry ${referenceId || ''} from ${customerName}
+  if (!twilioClient) return;
+
+  try {
+    const { customerName, medicineName, quantity, phone, selectedVariant, referenceId, city, state } = inquiry;
+    const variantLine = selectedVariant?.strength || selectedVariant?.form || selectedVariant?.packSize
+      ? `Variant: ${buildVariantLabel(selectedVariant)}`
+      : 'Variant: n/a';
+    const priceLine = Number.isFinite(selectedVariant?.price) ? `Price: ${selectedVariant.price}` : 'Price: n/a';
+    const body = `New inquiry ${referenceId || ''} from ${customerName}
 Medicine: ${medicineName || 'N/A'}
 ${variantLine}
 ${priceLine}
 Qty: ${quantity || 1}
  Phone: ${phone}
  City/State: ${[city, state].filter(Boolean).join(', ')}`;
-  await twilioClient.messages.create({
-    from: `whatsapp:${process.env.TWILIO_WHATSAPP_FROM}`,
-    to: `whatsapp:${whatsappTo}`,
-    body,
-  });
+    await twilioClient.messages.create({
+      from: `whatsapp:${process.env.TWILIO_WHATSAPP_FROM}`,
+      to: `whatsapp:${whatsappTo}`,
+      body,
+    });
+  } catch (error) {
+    logger.error({ err: error }, '[WhatsApp] Inquiry notification failed');
+  }
 }
 
 function normalizeQuantity(value) {
@@ -220,7 +244,10 @@ function buildInquiryEmailHtml(inquiry) {
 async function generateReferenceId() {
   const year = new Date().getFullYear();
   const prefix = `CN-${year}-`;
-  const count = await Inquiry.countDocuments({ referenceId: { $regex: `^${prefix}\d{4}$` } });
+  // Was `\d{4}` inside a plain template string — the backslash gets silently
+  // dropped, so the regex matched literal "d{4}" and never matched a real
+  // referenceId, meaning count was always 0 and every inquiry got "...-0001".
+  const count = await Inquiry.countDocuments({ referenceId: new RegExp(`^${escapeRegex(prefix)}\\d{4}$`) });
   const nextSeq = count + 1;
   const padded = String(nextSeq).padStart(4, '0');
   return `${prefix}${padded}`;
