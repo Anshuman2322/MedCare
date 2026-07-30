@@ -12,8 +12,17 @@ const FeaturedCard = ({ product, index }) => {
       index={index}
       className="group h-full flex flex-col rounded-2xl border border-emerald-100 bg-white ring-1 ring-emerald-100/60 shadow-sm overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:ring-emerald-300/70"
     >
-      <div className="relative w-full h-56 md:h-60 lg:h-64">
-        <img src={product.image} alt={product.title} className="absolute inset-0 w-full h-full object-cover" />
+      <div className="relative w-full h-56 md:h-60 lg:h-64 bg-gray-50">
+        {product.requiresPrescription && (
+          <span className="absolute top-2.5 left-2.5 z-10 rounded-full bg-red-50 border border-red-200 text-red-700 text-[11px] font-bold px-2 py-0.5">
+            Rx Only
+          </span>
+        )}
+        <img
+          src={product.image}
+          alt={product.title}
+          className="absolute inset-0 w-full h-full object-contain p-4"
+        />
       </div>
       <div className="p-4 md:p-5 flex-1 flex flex-col">
         <p className="text-xs md:text-sm text-gray-500">{product.category}</p>
@@ -50,6 +59,7 @@ const FeaturedMedicines = () => {
             title: m.name,
             price: Number(m.price) || 0,
             image: m.image || (Array.isArray(m.images) && m.images[0]) || '',
+            requiresPrescription: Boolean(m.requiresPrescription),
           }));
         setProducts(top);
       } catch (err) {
