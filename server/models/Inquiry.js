@@ -27,10 +27,13 @@ const inquirySchema = new mongoose.Schema(
       sku: { type: String, default: '', trim: true },
     },
     referenceId: { type: String, unique: true, index: true },
-    status: { type: String, enum: ['new', 'contacted', 'closed'], default: 'new' },
-    createdAt: { type: Date, default: Date.now },
+    status: { type: String, enum: ['new', 'contacted', 'closed'], default: 'new', index: true },
+    createdAt: { type: Date, default: Date.now, index: true },
   },
   { timestamps: { createdAt: false, updatedAt: true } }
 );
+
+// Admin inquiry list filters by status and always sorts by createdAt.
+inquirySchema.index({ status: 1, createdAt: -1 });
 
 export default mongoose.model('Inquiry', inquirySchema);

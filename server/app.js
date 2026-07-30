@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
 import pinoHttp from 'pino-http';
 import mongoose from 'mongoose';
 import path from 'path';
@@ -35,6 +36,7 @@ const envOrigins = (process.env.CORS_ORIGINS || '')
 const allowedOrigins = [...new Set([...envOrigins, ...defaultOrigins])];
 
 app.set('trust proxy', 1);
+app.use(compression());
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(
   cors({
@@ -88,8 +90,24 @@ app.get('/api/health', (_req, res) => {
 
 if (process.env.NODE_ENV === 'production') {
   const clientPath = path.resolve(__dirname, '../client/dist');
-  app.use(express.static(clientPath));
-  app.get('*', (_req, res) => res.sendFile(path.join(clientPath, 'index.html')));
+  app.use(
+    express.static(clientPath, {
+      // Vite fingerprints built asset filenames by content hash, so they're safe
+      // to cache "forever" — a new deploy produces new filenames. index.html
+      // (served below, uncached) is what points browsers at the new hashes.
+      setHeaders(res, filePath) {
+        if (filePath.endsWith('index.html')) {
+          res.setHeader('Cache-Control', 'no-cache');
+        } else {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+      },
+    })
+  );
+  app.get('*', (_req, res) => {
+    res.setHeader('Cache-Control', 'no-cache');
+    res.sendFile(path.join(clientPath, 'index.html'));
+  });
 }
 
 app.use(notFound);

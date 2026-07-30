@@ -18,7 +18,7 @@ const medicineSchema = new mongoose.Schema(
     slug: { type: String, required: true, unique: true, index: true, trim: true },
     name: { type: String, required: true, trim: true },
     brand: { type: String, default: '' },
-    category: { type: String, default: '', trim: true },
+    category: { type: String, default: '', trim: true, index: true },
     description: { type: String, default: '' },
     manufacturer: { type: String, default: '' },
     images: [{ type: String }],
@@ -67,5 +67,10 @@ medicineSchema.pre('validate', function ensureVariant(next) {
   }
   next();
 });
+
+// getAllMedicines defaults to sorting by createdAt, and supports sorting by
+// variants.price via ?sort=price_asc|price_desc.
+medicineSchema.index({ createdAt: -1 });
+medicineSchema.index({ 'variants.price': 1 });
 
 export default mongoose.model('Medicine', medicineSchema);
