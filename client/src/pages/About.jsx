@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import aboutTeam from '../assets/about-team.jpg';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
+import { fetchMedicines } from '../api/medicines';
 
 const HeaderHero = () => {
   const [ref, isVisible] = useScrollAnimation(0.1);
@@ -93,7 +94,7 @@ const MissionSection = () => {
                 <div className="inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex-shrink-0">
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
                 </div>
-                <div className="text-sm font-medium text-gray-900">24/7 Support</div>
+                <div className="text-sm font-medium text-gray-900">Dedicated Support</div>
               </div>
             </div>
           </div>
@@ -176,70 +177,6 @@ const ValuesSection = () => {
   );
 };
 
-const BusinessDetailsSection = () => {
-  const [sectionRef, sectionVisible] = useScrollAnimation(0.1);
-
-  const details = [
-    { label: 'Nature of Business', value: 'Service Provider and Others' },
-    { label: 'Legal Status of Firm', value: 'Proprietorship' },
-    { label: 'Annual Turnover', value: '0 - 40 L' },
-    { label: 'GST Registration Date', value: '20-12-2024' },
-    { label: 'Total Number of Employees', value: 'Upto 10 People' },
-    { label: 'Import Export Code (IEC)', value: 'GHJPP2766N' },
-    { label: 'GST Number', value: '09GHJPP2766N1ZD', highlight: true }
-  ];
-
-  return (
-    <section className="py-12 sm:py-16 bg-sky-50/60">
-      <div 
-        ref={sectionRef}
-        className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 transition-all duration-700 ${
-          sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-        }`}
-      >
-        <div className="text-center mb-6">
-          <h2 className="font-extrabold text-2xl sm:text-3xl text-gray-900 tracking-tight">Business Details</h2>
-          <p className="text-gray-600 text-sm sm:text-base">Verified registration and company profile information</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {details.map((d) => (
-            <div
-              key={d.label}
-              className={`bg-white rounded-xl border p-4 shadow-sm flex items-start gap-3 ${
-                d.highlight ? 'ring-2 ring-emerald-400 bg-emerald-50/40' : 'border-gray-200'
-              }`}
-            >
-              <div className="text-sm text-gray-500 flex-1">
-                <div className="mb-1 flex items-center gap-2">
-                  {d.label}
-                  {d.highlight && (
-                    <span className="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 text-[11px] font-semibold px-2 py-0.5 ring-1 ring-emerald-200">
-                      Important
-                    </span>
-                  )}
-                </div>
-                <div className={`${d.highlight ? 'text-emerald-700 font-semibold font-mono tracking-wide' : 'text-gray-900 font-medium'}`}>
-                  {d.value}
-                </div>
-              </div>
-              {d.highlight && (
-                <button
-                  type="button"
-                  className="h-8 px-2 text-xs rounded-md border border-emerald-300 text-emerald-700 hover:bg-emerald-50"
-                  onClick={() => navigator.clipboard?.writeText(d.value)}
-                  title="Copy GST Number"
-                >
-                  Copy
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
 const TrustSection = () => {
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
   const [card1Ref, card1Visible] = useScrollAnimation(0.1, 100);
@@ -250,91 +187,59 @@ const TrustSection = () => {
   return (
     <section className="py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        {/* Premium IndiaMART Certification Section - Moved to Top */}
+        {/* US-relevant trust badges: secure checkout + privacy, not fabricated third-party seals */}
         <div className="relative bg-linear-to-br from-emerald-50 via-emerald-100 to-emerald-200 rounded-3xl p-8 sm:p-12 border-2 border-emerald-300 shadow-2xl mb-16">
-          {/* Background Pattern */}
           <div className="absolute inset-0 bg-white/30 rounded-3xl backdrop-blur-sm"></div>
-          
-          {/* Content */}
+
           <div className="relative z-10">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center px-4 py-2 bg-linear-to-r from-emerald-600 to-emerald-700 text-white rounded-full text-sm font-semibold mb-4 shadow-lg">
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-                </svg>
-                IndiaMART Certified Partner
-              </div>
               <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-                Official IndiaMART Certifications
+                Shop With Confidence
               </h3>
               <p className="text-gray-700 text-lg max-w-2xl mx-auto">
-                Verified business credentials and trusted supplier status on India's largest B2B marketplace
+                Your information and orders are protected end-to-end
               </p>
             </div>
 
             <div className="w-full flex justify-center">
-              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center max-w-lg mx-auto">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center max-w-2xl mx-auto flex-wrap">
                 <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 sm:p-5 shadow-lg border border-white/50 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-64">
-                  <div className="mb-4">
-                    <img 
-                      src="/indiamart_two.png" 
-                      alt="IndiaMART Trust Seal Verified" 
-                      className="h-12 sm:h-16 w-auto mx-auto object-contain hover:scale-110 transition-transform duration-300"
-                      style={{ imageRendering: 'crisp-edges' }}
-                    />
-                  </div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">Trust Seal Verified</h4>
-                  <p className="text-gray-700 text-sm leading-relaxed">Verified and trusted supplier with authenticated business credentials on IndiaMART marketplace</p>
-                  <div className="mt-3 inline-flex items-center text-emerald-600 font-semibold text-sm">
-                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                  <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="4" y="10" width="16" height="10" rx="2"/>
+                      <path d="M8 10V7a4 4 0 018 0v3"/>
                     </svg>
-                    Verified ✓
                   </div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">SSL Secured Site</h4>
+                  <p className="text-gray-700 text-sm leading-relaxed">All traffic on our site is encrypted in transit to keep your information private</p>
                 </div>
 
                 <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 sm:p-5 shadow-lg border border-white/50 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-64">
-                  <div className="mb-4">
-                    <img 
-                      src="/indiamart_one.png" 
-                      alt="IndiaMART Verified Exporter" 
-                      className="h-12 sm:h-16 w-auto mx-auto object-contain hover:scale-110 transition-transform duration-300"
-                      style={{ imageRendering: 'crisp-edges' }}
-                    />
-                  </div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">Verified Exporter</h4>
-                  <p className="text-gray-700 text-sm leading-relaxed">Certified exporter with verified export capabilities and international business credentials</p>
-                  <div className="mt-3 inline-flex items-center text-emerald-600 font-semibold text-sm">
-                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                  <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 22s8-4 8-10V7l-8-5-8 5v5c0 6 8 10 8 10z"/>
                     </svg>
-                    Certified ✓
                   </div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Privacy Protected</h4>
+                  <p className="text-gray-700 text-sm leading-relaxed">We never sell your personal or health information to third parties</p>
                 </div>
-              </div>
-            </div>
 
-            {/* Trust Indicators */}
-            <div className="mt-8 text-center">
-              <div className="inline-flex items-center space-x-6 text-sm text-gray-600 bg-white/60 backdrop-blur-sm rounded-full px-6 py-3">
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                  Business Verified
-                </div>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-emerald-600 rounded-full mr-2"></div>
-                  Export Ready
-                </div>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-emerald-700 rounded-full mr-2"></div>
-                  Trusted Partner
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 sm:p-5 shadow-lg border border-white/50 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-64">
+                  <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 8v4l3 3"/>
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">US-Based Support</h4>
+                  <p className="text-gray-700 text-sm leading-relaxed">Reach a real support team during posted business hours, no overseas call centers</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div 
+        <div
           ref={headerRef}
           className={`text-center mb-16 transition-all duration-1000 ease-out ${
             headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -416,7 +321,7 @@ const CTASection = () => {
             <p className="mt-2 text-gray-600">Questions about products or orders? Our team is ready to assist.</p>
           </div>
           <div className="flex gap-3">
-            <a href="#" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow hover:bg-emerald-700 transition-colors">Contact Support</a>
+            <a href="#" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-700 text-white text-sm font-medium shadow hover:bg-emerald-800 transition-colors">Contact Support</a>
             <a href="/shop" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-emerald-200 bg-white text-emerald-700 text-sm font-medium hover:bg-emerald-50 hover:border-emerald-400 transition-colors">Shop Now</a>
           </div>
         </div>
@@ -427,6 +332,8 @@ const CTASection = () => {
 
 const StatsSection = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [productCount, setProductCount] = useState(null);
+  const [brandCount, setBrandCount] = useState(null);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -446,19 +353,37 @@ const StatsSection = () => {
     return () => observer.disconnect();
   }, [isVisible]);
 
+  useEffect(() => {
+    let active = true;
+    fetchMedicines()
+      .then((meds) => {
+        if (!active || !Array.isArray(meds)) return;
+        setProductCount(meds.length);
+        const brands = new Set(meds.map((m) => m.manufacturer).filter(Boolean));
+        setBrandCount(brands.size);
+      })
+      .catch(() => {
+        if (active) {
+          setProductCount(0);
+          setBrandCount(0);
+        }
+      });
+    return () => { active = false; };
+  }, []);
+
   return (
     <section className="bg-sky-50/60 overflow-hidden">
-      <div 
+      <div
         ref={ref}
         className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-16 transition-all duration-1000 ease-out ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}
       >
         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 lg:gap-20">
-          <Stat value="500K+" label="Happy Customers" />
-          <Stat value="2000+" label="Products Available" />
-          <Stat value="50+" label="Partner Brands" />
-          <Stat value="24/7" label="Customer Support" />
+          {/* Real counts pulled from the live catalog, not fixed marketing figures */}
+          {productCount !== null && <Stat value={`${productCount}`} label="Products Available" />}
+          {brandCount !== null && <Stat value={`${brandCount}`} label="Partner Brands" />}
+          <Stat value="2010" label="Serving Since" />
         </div>
       </div>
     </section>
@@ -556,9 +481,6 @@ export default function About() {
       {/* Values - themed cards */}
       <ValuesSection />
 
-      {/* Business details */}
-      <BusinessDetailsSection />
-
       {/* Why trust section */}
       <TrustSection />
 
@@ -571,7 +493,7 @@ export default function About() {
               <p className="mt-2 text-gray-600">Questions about products or orders? Our team is ready to assist.</p>
             </div>
             <div className="flex gap-3">
-              <a href="#" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow hover:bg-emerald-700 transition-colors">Contact Support</a>
+              <a href="#" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-700 text-white text-sm font-medium shadow hover:bg-emerald-800 transition-colors">Contact Support</a>
               <a href="/shop" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-emerald-200 bg-white text-emerald-700 text-sm font-medium hover:bg-emerald-50 hover:border-emerald-400 transition-colors">Shop Now</a>
             </div>
           </div>

@@ -1,19 +1,31 @@
 import React, { useState } from "react";
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 
+const FAQ_ITEMS = [
+  {
+    question: 'How long does shipping take?',
+    answer: 'Standard shipping typically takes 3-5 business days. Express shipping is available for 1-2 day delivery.',
+  },
+  {
+    question: 'Do you ship internationally?',
+    answer: 'Currently, we only ship within the United States. International shipping is coming soon.',
+  },
+  {
+    question: 'Are prescriptions required?',
+    answer: 'Some medications require a valid prescription. Submit an inquiry for the product you need and our team will follow up with you to verify your prescription before fulfilling the order.',
+  },
+];
+
 export default function Contact() {
   const [, setFormHover] = useState(false);
-  const [, setFaqHover] = useState([false, false, false]);
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
   // Animation refs
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
   const [formRef, formVisible] = useScrollAnimation(0.1, 200);
   const [contactInfoRef, contactInfoVisible] = useScrollAnimation(0.1, 300);
   const [faqHeaderRef, faqHeaderVisible] = useScrollAnimation(0.1, 100);
-  const [faq1Ref, faq1Visible] = useScrollAnimation(0.1, 200);
-  const [faq2Ref, faq2Visible] = useScrollAnimation(0.1, 300);
-  const [faq3Ref, faq3Visible] = useScrollAnimation(0.1, 400);
-
+  const [faqListRef, faqListVisible] = useScrollAnimation(0.1, 200);
 
 
   return (
@@ -48,32 +60,43 @@ export default function Contact() {
               <form>
                 <h2 className="font-bold text-xl sm:text-2xl text-gray-900 mb-6">Send us a message</h2>
                 <div className="mb-4 sm:mb-5">
-                  <label className="block font-medium text-gray-900 mb-2">Name</label>
-                  <input 
-                    type="text" 
-                    placeholder="Your name" 
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors" 
+                  <label htmlFor="contact-name" className="block font-medium text-gray-900 mb-2">Name</label>
+                  <input
+                    id="contact-name"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    required
+                    placeholder="Your name"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   />
                 </div>
                 <div className="mb-4 sm:mb-5">
-                  <label className="block font-medium text-gray-900 mb-2">Email</label>
-                  <input 
-                    type="email" 
-                    placeholder="your@email.com" 
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors" 
+                  <label htmlFor="contact-email" className="block font-medium text-gray-900 mb-2">Email</label>
+                  <input
+                    id="contact-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    placeholder="your@email.com"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   />
                 </div>
                 <div className="mb-6">
-                  <label className="block font-medium text-gray-900 mb-2">Message</label>
-                  <textarea 
-                    placeholder="How can we help you?" 
-                    rows={4} 
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base resize-vertical focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors" 
+                  <label htmlFor="contact-message" className="block font-medium text-gray-900 mb-2">Message</label>
+                  <textarea
+                    id="contact-message"
+                    name="message"
+                    required
+                    placeholder="How can we help you?"
+                    rows={4}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base resize-vertical focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   />
                 </div>
                 <button 
                   type="submit" 
-                  className="w-full bg-emerald-500 text-white font-semibold text-sm sm:text-base rounded-lg py-3 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors"
+                  className="w-full bg-emerald-700 text-white font-semibold text-sm sm:text-base rounded-lg py-3 hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors"
                 >
                   Send Message
                 </button>
@@ -116,11 +139,11 @@ export default function Contact() {
                 <div>
                   <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Phone</div>
                   <div className="text-gray-700 text-xs sm:text-sm">
-                    <a href="tel:07949282406" className="hover:text-emerald-600 transition-colors">07949282406</a>
+                    <a href="tel:1-800-633-2273" className="hover:text-emerald-600 transition-colors">1-800-MED-CARE (1-800-633-2273)</a>
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3 sm:gap-4">
                 <div className="bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -131,28 +154,14 @@ export default function Contact() {
                 <div>
                   <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Address</div>
                   <div className="text-gray-700 text-xs sm:text-sm">
-                    Cureera Solution<br />
-                    00, Belwani, OD 660343, Mathela,<br />
-                    Common Service Centre, Sakaldiha,<br />
-                    Chandauli-232109, Uttar Pradesh, India
-                  </div>
-                  <div className="mt-2">
-                    {/* Removed Get Directions feature as requested */}
+                    CureNeed Health Inc.<br />
+                    123 Market Street, Suite 400<br />
+                    Wilmington, DE 19801<br />
+                    United States
                   </div>
                 </div>
               </div>
-              <div className="flex items-start gap-3 sm:gap-4">
-                <div className="bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/><path d="M6 22v-2a6 6 0 0112 0v2"/>
-                  </svg>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Contact Person</div>
-                  <div className="text-gray-700 text-xs sm:text-sm">Kanhaiya Pal (CEO)</div>
-                </div>
-              </div>
-              
+
               <div className="flex items-start gap-3 sm:gap-4">
                 <div className="bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -193,58 +202,56 @@ export default function Contact() {
               Frequently Asked Questions
             </h2>
           </div>
-          <div className="space-y-4 sm:space-y-6">
-            <div
-              ref={faq1Ref}
-              className={`${animationClasses.fadeUp(faq1Visible)}`}
-            >
-              <div
-                onMouseEnter={() => setFaqHover(([, b, c]) => [true, b, c])}
-                onMouseLeave={() => setFaqHover(([, b, c]) => [false, b, c])}
-                className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-7 shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-sky-200"
-              >
-              <div className="font-semibold text-gray-900 mb-2 text-sm sm:text-base lg:text-lg">How long does shipping take?</div>
-              <div className="text-gray-600 text-xs sm:text-sm lg:text-base leading-relaxed">
-                Standard shipping typically takes 3-5 business days. Express shipping is available for 1-2 day delivery.
-              </div>
-            </div>
-            </div>
-            
-            <div
-              ref={faq2Ref}
-              className={`${animationClasses.fadeUp(faq2Visible)}`}
-            >
-              <div
-                onMouseEnter={() => setFaqHover(([a, , c]) => [a, true, c])}
-                onMouseLeave={() => setFaqHover(([a, , c]) => [a, false, c])}
-                className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-7 shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-sky-200"
-              >
-                <div className="font-semibold text-gray-900 mb-2 text-sm sm:text-base lg:text-lg">Do you ship internationally?</div>
-                <div className="text-gray-600 text-xs sm:text-sm lg:text-base leading-relaxed">
-                  Currently, we only ship within the United States. International shipping is coming soon.
+          <div
+            ref={faqListRef}
+            className={`space-y-3 sm:space-y-4 ${animationClasses.fadeUp(faqListVisible)}`}
+          >
+            {FAQ_ITEMS.map((item, index) => {
+              const isOpen = openFaqIndex === index;
+              const panelId = `faq-panel-${index}`;
+              const buttonId = `faq-button-${index}`;
+              return (
+                <div
+                  key={item.question}
+                  className="bg-white rounded-xl border border-gray-200 shadow-sm transition-all duration-200 hover:border-sky-200 overflow-hidden"
+                >
+                  <h3 className="m-0">
+                    <button
+                      id={buttonId}
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      onClick={() => setOpenFaqIndex(isOpen ? -1 : index)}
+                      className="w-full flex items-center justify-between gap-4 text-left p-4 sm:p-6 lg:p-7"
+                    >
+                      <span className="font-semibold text-gray-900 text-sm sm:text-base lg:text-lg">{item.question}</span>
+                      <svg
+                        className={`w-5 h-5 flex-shrink-0 text-emerald-600 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </h3>
+                  <div
+                    id={panelId}
+                    role="region"
+                    aria-labelledby={buttonId}
+                    className={`grid transition-all duration-200 ease-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="text-gray-600 text-xs sm:text-sm lg:text-base leading-relaxed px-4 sm:px-6 lg:px-7 pb-4 sm:pb-6 lg:pb-7">
+                        {item.answer}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            
-            <div
-              ref={faq3Ref}
-              className={`${animationClasses.fadeUp(faq3Visible)}`}
-            >
-              <div
-                onMouseEnter={() => setFaqHover(([a, b]) => [a, b, true])}
-                onMouseLeave={() => setFaqHover(([a, b]) => [a, b, false])}
-                className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-7 shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-sky-200"
-              >
-                <div className="font-semibold text-gray-900 mb-2 text-sm sm:text-base lg:text-lg">Are prescriptions required?</div>
-                <div className="text-gray-600 text-xs sm:text-sm lg:text-base leading-relaxed">
-                  Some medications require a valid prescription. You can upload your prescription during checkout or have your doctor send it directly to us.
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
       </div>
-      
+
       {/* Footer is rendered globally in App.jsx */}
     </div>
   );
