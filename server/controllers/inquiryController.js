@@ -2,6 +2,7 @@ import Inquiry from '../models/Inquiry.js';
 import Medicine from '../models/Medicine.js';
 import twilio from 'twilio';
 import { sendEmail } from '../utils/sendEmail.js';
+import { logger } from '../config/logger.js';
 
 const whatsappTo = process.env.ADMIN_WHATSAPP_TO;
 
@@ -121,7 +122,7 @@ async function sendEmailNotification({ inquiry }) {
       replyTo: inquiry.email,
     });
   } catch (error) {
-    console.error('[Email] Inquiry notification failed', error);
+    logger.error({ err: error }, '[Email] Inquiry notification failed');
   }
 }
 

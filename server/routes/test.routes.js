@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { Resend } from 'resend';
+import { logger } from '../config/logger.js';
 
 const router = Router();
 
@@ -7,7 +8,7 @@ router.get('/email', async (_req, res) => {
   const { RESEND_API_KEY, ADMIN_EMAIL } = process.env;
 
   if (!RESEND_API_KEY || !ADMIN_EMAIL) {
-    console.error('Missing RESEND_API_KEY or ADMIN_EMAIL');
+    logger.error('Missing RESEND_API_KEY or ADMIN_EMAIL');
     return res.status(500).json({ success: false, message: 'Email configuration missing' });
   }
 
@@ -40,13 +41,13 @@ router.get('/email', async (_req, res) => {
     });
 
     if (error) {
-      console.error('Resend error', error);
+      logger.error({ err: error }, 'Resend error');
       return res.status(500).json({ success: false, message: 'Failed to send test email' });
     }
 
     return res.json({ success: true });
   } catch (err) {
-    console.error('Failed to send test email', err);
+    logger.error({ err }, 'Failed to send test email');
     return res.status(500).json({ success: false, message: 'Failed to send test email' });
   }
 });

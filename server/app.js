@@ -1,10 +1,12 @@
 import express from 'express';
 import cors from 'cors';
-import morgan from 'morgan';
+import pinoHttp from 'pino-http';
+import mongoose from 'mongoose';
 import path from 'path';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
+import { logger } from './config/logger.js';
 import medicineRoutes from './routes/medicineRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import uploadRoute from './routes/uploadRoute.js';
@@ -46,7 +48,16 @@ app.use(
 );
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
-app.use(morgan('dev'));
+app.use(
+  pinoHttp({
+    logger,
+    autoLogging: {
+      ignore: (req) => req.url === '/api/health',
+    },
+    // Never let request/response logs echo credentials or tokens.
+    redact: ['req.headers.cookie', 'req.headers.authorization', 'req.body.password'],
+  })
+);
 
 app.use('/api', apiLimiter);
 app.use('/api/auth/login', authLimiter);
@@ -65,7 +76,15 @@ app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/inquiry', inquiryRoutes);
 app.use('/api/test', testRoutes);
 
-app.get('/api/health', (_req, res) => res.json({ ok: true }));
+app.get('/api/health', (_req, res) => {
+  const dbConnected = mongoose.connection.readyState === 1;
+  res.json({
+    ok: true,
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    db: dbConnected ? 'connected' : 'disconnected',
+  });
+});
 
 if (process.env.NODE_ENV === 'production') {
   const clientPath = path.resolve(__dirname, '../client/dist');

@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import { logger } from './logger.js';
 
 dotenv.config();
 
@@ -11,21 +12,21 @@ export async function connectDB({ required = true } = {}) {
     if (required) {
       throw error;
     }
-    console.warn(error.message);
+    logger.warn(error.message);
     return false;
   }
 
   try {
     await mongoose.connect(uri, { dbName: process.env.MONGO_DB || 'medcare' });
-    console.log('MongoDB connected');
+    logger.info('MongoDB connected');
     return true;
   } catch (error) {
-    console.error('MongoDB connection error', error);
+    logger.error({ err: error }, 'MongoDB connection error');
     if (required) {
       throw error;
     }
 
-    console.warn('Continuing without MongoDB. Set a reachable MONGO_URI to enable database-backed routes.');
+    logger.warn('Continuing without MongoDB. Set a reachable MONGO_URI to enable database-backed routes.');
     return false;
   }
 }

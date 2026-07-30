@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
+import { logger } from './logger.js';
 
 // Load environment variables from /server/.env
 dotenv.config();
@@ -7,10 +8,9 @@ dotenv.config();
 const { CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET } = process.env;
 
 if (!CLOUD_NAME || !CLOUD_API_KEY || !CLOUD_API_SECRET) {
-  console.warn('Cloudinary env vars are not set; uploads will fail.');
+  logger.warn('Cloudinary env vars are not set; uploads will fail.');
 } else {
-  // Debug log: which cloud_name are we configuring
-  console.log('[Cloudinary] Using cloud_name:', CLOUD_NAME);
+  logger.info({ cloudName: CLOUD_NAME }, '[Cloudinary] configured');
 }
 
 cloudinary.config({

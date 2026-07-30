@@ -3,6 +3,7 @@ import upload from "../middleware/upload.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
 import { protectAdmin } from "../middleware/auth.middleware.js";
+import { logger } from "../config/logger.js";
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ router.post("/", protectAdmin, upload.single("image"), async (req, res) => {
 
     res.json({ imageUrl: result.secure_url });
   } catch (err) {
-    console.error(err);
+    logger.error({ err }, "Upload failed");
     res.status(500).json({ message: "Upload failed" });
   }
 });
