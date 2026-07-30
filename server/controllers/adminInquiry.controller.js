@@ -1,6 +1,7 @@
 import { validationResult } from 'express-validator';
 import Inquiry from '../models/Inquiry.js';
 import mongoose from 'mongoose';
+import { escapeRegex } from '../utils/sanitize.js';
 
 const ALLOWED_STATUSES = ['new', 'contacted', 'closed'];
 
@@ -24,25 +25,27 @@ export async function listAdminInquiries(req, res, next) {
     }
 
     if (search) {
+      const pattern = escapeRegex(search);
       filter.$or = [
-        { email: { $regex: search, $options: 'i' } },
-        { customerName: { $regex: search, $options: 'i' } },
-        { firstName: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } },
+        { email: { $regex: pattern, $options: 'i' } },
+        { customerName: { $regex: pattern, $options: 'i' } },
+        { firstName: { $regex: pattern, $options: 'i' } },
+        { lastName: { $regex: pattern, $options: 'i' } },
       ];
     }
 
     if (name) {
+      const pattern = escapeRegex(name);
       filter.$or = filter.$or || [];
       filter.$or.push(
-        { customerName: { $regex: name, $options: 'i' } },
-        { firstName: { $regex: name, $options: 'i' } },
-        { lastName: { $regex: name, $options: 'i' } }
+        { customerName: { $regex: pattern, $options: 'i' } },
+        { firstName: { $regex: pattern, $options: 'i' } },
+        { lastName: { $regex: pattern, $options: 'i' } }
       );
     }
 
     if (email) {
-      filter.email = { $regex: email, $options: 'i' };
+      filter.email = { $regex: escapeRegex(email), $options: 'i' };
     }
 
     const total = await Inquiry.countDocuments(filter);

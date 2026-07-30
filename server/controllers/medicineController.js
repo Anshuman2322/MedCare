@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { readFile, writeFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { escapeRegex } from '../utils/sanitize.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -310,10 +311,10 @@ export async function getAllMedicines(req, res, next) {
 
     const filter = {};
     if (search) {
-      filter.name = { $regex: String(search), $options: 'i' };
+      filter.name = { $regex: escapeRegex(search), $options: 'i' };
     }
     if (category) {
-      filter.category = { $regex: `^${String(category)}$`, $options: 'i' };
+      filter.category = { $regex: `^${escapeRegex(category)}$`, $options: 'i' };
     }
 
     let sortOption = { createdAt: -1 };

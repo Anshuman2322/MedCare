@@ -7,9 +7,14 @@ dotenv.config();
 async function seedAdmin() {
   await connectDB();
 
-  const email = (process.env.ADMIN_EMAIL || 'admin@cureneed.com').toLowerCase();
-  const password = process.env.ADMIN_PASSWORD || 'Admin@123';
+  const email = process.env.ADMIN_EMAIL?.toLowerCase();
+  const password = process.env.ADMIN_PASSWORD;
   const role = 'super_admin';
+
+  if (!email || !password) {
+    console.error('Set ADMIN_EMAIL and ADMIN_PASSWORD in the environment before running this script.');
+    process.exit(1);
+  }
 
   const existing = await Admin.findOne({ email });
   if (existing) {

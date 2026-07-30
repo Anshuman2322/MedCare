@@ -2,10 +2,11 @@ import express from "express";
 import upload from "../middleware/upload.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+import { protectAdmin } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", protectAdmin, upload.single("image"), async (req, res) => {
   try {
     const streamUpload = () =>
       new Promise((resolve, reject) => {

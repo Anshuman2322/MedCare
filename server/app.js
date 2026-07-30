@@ -14,6 +14,7 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import inquiryRoutes from './routes/inquiryRoutes.js';
 import testRoutes from './routes/test.routes.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
+import { apiLimiter, authLimiter, inquiryLimiter } from './middleware/rateLimit.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,6 +47,13 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use(morgan('dev'));
+
+app.use('/api', apiLimiter);
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/bootstrap', authLimiter);
+app.use('/api/inquiries', inquiryLimiter);
+app.use('/api/inquiry', inquiryLimiter);
 
 app.use('/api/medicines', medicineRoutes);
 app.use('/api/orders', orderRoutes);

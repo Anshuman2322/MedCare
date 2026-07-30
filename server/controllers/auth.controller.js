@@ -47,8 +47,13 @@ function signToken(id, role) {
 }
 
 function getFallbackAdmin() {
-  const email = (process.env.ADMIN_EMAIL || 'admin@cureneed.com').toLowerCase();
-  const password = process.env.ADMIN_PASSWORD || 'Admin@123';
+  // No hardcoded default password: this login-when-database-is-unreachable path only
+  // works if the operator has explicitly set ADMIN_PASSWORD, so there's never a
+  // shipped/guessable credential sitting in the codebase.
+  const email = process.env.ADMIN_EMAIL?.toLowerCase();
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!email || !password) return null;
 
   return {
     id: email,
@@ -118,7 +123,7 @@ export async function loginAdmin(req, res, next) {
 
     if (mongoose.connection.readyState !== 1) {
       const fallbackAdmin = getFallbackAdmin();
-      if (email !== fallbackAdmin.email) {
+      if (!fallbackAdmin || email !== fallbackAdmin.email) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
@@ -145,10 +150,20 @@ export async function loginAdmin(req, res, next) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    if (admin.isLocked()) {
+      const retryAfterMinutes = Math.ceil((admin.lockUntil.getTime() - Date.now()) / 60000);
+      return res.status(423).json({
+        error: `Account locked after too many failed attempts. Try again in ${retryAfterMinutes} minute(s).`,
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
+      await admin.registerFailedLogin();
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+
+    await admin.registerSuccessfulLogin();
 
     const token = signToken(admin.id, admin.role);
     res.cookie('token', token, cookieOptions());
