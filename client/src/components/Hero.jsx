@@ -47,7 +47,7 @@ const Hero = () => {
               ref={buttonsRef}
               className={`mt-6 sm:mt-8 flex flex-row items-center gap-3 sm:gap-4 ${animationClasses.fadeUp(buttonsVisible)}`}
             >
-              <button className="inline-flex items-center justify-center px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 rounded-lg bg-emerald-700 text-white text-sm sm:text-base font-medium shadow-lg hover:bg-emerald-800 hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
+              <button className="inline-flex items-center justify-center px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 rounded-lg bg-emerald-600 text-white text-sm sm:text-base font-medium shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                 Shop Now
               </button>
               <button className="inline-flex items-center justify-center px-6 sm:px-7 md:px-8 py-3 sm:py-3.5 rounded-lg border border-emerald-200 bg-white/90 backdrop-blur-sm text-emerald-700 text-sm sm:text-base font-medium hover:bg-emerald-50 hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200">
