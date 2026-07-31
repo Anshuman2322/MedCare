@@ -5,6 +5,7 @@ import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 import { useCurrency } from '../store/useStore.jsx';
 import ProductCarousel from './product/ProductCarousel.jsx';
 import InquiryModal from './InquiryModal.jsx';
+import featuredMedicinesSample from '../data/featuredMedicinesSample.js';
 
 const FeaturedMedicines = () => {
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
@@ -51,6 +52,8 @@ const FeaturedMedicines = () => {
 
         {products.length > 0 ? (
           <ProductCarousel products={products} onQuickInquiry={setInquiryMedicine} />
+        ) : import.meta.env.DEV ? (
+          <ProductCarousel products={featuredMedicinesSample} onQuickInquiry={setInquiryMedicine} />
         ) : (
           <div className="text-gray-500 text-center py-12">Featured medicines will appear here once available.</div>
         )}
