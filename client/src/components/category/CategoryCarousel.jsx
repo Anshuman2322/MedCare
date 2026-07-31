@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
+import AutoScroll from 'embla-carousel-auto-scroll';
 import CategoryCard from './CategoryCard.jsx';
 
 const PrevIcon = () => (
@@ -15,37 +15,31 @@ const NextIcon = () => (
   </svg>
 );
 
-// Full-width, infinite-loop, auto-scrolling category carousel: mouse drag
-// and touch swipe are native Embla behavior, autoplay pauses on
-// hover/focus and resumes after interaction, and a continuous progress
-// indicator (not pagination dots) tracks scroll position above the cards.
+// Continuous marquee-style category carousel (Apple showcase / logo-wall
+// style), not a slide-by-slide autoplay: AutoScroll nudges the track a
+// fraction of a pixel every frame via Embla's GPU-accelerated translate3d
+// track transform, rather than snapping to discrete positions. `speed` is
+// tuned so one full pass of the (duplicated) category list takes roughly
+// 30s. The list is rendered twice back-to-back - with loop:true a single
+// copy is usually wide enough on its own, but doubling it guarantees
+// there's never a visible gap at the seam even on very wide viewports.
+// The second copy is aria-hidden so screen readers and Tab order only
+// see each category once.
 export default function CategoryCarousel({ categories }) {
-  const autoplay = useRef(
-    Autoplay({ delay: 3500, stopOnInteraction: false, stopOnMouseEnter: true, stopOnFocusIn: true })
+  const autoScroll = useRef(
+    // speed is px moved per animation frame (~60fps), so speed * 60 ≈ px/sec.
+    // Measured empirically: at speed 0.55 the track moved ~33px/s. With 17
+    // cards at 250px + 24px gaps (~4634px for one full pass), 2.6 lands
+    // one complete cycle at roughly 4634 / (2.6 * 60) ≈ 30s.
+    AutoScroll({ speed: 2.6, startDelay: 0, stopOnInteraction: false, stopOnMouseEnter: true, stopOnFocusIn: true })
   );
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, align: 'start', containScroll: false },
-    [autoplay.current]
+    { loop: true, align: 'start', containScroll: false, dragFree: true, skipSnaps: true },
+    [autoScroll.current]
   );
-  const [progress, setProgress] = useState(0);
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-
-  const updateProgress = useCallback((api) => {
-    setProgress(Math.min(1, Math.max(0, api.scrollProgress())));
-  }, []);
-
-  useEffect(() => {
-    if (!emblaApi) return undefined;
-    updateProgress(emblaApi);
-    emblaApi.on('scroll', updateProgress);
-    emblaApi.on('reInit', updateProgress);
-    return () => {
-      emblaApi.off('scroll', updateProgress);
-      emblaApi.off('reInit', updateProgress);
-    };
-  }, [emblaApi, updateProgress]);
 
   const onKeyDown = (event) => {
     if (event.key === 'ArrowLeft') {
@@ -57,15 +51,17 @@ export default function CategoryCarousel({ categories }) {
     }
   };
 
+  const loopedSlides = useMemo(
+    () => [
+      ...categories.map((c) => ({ ...c, key: `${c.name}-a`, hidden: false })),
+      ...categories.map((c) => ({ ...c, key: `${c.name}-b`, hidden: true })),
+    ],
+    [categories]
+  );
+
   return (
     <div>
-      <div className="mb-8 flex items-center gap-4">
-        <div className="relative h-[2px] flex-1 rounded-full bg-[#E5E7EB]">
-          <div
-            className="absolute top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-[#16A34A] shadow-[0_0_0_4px_rgba(22,163,74,0.15)] transition-[left] duration-150 ease-linear"
-            style={{ left: `calc(${progress * 100}% - 5px)` }}
-          />
-        </div>
+      <div className="mb-8 flex justify-end">
         <div className="hidden shrink-0 items-center gap-2 sm:flex">
           <button
             type="button"
@@ -96,19 +92,21 @@ export default function CategoryCarousel({ categories }) {
         onKeyDown={onKeyDown}
       >
         <div className="flex gap-6">
-          {categories.map((c) => (
+          {loopedSlides.map(({ key, hidden, ...c }) => (
             <div
-              key={c.name}
+              key={key}
               className="min-w-0 flex-[0_0_250px]"
               role="group"
               aria-roledescription="slide"
               aria-label={c.name}
+              aria-hidden={hidden}
             >
               <CategoryCard
                 name={c.name}
                 description={c.description}
                 Illustration={c.illustration}
                 href={`/shop?category=${encodeURIComponent(c.name)}`}
+                tabIndex={hidden ? -1 : 0}
               />
             </div>
           ))}

@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 // real CSS :hover (border tint, shadow) layered under a Framer Motion
 // lift so keyboard/focus and touch users get the same affordance as a
 // mouse hover.
-export default function CategoryCard({ name, description, Illustration, href }) {
+export default function CategoryCard({ name, description, Illustration, href, tabIndex }) {
   return (
     <motion.div
       className="group h-[320px] w-[250px]"
@@ -17,6 +17,7 @@ export default function CategoryCard({ name, description, Illustration, href }) 
     >
       <Link
         to={href}
+        tabIndex={tabIndex}
         aria-label={`Browse ${name} category`}
         className="flex h-full w-full flex-col rounded-[24px] border border-[#E5E7EB] bg-white p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-all duration-300 ease-out group-hover:border-[#16A34A] group-hover:shadow-[0_20px_40px_-14px_rgba(16,163,74,0.28)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2"
       >
