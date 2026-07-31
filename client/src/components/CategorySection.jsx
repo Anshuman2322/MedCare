@@ -1,46 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { fetchMedicines } from '../api/medicines';
+import React from 'react';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
-import CategoryCard from './category/CategoryCard.jsx';
-import { getCategoryMeta } from './category/categoryData.js';
+import CategoryCarousel from './category/CategoryCarousel.jsx';
+import { CAROUSEL_CATEGORIES } from './category/categoryData.js';
 
+// A curated, always-full browse list (not derived from current inventory)
+// so the section reads like a premium pharmacy's full category directory
+// rather than shrinking to whatever 2-3 categories happen to have stock
+// today. Categories with no matching products yet still link through to
+// the shop page's expected empty state, same as any other filter.
 const CategorySection = () => {
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    let active = true;
-    const load = async () => {
-      try {
-        const meds = await fetchMedicines();
-        if (!active) return;
-        const counts = new Map();
-        meds.forEach((m) => {
-          const key = m?.category || 'Other';
-          counts.set(key, (counts.get(key) || 0) + 1);
-        });
-        const arr = Array.from(counts.entries()).map(([name, count]) => ({
-          name,
-          count,
-          ...getCategoryMeta(name),
-        }));
-        setCategories(arr.sort((a, b) => b.count - a.count).slice(0, 8));
-      } catch (err) {
-        console.error('Failed to load categories', err);
-        setCategories([]);
-      }
-    };
-    load();
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  if (categories.length === 0) return null;
 
   return (
     <section className="w-full bg-[#F8FAFC]">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-16 sm:py-20">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-16 sm:py-20">
         <div
           ref={headerRef}
           className={`text-center mb-12 sm:mb-14 ${animationClasses.fadeUp(headerVisible)}`}
@@ -51,17 +24,7 @@ const CategorySection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((c) => (
-            <CategoryCard
-              key={c.name}
-              name={c.name}
-              description={c.description}
-              Illustration={c.illustration}
-              href={`/shop?category=${encodeURIComponent(c.name)}`}
-            />
-          ))}
-        </div>
+        <CategoryCarousel categories={CAROUSEL_CATEGORIES} />
       </div>
     </section>
   );

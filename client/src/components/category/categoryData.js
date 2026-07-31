@@ -10,30 +10,37 @@ import {
   SkinCareIllustration,
   DigestiveCareIllustration,
   ColdAndFluIllustration,
-  GeneralHealthIllustration,
+  DiabetesCareIllustration,
+  FirstAidIllustration,
+  MentalWellnessIllustration,
+  AllergyReliefIllustration,
+  BabyCareIllustration,
+  PersonalCareIllustration,
+  MedicalDevicesIllustration,
 } from './CategoryIllustrations.jsx';
 
-// Maps a raw category name (as stored on a medicine) to display metadata:
-// a premium flat illustration and a benefit-led description, in place of
-// a raw "N products" count. Matched by keyword so new categories added in
-// the admin panel degrade gracefully to a sensible default rather than
-// breaking the section.
-const CATEGORY_META = [
-  { test: /pain/i, illustration: PainReliefIllustration, description: 'Fast pain relief medicines' },
-  { test: /antibiot/i, illustration: AntibioticsIllustration, description: 'Trusted antibiotics' },
-  { test: /erectile|^ed$/i, illustration: ErectileDysfunctionIllustration, description: "Men's wellness products" },
-  { test: /heart|cardiac|chronic/i, illustration: HeartCareIllustration, description: 'Heart health solutions' },
-  { test: /men'?s? health/i, illustration: MensHealthIllustration, description: "Men's wellness products" },
-  { test: /women'?s? health/i, illustration: WomensHealthIllustration, description: "Women's care essentials" },
-  { test: /prescription|rx/i, illustration: PrescriptionIllustration, description: 'Doctor recommended products' },
-  { test: /vitamin|supplement/i, illustration: VitaminsIllustration, description: 'Daily vitamin support' },
-  { test: /skin/i, illustration: SkinCareIllustration, description: 'Skin health solutions' },
-  { test: /digestive|gastro/i, illustration: DigestiveCareIllustration, description: 'Digestive care essentials' },
-  { test: /cold|flu|allergy|asthma/i, illustration: ColdAndFluIllustration, description: 'Cold & flu relief' },
+// Curated browse list for the homepage category carousel. This always
+// shows the full set of categories customers expect to be able to
+// explore on a premium US pharmacy site, rather than shrinking to
+// whatever 2-3 categories happen to have stock today - some may return
+// zero products until more inventory is seeded, same as any other filter.
+export const CAROUSEL_CATEGORIES = [
+  { name: 'Pain Relief', description: 'Fast pain relief medicines', illustration: PainReliefIllustration },
+  { name: "Men's Health", description: "Men's wellness products", illustration: MensHealthIllustration },
+  { name: "Women's Health", description: "Women's care essentials", illustration: WomensHealthIllustration },
+  { name: 'Heart Care', description: 'Heart health solutions', illustration: HeartCareIllustration },
+  { name: 'Diabetes Care', description: 'Blood sugar management support', illustration: DiabetesCareIllustration },
+  { name: 'Cold & Flu', description: 'Cold & flu relief', illustration: ColdAndFluIllustration },
+  { name: 'Skin Care', description: 'Skin health solutions', illustration: SkinCareIllustration },
+  { name: 'Digestive Health', description: 'Digestive care essentials', illustration: DigestiveCareIllustration },
+  { name: 'Vitamins & Supplements', description: 'Daily vitamin support', illustration: VitaminsIllustration },
+  { name: 'First Aid', description: 'Everyday first aid essentials', illustration: FirstAidIllustration },
+  { name: 'Prescription Medicines', description: 'Doctor recommended products', illustration: PrescriptionIllustration },
+  { name: 'Mental Wellness', description: 'Support for mind and mood', illustration: MentalWellnessIllustration },
+  { name: 'Allergy Relief', description: 'Fast seasonal allergy relief', illustration: AllergyReliefIllustration },
+  { name: 'Baby Care', description: 'Gentle care for your little one', illustration: BabyCareIllustration },
+  { name: 'Personal Care', description: 'Daily hygiene essentials', illustration: PersonalCareIllustration },
+  { name: 'Medical Devices', description: 'Trusted home health devices', illustration: MedicalDevicesIllustration },
+  { name: 'Antibiotics', description: 'Trusted antibiotics', illustration: AntibioticsIllustration },
+  { name: 'Erectile Dysfunction', description: "Men's wellness products", illustration: ErectileDysfunctionIllustration },
 ];
-
-export function getCategoryMeta(name) {
-  const match = CATEGORY_META.find((entry) => entry.test.test(name || ''));
-  if (match) return { illustration: match.illustration, description: match.description };
-  return { illustration: GeneralHealthIllustration, description: 'Daily wellness essentials' };
-}

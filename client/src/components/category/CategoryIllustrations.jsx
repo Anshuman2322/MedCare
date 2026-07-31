@@ -102,6 +102,71 @@ export const ColdAndFluIllustration = () => (
   </svg>
 );
 
+export const DiabetesCareIllustration = () => (
+  <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+    <circle cx="32" cy="32" r="30" fill="#E0E7FF" />
+    <path d="M32 12c-4 6-10 14-10 21a10 10 0 0020 0c0-7-6-15-10-21z" fill="#4F46E5" />
+    <circle cx="32" cy="35" r="3" fill="#FFFFFF" />
+    <path d="M32 38v6" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
+  </svg>
+);
+
+export const FirstAidIllustration = () => (
+  <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+    <circle cx="32" cy="32" r="30" fill="#FEE2E2" />
+    <rect x="14" y="20" width="36" height="26" rx="6" fill="#DC2626" />
+    <rect x="20" y="14" width="24" height="12" rx="4" fill="#DC2626" />
+    <rect x="20" y="26" width="24" height="16" rx="3" fill="#FFFFFF" />
+    <path d="M32 30v8M28 34h8" stroke="#DC2626" strokeWidth="3" strokeLinecap="round" />
+  </svg>
+);
+
+export const MentalWellnessIllustration = () => (
+  <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+    <circle cx="32" cy="32" r="30" fill="#F3E8FF" />
+    <path d="M32 14a14 14 0 00-9 24.7V44a4 4 0 004 4h10a4 4 0 004-4v-5.3A14 14 0 0032 14z" fill="#9333EA" />
+    <path d="M26 30c1-3 4-3 6 0 2-3 5-3 6 0-1 4-6 8-6 8s-5-4-6-8z" fill="#FFFFFF" />
+  </svg>
+);
+
+export const AllergyReliefIllustration = () => (
+  <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+    <circle cx="32" cy="32" r="30" fill="#FFF7ED" />
+    <circle cx="26" cy="28" r="10" fill="#FB923C" />
+    <circle cx="38" cy="30" r="7" fill="#FDBA74" />
+    <path d="M22 40c0 4 4 8 10 8s10-4 10-8" stroke="#EA580C" strokeWidth="3" fill="none" strokeLinecap="round" />
+  </svg>
+);
+
+export const BabyCareIllustration = () => (
+  <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+    <circle cx="32" cy="32" r="30" fill="#FCE7F3" />
+    <circle cx="32" cy="28" r="14" fill="#FBCFE8" />
+    <circle cx="27" cy="27" r="2" fill="#BE185D" />
+    <circle cx="37" cy="27" r="2" fill="#BE185D" />
+    <path d="M27 33c2 2 8 2 10 0" stroke="#BE185D" strokeWidth="2" fill="none" strokeLinecap="round" />
+    <path d="M20 26a12 12 0 0124 0" stroke="#EC4899" strokeWidth="3" fill="none" strokeLinecap="round" />
+  </svg>
+);
+
+export const PersonalCareIllustration = () => (
+  <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+    <circle cx="32" cy="32" r="30" fill="#CCFBF1" />
+    <path d="M26 14h12l2 8H24z" fill="#0D9488" />
+    <rect x="22" y="22" width="20" height="26" rx="8" fill="#14B8A6" />
+    <path d="M27 30c3 3 7 3 10 0" stroke="#FFFFFF" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+  </svg>
+);
+
+export const MedicalDevicesIllustration = () => (
+  <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+    <circle cx="32" cy="32" r="30" fill="#E2E8F0" />
+    <circle cx="24" cy="22" r="6" fill="#334155" />
+    <path d="M24 28v10a8 8 0 008 8 8 8 0 008-8" stroke="#334155" strokeWidth="3" fill="none" strokeLinecap="round" />
+    <circle cx="40" cy="46" r="5" fill="#475569" />
+  </svg>
+);
+
 export const GeneralHealthIllustration = () => (
   <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
     <circle cx="32" cy="32" r="30" fill="#DCFCE7" />
