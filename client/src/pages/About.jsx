@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import aboutTeam from '../assets/about-team.jpg';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 
@@ -22,79 +23,137 @@ const HeaderHero = () => {
   );
 };
 
-const MissionSection = () => {
-  const [imageRef, imageVisible] = useScrollAnimation(0.1);
-  const [textRef, textVisible] = useScrollAnimation(0.1, 200);
-  const [cardsRef, cardsVisible] = useScrollAnimation(0.1, 400);
+const missionFeatures = [
+  {
+    label: 'Quality Assured',
+    icon: (
+      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <path d="M5 13l4 4L19 7" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Fast Delivery',
+    icon: (
+      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <path d="M3 7h11v10H3z" />
+        <path d="M14 10h4l3 3v4h-7z" />
+        <circle cx="8" cy="18" r="2" />
+        <circle cx="18" cy="18" r="2" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Licensed Pharmacy',
+    icon: (
+      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <path d="M12 3l7 3v5c0 4.8-3 9.2-7 10-4-0.8-7-5.2-7-10V6l7-3z" />
+        <path d="M9.5 12.5l1.7 1.7 3.8-4.1" />
+      </svg>
+    ),
+  },
+  {
+    label: '24/7 Support',
+    icon: (
+      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 3" />
+      </svg>
+    ),
+  },
+];
 
+const FeatureCard = ({ icon, label, index }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.4 }}
+    transition={{ duration: 0.5, delay: 0.15 + index * 0.1, ease: 'easeOut' }}
+    whileHover={{ y: -4 }}
+    className="flex h-full items-center gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.06)] transition-shadow duration-300 hover:shadow-[0_14px_32px_rgba(16,185,129,0.16)] cursor-pointer"
+  >
+    <motion.div
+      whileHover={{ scale: 1.12 }}
+      transition={{ duration: 0.25 }}
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100"
+    >
+      {icon}
+    </motion.div>
+    <span className="text-[16px] font-medium text-gray-900">{label}</span>
+  </motion.div>
+);
+
+const MissionSection = () => {
   return (
-    <section className="py-12 sm:py-16 lg:py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Image left */}
-          <div 
-            ref={imageRef}
-            className={`order-2 md:order-1 md:col-span-8 lg:col-span-9 flex justify-center ${animationClasses.fadeLeft(imageVisible)}`}
+    <section className="relative overflow-hidden bg-[linear-gradient(180deg,#FFFFFF_0%,#F2FBF6_50%,#FFFFFF_100%)] py-16 sm:py-20 lg:py-[120px]">
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-10 xl:px-12">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[45%_55%] lg:gap-20">
+          {/* Image */}
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, ease: 'easeOut' }}
+            className="relative mx-auto w-full max-w-[620px]"
           >
-            <div className="rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-200 w-full">
-              <div className="relative h-72 sm:h-80 md:h-96 lg:h-[32rem] xl:h-[40rem]">
-                <img
-                  src={aboutTeam}
-                  alt="CureNeed professional team"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            <div className="absolute -inset-6 -z-10 rounded-[40px] bg-[radial-gradient(circle_at_50%_40%,rgba(16,185,129,0.16),transparent_65%)] blur-2xl" />
+            <div className="aspect-[4/3] overflow-hidden rounded-[24px] shadow-[0_30px_60px_rgba(15,23,42,0.18)] ring-1 ring-gray-100">
+              <img
+                src={aboutTeam}
+                alt="CureNeed professional team"
+                className="h-full w-full object-cover"
+              />
             </div>
-          </div>
+          </motion.div>
+
           {/* Text and feature cards */}
-          <div className="order-1 md:order-2 md:col-span-4 lg:col-span-3">
-            <div 
-              ref={textRef}
-              className={`transition-all duration-1000 ease-out ${
-                textVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
-              }`}
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className="mb-6 inline-flex items-center rounded-full bg-emerald-50 px-5 py-2 text-sm font-medium text-emerald-700 ring-1 ring-emerald-100"
             >
-              <div className="inline-flex items-center rounded-full bg-emerald-50 px-4 sm:px-5 py-2 text-sm font-medium text-emerald-700 ring-1 ring-emerald-100 mb-4 sm:mb-6">
-                OUR MISSION
-              </div>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-gray-900 mb-4 sm:mb-6 leading-tight">
-                Making Healthcare <span className="text-emerald-600">Accessible</span> to Everyone
-              </h2>
-              <p className="text-gray-600 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
-                At CureNeed, we believe everyone deserves access to quality healthcare products.
-                Our mission is to make essential medicines and health products easily accessible
-                through our online platform, delivering directly to your doorstep.
-              </p>
-              <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8">
-                We work tirelessly to ensure every product meets the highest safety and quality
-                standards, partnering only with certified manufacturers and distributors.
-              </p>
-            </div>
-            {/* Feature cards */}
-            <div 
-              ref={cardsRef}
-              className={`grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 transition-all duration-1000 ease-out ${
-                cardsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
+              OUR MISSION
+            </motion.div>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.08, ease: 'easeOut' }}
+              className="mb-7 text-[40px] font-bold leading-[1.1] tracking-tight text-gray-900 sm:text-[48px] lg:text-[56px]"
             >
-              <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 cursor-pointer text-center sm:text-left">
-                <div className="inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex-shrink-0">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
-                </div>
-                <div className="text-sm font-medium text-gray-900">Quality Assured</div>
-              </div>
-              <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 cursor-pointer text-center sm:text-left">
-                <div className="inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex-shrink-0">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
-                </div>
-                <div className="text-sm font-medium text-gray-900">Fast Delivery</div>
-              </div>
-              <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 cursor-pointer text-center sm:text-left">
-                <div className="inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex-shrink-0">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 13l4 4L19 7"/></svg>
-                </div>
-                <div className="text-sm font-medium text-gray-900">24/7 Support</div>
-              </div>
+              Making Healthcare <span className="text-emerald-600">Accessible</span> to Everyone
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.16, ease: 'easeOut' }}
+              className="mb-5 text-[18px] leading-[1.8] text-gray-600"
+            >
+              At CureNeed, we believe everyone deserves access to quality healthcare products,
+              delivered quickly and affordably to their doorstep.
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.24, ease: 'easeOut' }}
+              className="mb-10 text-[18px] leading-[1.8] text-gray-600"
+            >
+              Every product meets the highest safety standards, sourced only from certified
+              manufacturers and licensed distributors we trust.
+            </motion.p>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {missionFeatures.map((feature, index) => (
+                <FeatureCard key={feature.label} icon={feature.icon} label={feature.label} index={index} />
+              ))}
             </div>
           </div>
         </div>
