@@ -1,47 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchMedicines } from '../api/medicines';
-import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
+import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 import { useCurrency } from '../store/useStore.jsx';
-import { formatPrice } from '../utils/currency';
-
-const FeaturedCard = ({ product, index }) => {
-  const { currency } = useCurrency();
-  return (
-    <AnimatedCard 
-      index={index}
-      className="group h-full flex flex-col rounded-2xl border border-emerald-100 bg-white ring-1 ring-emerald-100/60 shadow-sm overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:ring-emerald-300/70"
-    >
-      <div className="relative w-full h-56 md:h-60 lg:h-64 bg-gray-50">
-        {product.requiresPrescription && (
-          <span className="absolute top-2.5 left-2.5 z-10 rounded-full bg-red-50 border border-red-200 text-red-700 text-[11px] font-bold px-2 py-0.5">
-            Rx Only
-          </span>
-        )}
-        <img
-          src={product.image}
-          alt={product.title}
-          className="absolute inset-0 w-full h-full object-contain p-4"
-        />
-      </div>
-      <div className="p-4 md:p-5 flex-1 flex flex-col">
-        <p className="text-xs md:text-sm text-gray-500">{product.category}</p>
-        <h3 className="mt-1 text-base md:text-lg font-semibold text-gray-800">{product.title}</h3>
-        <p className="mt-2 text-emerald-600 font-semibold" key={`price-${currency}`}>{formatPrice(product.price, currency)}</p>
-        <div className="mt-auto pt-4">
-          <Link to={`/medicine/${product.slug}`} className="w-full inline-flex items-center justify-center h-11 rounded-xl border border-emerald-200 text-emerald-700 text-sm font-medium bg-white transition-colors hover:bg-emerald-50 hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
-            View Details
-          </Link>
-        </div>
-      </div>
-    </AnimatedCard>
-  );
-};
+import ProductCarousel from './product/ProductCarousel.jsx';
+import InquiryModal from './InquiryModal.jsx';
 
 const FeaturedMedicines = () => {
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
-  const [buttonRef, buttonVisible] = useScrollAnimation(0.1, 200);
   const [products, setProducts] = useState([]);
+  const [inquiryMedicine, setInquiryMedicine] = useState(null);
+  const { currency } = useCurrency();
 
   useEffect(() => {
     let active = true;
@@ -49,19 +18,10 @@ const FeaturedMedicines = () => {
       try {
         const meds = await fetchMedicines();
         if (!active) return;
-        const top = meds
-          .filter((m) => m && (m.image || (Array.isArray(m.images) && m.images.length)) && m.price !== undefined)
-          .slice(0, 6)
-          .map((m) => ({
-            id: m._id,
-            slug: m.slug || m._id,
-            category: (Array.isArray(m.categories) && m.categories.length ? m.categories[0] : m.category),
-            title: m.name,
-            price: Number(m.price) || 0,
-            image: m.image || (Array.isArray(m.images) && m.images[0]) || '',
-            requiresPrescription: Boolean(m.requiresPrescription),
-          }));
-        setProducts(top);
+        const featured = meds
+          .filter((m) => m && (m.image || (Array.isArray(m.images) && m.images.length)))
+          .slice(0, 12);
+        setProducts(featured);
       } catch (err) {
         console.error('Failed to load featured medicines', err);
         setProducts([]);
@@ -74,9 +34,9 @@ const FeaturedMedicines = () => {
   }, []);
 
   return (
-    <section className="w-full bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-12 sm:py-16">
-        <div 
+    <section className="w-full bg-gradient-to-b from-white to-[#F8FAFC]">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-12 sm:py-16">
+        <div
           ref={headerRef}
           className={`flex items-start justify-between mb-8 md:mb-10 ${animationClasses.fadeUp(headerVisible)}`}
         >
@@ -89,22 +49,25 @@ const FeaturedMedicines = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {products.map((p, index) => (
-            <FeaturedCard key={p.slug} product={p} index={index} />
-          ))}
-          {products.length === 0 && (
-            <div className="col-span-full text-gray-500 text-center">Featured medicines will appear here once available.</div>
-          )}
-        </div>
+        {products.length > 0 ? (
+          <ProductCarousel products={products} onQuickInquiry={setInquiryMedicine} />
+        ) : (
+          <div className="text-gray-500 text-center py-12">Featured medicines will appear here once available.</div>
+        )}
 
-        <div 
-          ref={buttonRef}
-          className={`sm:hidden mt-8 flex justify-center ${animationClasses.fadeUp(buttonVisible)}`}
-        >
+        <div className="sm:hidden mt-8 flex justify-center">
           <Link to="/shop" className="inline-flex items-center h-10 rounded-lg border border-gray-300 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-emerald-400 transition-colors">View More</Link>
         </div>
       </div>
+
+      {inquiryMedicine && (
+        <InquiryModal
+          isOpen={Boolean(inquiryMedicine)}
+          onClose={() => setInquiryMedicine(null)}
+          medicine={inquiryMedicine}
+          currency={currency}
+        />
+      )}
     </section>
   );
 };
