@@ -19,6 +19,7 @@ export default function Sidebar() {
     }
     if (can('categories')) base.push({ to: '/categories', label: 'Categories' });
     if (can('inquiries')) base.push({ to: '/inquiries', label: 'Inquiries' });
+    if (can('inquiries')) base.push({ to: '/messages', label: 'Messages' });
     if (isSuper) base.push({ to: '/manage-admins', label: 'Admin Management' });
     return base;
   }, [admin?.permissions, admin?.role]);

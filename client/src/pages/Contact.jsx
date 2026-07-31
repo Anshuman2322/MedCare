@@ -1,9 +1,41 @@
 import React, { useState } from "react";
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+
 export default function Contact() {
   const [, setFormHover] = useState(false);
   const [, setFaqHover] = useState([false, false, false]);
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState('idle'); // idle | submitting | success | error
+  const [errorMessage, setErrorMessage] = useState('');
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setStatus('submitting');
+    setErrorMessage('');
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setErrorMessage(data?.error || 'Something went wrong. Please try again.');
+        setStatus('error');
+        return;
+      }
+
+      setForm({ name: '', email: '', message: '' });
+      setStatus('success');
+    } catch (err) {
+      setErrorMessage('Unable to reach the server. Please try again later.');
+      setStatus('error');
+    }
+  }
 
   // Animation refs
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
@@ -45,37 +77,59 @@ export default function Contact() {
               onMouseLeave={() => setFormHover(false)}
               className="bg-white rounded-xl border border-gray-200 shadow-lg p-6 sm:p-8 lg:p-10 transition-all duration-200 hover:shadow-xl hover:-translate-y-1 hover:border-sky-200"
             >
-              <form>
+              <form onSubmit={handleSubmit}>
                 <h2 className="font-bold text-xl sm:text-2xl text-gray-900 mb-6">Send us a message</h2>
                 <div className="mb-4 sm:mb-5">
                   <label className="block font-medium text-gray-900 mb-2">Name</label>
-                  <input 
-                    type="text" 
-                    placeholder="Your name" 
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors" 
+                  <input
+                    type="text"
+                    placeholder="Your name"
+                    value={form.name}
+                    onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   />
                 </div>
                 <div className="mb-4 sm:mb-5">
                   <label className="block font-medium text-gray-900 mb-2">Email</label>
-                  <input 
-                    type="email" 
-                    placeholder="your@email.com" 
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors" 
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={form.email}
+                    onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   />
                 </div>
                 <div className="mb-6">
                   <label className="block font-medium text-gray-900 mb-2">Message</label>
-                  <textarea 
-                    placeholder="How can we help you?" 
-                    rows={4} 
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base resize-vertical focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors" 
+                  <textarea
+                    placeholder="How can we help you?"
+                    rows={4}
+                    value={form.message}
+                    onChange={(e) => setForm((prev) => ({ ...prev, message: e.target.value }))}
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50/50 text-sm sm:text-base resize-vertical focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                   />
                 </div>
-                <button 
-                  type="submit" 
-                  className="w-full bg-emerald-500 text-white font-semibold text-sm sm:text-base rounded-lg py-3 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors"
+
+                {status === 'success' && (
+                  <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                    Thanks for reaching out — we've received your message and will get back to you soon.
+                  </div>
+                )}
+                {status === 'error' && (
+                  <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                    {errorMessage}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={status === 'submitting'}
+                  className="w-full bg-emerald-500 text-white font-semibold text-sm sm:text-base rounded-lg py-3 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors disabled:opacity-60"
                 >
-                  Send Message
+                  {status === 'submitting' ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             </div>

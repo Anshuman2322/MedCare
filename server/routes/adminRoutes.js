@@ -4,6 +4,7 @@ import { getDashboardStats } from '../controllers/adminController.js';
 import { getCategoriesWithCount } from '../controllers/categoryController.js';
 import { listAdmins, createAdmin, deleteAdmin, transferOwnership, updateAdminRole } from '../controllers/adminUser.controller.js';
 import { listAdminInquiries, updateInquiryStatus } from '../controllers/adminInquiry.controller.js';
+import { listContactMessages, markContactMessageRead } from '../controllers/contactController.js';
 import { protectAdmin, requireRole, requirePermission } from '../middleware/auth.middleware.js';
 
 const router = Router();
@@ -49,5 +50,8 @@ router.put(
 	body('status').isString().trim(),
 	updateInquiryStatus
 );
+
+router.get('/contact-messages', protectAdmin, requirePermission('inquiries'), requireRole('admin', 'super_admin'), listContactMessages);
+router.put('/contact-messages/:id/read', protectAdmin, requirePermission('inquiries'), requireRole('admin', 'super_admin'), markContactMessageRead);
 
 export default router;

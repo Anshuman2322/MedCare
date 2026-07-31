@@ -15,6 +15,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import authRoutes from './routes/auth.routes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import inquiryRoutes from './routes/inquiryRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 import testRoutes from './routes/test.routes.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import { apiLimiter, authLimiter, inquiryLimiter } from './middleware/rateLimit.js';
@@ -67,6 +68,7 @@ app.use('/api/auth/register', authLimiter);
 app.use('/api/auth/bootstrap', authLimiter);
 app.use('/api/inquiries', inquiryLimiter);
 app.use('/api/inquiry', inquiryLimiter);
+app.use('/api/contact', inquiryLimiter);
 
 app.use('/api/medicines', medicineRoutes);
 app.use('/api/orders', orderRoutes);
@@ -76,6 +78,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/inquiry', inquiryRoutes);
+app.use('/api/contact', contactRoutes);
 app.use('/api/test', testRoutes);
 
 app.get('/api/health', (_req, res) => {
