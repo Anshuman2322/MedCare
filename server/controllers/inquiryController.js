@@ -123,15 +123,6 @@ export async function createInquiry(req, res, next) {
   }
 }
 
-export async function listInquiries(_req, res, next) {
-  try {
-    const inquiries = await Inquiry.find().sort({ createdAt: -1 });
-    res.json(inquiries);
-  } catch (error) {
-    next(error);
-  }
-}
-
 async function sendEmailNotification({ inquiry }) {
   try {
     const html = buildInquiryEmailHtml(inquiry);
