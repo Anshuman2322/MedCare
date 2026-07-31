@@ -14,6 +14,9 @@ import { CurrencyProvider } from "./store/useStore.jsx";
 
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import ShippingPolicy from "./pages/ShippingPolicy";
 import "./App.css";
 
 {/*Temporary comment*/}
@@ -40,6 +43,9 @@ function App() {
           <Route path="/inquiry/:slug" element={<InquiryWizardPage />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/shipping-policy" element={<ShippingPolicy />} />
         </Routes>
         <Footer />
         <FloatingHomeButton />

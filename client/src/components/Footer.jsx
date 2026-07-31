@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 
 const FeatureItem = ({ icon, title, desc }) => (
@@ -34,17 +35,17 @@ const Footer = () => {
             <div>
               <h4 className="text-base sm:text-lg font-semibold text-gray-900">Quick Links</h4>
               <ul className="mt-3 space-y-2 text-sm">
-                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">Shop</a></li>
-                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">About Us</a></li>
-                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">Contact</a></li>
+                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/shop">Shop</Link></li>
+                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/about">About Us</Link></li>
+                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/contact">Contact</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-base sm:text-lg font-semibold text-gray-900">Policies</h4>
               <ul className="mt-3 space-y-2 text-sm">
-                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">Privacy Policy</a></li>
-                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">Terms of Service</a></li>
-                <li><a className="text-gray-600 hover:text-emerald-600 transition-colors" href="#">Shipping Policy</a></li>
+                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/privacy-policy">Privacy Policy</Link></li>
+                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/terms-of-service">Terms of Service</Link></li>
+                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/shipping-policy">Shipping Policy</Link></li>
               </ul>
             </div>
             <div>
