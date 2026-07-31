@@ -1,16 +1,39 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import MedicineCard from '../components/MedicineCard';
 import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
 import { parseMedicinePrice } from '../utils/medicineDisplay.js';
 import { fetchMedicines } from '../api/medicines';
 import './ShopByCategory.css';
 
+// Raw category names as stored on a medicine (m.category) don't always
+// match the checkbox labels shown in the filter sidebar below - module
+// level so it can normalize the initial ?category= URL param too.
+const LEGACY_CATEGORY_MAP = new Map([
+  ['Anti Cancer', 'Anti-Cancer'],
+  ['Anti Malarial', 'Anti-Malarial'],
+  ['Anti Viral', 'Anti-Viral'],
+  ['Chronic / Cardiac', 'Chronic-Cardiac'],
+  ['Erectile Dysfunction', 'ED'],
+  ['Hormones & Steroids', 'Hormones-Steroids'],
+  ['Pain Relief', 'Pain-Killers'],
+  ['Skin / Allergy / Asthma', 'Skin-Allergy-Asthma'],
+  ['Supplements & Hair', 'Supplements-Vitamins-Hair'],
+]);
+const normalizeCategoryLabel = (label) => LEGACY_CATEGORY_MAP.get(label) || label;
+
 export default function ShopByCategory() {
+  const [searchParams] = useSearchParams();
   const [medicines, setMedicines] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  // Filter states
-  const [selectedCategory, setSelectedCategory] = useState('');
+  // Filter states - preselect from ?category= so "Browse Category" links
+  // from the Shop by Category cards land pre-filtered. The URL carries the
+  // raw category name (e.g. "Pain Relief"), so it needs the same
+  // normalization the filter checkboxes use (e.g. "Pain-Killers").
+  const [selectedCategory, setSelectedCategory] = useState(
+    () => normalizeCategoryLabel(searchParams.get('category') || '')
+  );
   const [selectedManufacturer, setSelectedManufacturer] = useState('');
   const [selectedForm, setSelectedForm] = useState('');
   // Determine max price dynamically so newly added higher-priced items aren't hidden by default
@@ -56,23 +79,12 @@ export default function ShopByCategory() {
   const [productsRef] = useScrollAnimation(0.1, 400);
 
   // Derive filter values dynamically from data
-  const LEGACY_CATEGORY_MAP = useMemo(() => new Map([
-    ['Anti Cancer', 'Anti-Cancer'],
-    ['Anti Malarial', 'Anti-Malarial'],
-    ['Anti Viral', 'Anti-Viral'],
-    ['Chronic / Cardiac', 'Chronic-Cardiac'],
-    ['Erectile Dysfunction', 'ED'],
-    ['Hormones & Steroids', 'Hormones-Steroids'],
-    ['Pain Relief', 'Pain-Killers'],
-    ['Skin / Allergy / Asthma', 'Skin-Allergy-Asthma'],
-    ['Supplements & Hair', 'Supplements-Vitamins-Hair'],
-  ]), []);
   const toLabel = (c) => {
     const s = typeof c === 'string' ? c : (c?.label ?? c?.name ?? '');
     return String(s).trim();
   };
   const normalizeString = (s) => String(s || '').trim().toLowerCase();
-  const normalizeCategory = (label) => LEGACY_CATEGORY_MAP.get(label) || label;
+  const normalizeCategory = normalizeCategoryLabel;
   const categories = useMemo(() => {
     const set = new Set();
     // From medicines present in data
