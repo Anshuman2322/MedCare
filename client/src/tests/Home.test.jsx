@@ -29,7 +29,7 @@ describe('Home page', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/Your Health, Our/i)).toBeInTheDocument();
+    expect(screen.getByText(/Trusted medicines\./i)).toBeInTheDocument();
     expect(await screen.findByText('Test Medicine 100mg')).toBeInTheDocument();
   });
 });
