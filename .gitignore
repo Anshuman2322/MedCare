@@ -239,3 +239,10 @@ coverage.xml
 *.egg
 *.egg-info/
 .eggs/
+
+# Explicitly track the .env.example templates despite the broad .env* /
+# admin/.env* ignore rules above — these are documentation, not secrets.
+!.env.example
+!server/.env.example
+!client/.env.example
+!admin/.env.example

@@ -1,0 +1,38 @@
+services:
+  server:
+    build: ./server
+    env_file:
+      - ./server/.env
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+      args:
+        # Value the *browser* uses to reach the API — this is baked into the
+        # static build at image-build time, not read at container runtime.
+        # Override with: docker compose build --build-arg VITE_API_URL=https://api.example.com client
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+    ports:
+      - "5173:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+  admin:
+    build:
+      context: ./admin
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+        VITE_CLOUDINARY_CLOUD: ${VITE_CLOUDINARY_CLOUD:-}
+        VITE_CLOUDINARY_PRESET: ${VITE_CLOUDINARY_PRESET:-}
+    ports:
+      - "5175:80"
+    depends_on:
+      - server
+    restart: unless-stopped
