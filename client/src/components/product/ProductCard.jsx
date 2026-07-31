@@ -45,18 +45,12 @@ function getBadge(product) {
   return null;
 }
 
-// Premium featured-product card. The image/title/price zone is one Link
-// to the product page (primary navigation target); the wishlist toggle
-// and Send Inquiry button are deliberately separate sibling controls
-// rather than nested inside that Link - a <button> inside an <a> is
-// invalid HTML and breaks keyboard/screen-reader navigation, so "entire
-// card clickable" is implemented as "everything that isn't its own
-// distinct action is one big link," which is how Amazon/Nike do it too.
 export default function ProductCard({ product, onQuickInquiry }) {
   const { currency } = useCurrency();
   const slug = product.slug || product._id;
   const [wishlisted, setWishlisted] = useState(() => isWishlisted(slug));
   const [bounce, setBounce] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const badge = getBadge(product);
   const price = parseMedicinePrice(product);
@@ -77,14 +71,21 @@ export default function ProductCard({ product, onQuickInquiry }) {
 
   return (
     <motion.div
-      className="group relative flex h-full flex-col rounded-[20px] border border-[#E5E7EB] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-all duration-300 ease-out hover:border-[#16A34A] hover:shadow-[0_20px_40px_-14px_rgba(16,163,74,0.25)]"
+      className="group relative flex h-full min-h-[520px] flex-col overflow-hidden rounded-[20px] border border-[#E5E7EB] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-[#16A34A] hover:shadow-[0_24px_48px_-18px_rgba(16,163,74,0.25)]"
       whileHover={{ y: -6 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
     >
-      <Link to={`/medicine/${slug}`} className="flex flex-1 flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2 rounded-2xl">
-        <div className="relative mb-4 h-48 w-full overflow-hidden rounded-2xl bg-[#F8FAFC]">
+      <Link
+        to={`/medicine/${slug}`}
+        aria-label={`Open ${product.name}`}
+        className="absolute inset-0 z-0 rounded-[20px] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2"
+      />
+
+      <div className="relative z-10 flex h-full flex-col">
+        <div className="relative mb-4 h-56 w-full overflow-hidden rounded-2xl bg-[linear-gradient(180deg,#F8FAFC_0%,#EEFDF5_100%)]">
+          {!imageLoaded && <div className="absolute inset-0 animate-pulse bg-slate-100/80" aria-hidden="true" />}
           {badge && (
-            <span className={`absolute left-2.5 top-2.5 z-10 rounded-full border px-2.5 py-1 text-[11px] font-bold ${badge.className}`}>
+            <span className={`absolute left-3 top-3 z-20 rounded-full border px-2.5 py-1 text-[11px] font-bold tracking-wide ${badge.className}`}>
               {badge.label}
             </span>
           )}
@@ -92,63 +93,61 @@ export default function ProductCard({ product, onQuickInquiry }) {
             src={resolveMedicineImage(product)}
             alt={product.name}
             loading="lazy"
-            className="absolute inset-0 h-full w-full object-contain p-4 transition-transform duration-300 ease-out group-hover:scale-[1.08]"
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageLoaded(true)}
+            className="absolute inset-0 h-full w-full object-contain p-5 transition-transform duration-300 ease-out group-hover:scale-[1.08]"
           />
         </div>
 
-        <div className="text-xs font-medium text-[#64748B]">{category}</div>
-        <h3 className="mt-1 line-clamp-2 min-h-[2.75rem] text-[18px] font-semibold leading-snug text-[#0F172A]">
-          {product.name}
-        </h3>
+        <div className="flex-1 pointer-events-none">
+          <div className="text-xs font-medium uppercase tracking-[0.12em] text-[#64748B]">{category}</div>
+          <h3 className="mt-1 line-clamp-2 min-h-[3.5rem] text-[18px] font-semibold leading-snug text-[#0F172A]">
+            {product.name}
+          </h3>
 
-        {rating !== null && (
-          <div className="mt-1.5 flex items-center gap-1.5">
-            <div className="flex items-center gap-0.5">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <StarIcon key={n} filled={n <= Math.round(rating)} />
-              ))}
+          {rating !== null && (
+            <div className="mt-2 flex items-center gap-2">
+              <div className="flex items-center gap-0.5" aria-hidden="true">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <StarIcon key={n} filled={n <= Math.round(rating)} />
+                ))}
+              </div>
+              <span className="text-xs font-medium text-[#64748B]">
+                {rating.toFixed(1)}{reviewCount !== null ? ` (${reviewCount} Reviews)` : ''}
+              </span>
             </div>
-            <span className="text-xs font-medium text-[#64748B]">
-              {rating.toFixed(1)}{reviewCount !== null ? ` (${reviewCount} Reviews)` : ''}
-            </span>
-          </div>
-        )}
-
-        <div className="mt-2 flex items-center gap-2" key={`price-${currency}`}>
-          <span className="text-xl font-bold text-[#16A34A]">{formatPrice(price, currency)}</span>
-          {hasDiscount && (
-            <span className="text-sm font-medium text-[#94A3B8] line-through">
-              {formatPrice(product.compareAtPrice, currency)}
-            </span>
           )}
+
+          <div className="mt-3 flex items-end gap-2" key={`price-${currency}`}>
+            <span className="text-2xl font-semibold tracking-tight text-[#16A34A]">{formatPrice(price, currency)}</span>
+            {hasDiscount && (
+              <span className="pb-0.5 text-sm font-medium text-[#94A3B8] line-through">
+                {formatPrice(product.compareAtPrice, currency)}
+              </span>
+            )}
+          </div>
         </div>
-      </Link>
+
+        <div className="relative z-20 mt-5 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onQuickInquiry?.(product)}
+            className="flex h-11 flex-1 items-center justify-center rounded-xl bg-[#16A34A] text-sm font-semibold text-white shadow-[0_10px_20px_-12px_rgba(22,163,74,0.7)] transition-all duration-200 hover:bg-[#15803D] hover:shadow-[0_14px_24px_-12px_rgba(22,163,74,0.8)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2"
+          >
+            Inquire Now
+          </button>
+        </div>
+      </div>
 
       <button
         type="button"
         onClick={handleWishlistClick}
         aria-pressed={wishlisted}
         aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
-        className={`absolute right-7 top-7 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 shadow-sm ring-1 ring-[#E5E7EB] transition-transform duration-200 hover:ring-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] ${bounce ? 'scale-125' : 'scale-100'}`}
+        className={`absolute right-4 top-4 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 shadow-[0_8px_18px_rgba(15,23,42,0.12)] ring-1 ring-[#E5E7EB] transition-transform duration-200 hover:bg-white hover:ring-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] ${bounce ? 'scale-125' : 'scale-100'}`}
       >
         <HeartIcon filled={wishlisted} />
       </button>
-
-      <div className="mt-4 flex items-center gap-2">
-        <Link
-          to={`/medicine/${slug}`}
-          className="flex h-11 flex-1 items-center justify-center rounded-xl bg-[#16A34A] text-sm font-semibold text-white transition-colors duration-200 hover:bg-[#15803D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2"
-        >
-          View Details
-        </Link>
-        <button
-          type="button"
-          onClick={() => onQuickInquiry?.(product)}
-          className="flex h-11 flex-1 items-center justify-center rounded-xl border border-[#16A34A] text-sm font-semibold text-[#16A34A] transition-colors duration-200 hover:bg-[#F0FDF4] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2"
-        >
-          Send Inquiry
-        </button>
-      </div>
     </motion.div>
   );
 }
