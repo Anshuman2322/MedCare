@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import aboutTeam from '../assets/about-team.jpg';
+import SEO from '../components/SEO.jsx';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 
 const HeaderHero = () => {
@@ -475,7 +476,7 @@ const CTASection = () => {
             <p className="mt-2 text-gray-600">Questions about products or orders? Our team is ready to assist.</p>
           </div>
           <div className="flex gap-3">
-            <a href="#" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow hover:bg-emerald-700 transition-colors">Contact Support</a>
+            <a href="/contact" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow hover:bg-emerald-700 transition-colors">Contact Support</a>
             <a href="/shop" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-emerald-200 bg-white text-emerald-700 text-sm font-medium hover:bg-emerald-50 hover:border-emerald-400 transition-colors">Shop Now</a>
           </div>
         </div>
@@ -606,6 +607,11 @@ const ValueCard = ({ icon, title, desc }) => (
 export default function About() {
   return (
     <div className="bg-white">
+      <SEO
+        title="About Us"
+        description="Learn about CureNeed's mission to deliver trusted, verified healthcare products through transparent sourcing and an inquiry-based marketplace."
+        path="/about"
+      />
       {/* Header hero - clean and simple */}
       <HeaderHero />
 
@@ -630,7 +636,7 @@ export default function About() {
               <p className="mt-2 text-gray-600">Questions about products or orders? Our team is ready to assist.</p>
             </div>
             <div className="flex gap-3">
-              <a href="#" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow hover:bg-emerald-700 transition-colors">Contact Support</a>
+              <a href="/contact" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow hover:bg-emerald-700 transition-colors">Contact Support</a>
               <a href="/shop" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-emerald-200 bg-white text-emerald-700 text-sm font-medium hover:bg-emerald-50 hover:border-emerald-400 transition-colors">Shop Now</a>
             </div>
           </div>

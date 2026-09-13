@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import MedicineCard from '../components/MedicineCard';
+import SEO from '../components/SEO.jsx';
 import { useScrollAnimation, animationClasses, AnimatedCard } from '../utils/animations.jsx';
 import { parseMedicinePrice } from '../utils/medicineDisplay.js';
 import { fetchMedicines } from '../api/medicines';
@@ -42,10 +43,16 @@ export default function ShopByCategory() {
     const max = values.length ? Math.max(...values) : 50;
     return Math.max(50, Math.ceil(max));
   }, [medicines]);
+  const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(() => maxPriceInData);
-  const [search, setSearch] = useState('');
+  // Preselect from ?search= too, so the navbar search box's "view all
+  // results" submission lands here pre-filtered, same as ?category= above.
+  const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const [sort, setSort] = useState('Featured');
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState('grid');
+  const PAGE_SIZE = 9;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     let active = true;
@@ -105,6 +112,35 @@ export default function ShopByCategory() {
     return Array.from(new Set(medicines.map(m => m.form).filter(Boolean))).sort();
   }, [medicines]);
 
+  // Product counts per filter option, so the sidebar can show "Antibiotics (12)"
+  // etc. without a separate API call - derived from the same in-memory list
+  // (minus deletedAt) that backs the filters themselves.
+  const activeMedicines = useMemo(() => medicines.filter(m => !m.deletedAt), [medicines]);
+  const categoryCounts = useMemo(() => {
+    const map = new Map();
+    for (const m of activeMedicines) {
+      const cats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];
+      cats.map(toLabel).filter(Boolean).map(normalizeCategory).forEach(c => {
+        map.set(c, (map.get(c) || 0) + 1);
+      });
+    }
+    return map;
+  }, [activeMedicines]);
+  const manufacturerCounts = useMemo(() => {
+    const map = new Map();
+    for (const m of activeMedicines) {
+      if (m.manufacturer) map.set(m.manufacturer, (map.get(m.manufacturer) || 0) + 1);
+    }
+    return map;
+  }, [activeMedicines]);
+  const formCounts = useMemo(() => {
+    const map = new Map();
+    for (const m of activeMedicines) {
+      if (m.form) map.set(m.form, (map.get(m.form) || 0) + 1);
+    }
+    return map;
+  }, [activeMedicines]);
+
   const filtered = useMemo(() => {
     let list = medicines.filter(m => !m.deletedAt).slice();
     const selectedCategoryNorm = normalizeString(selectedCategory);
@@ -118,7 +154,10 @@ export default function ShopByCategory() {
     });
     if (selectedManufacturer) list = list.filter(m => m.manufacturer === selectedManufacturer);
     if (selectedForm) list = list.filter(m => m.form === selectedForm);
-    list = list.filter((m) => parseMedicinePrice(m) <= Number(maxPrice));
+    list = list.filter((m) => {
+      const price = parseMedicinePrice(m);
+      return price >= Number(minPrice) && price <= Number(maxPrice);
+    });
     if (search) {
       const s = search.toLowerCase();
       list = list.filter(m => (m.name + ' ' + (m.description || '')).toLowerCase().includes(s));
@@ -127,7 +166,26 @@ export default function ShopByCategory() {
     if (sort === 'Price: High to Low') list.sort((a, b) => parseMedicinePrice(b) - parseMedicinePrice(a));
     if (sort === 'Name: A-Z') list.sort((a, b) => a.name.localeCompare(b.name));
     return list;
-  }, [medicines, selectedCategory, selectedManufacturer, selectedForm, maxPrice, search, sort]);
+  }, [medicines, selectedCategory, selectedManufacturer, selectedForm, minPrice, maxPrice, search, sort]);
+
+  // Active filter chips shown above the grid, each individually removable.
+  const activeFilters = useMemo(() => {
+    const chips = [];
+    if (search) chips.push({ key: 'search', label: `"${search}"`, clear: () => setSearch('') });
+    if (selectedCategory) chips.push({ key: 'category', label: selectedCategory, clear: () => setSelectedCategory('') });
+    if (selectedManufacturer) chips.push({ key: 'manufacturer', label: selectedManufacturer, clear: () => setSelectedManufacturer('') });
+    if (selectedForm) chips.push({ key: 'form', label: selectedForm, clear: () => setSelectedForm('') });
+    if (Number(minPrice) > 0 || Number(maxPrice) < maxPriceInData) {
+      chips.push({ key: 'price', label: `$${minPrice} - $${maxPrice}`, clear: () => { setMinPrice(0); setMaxPrice(maxPriceInData); } });
+    }
+    return chips;
+  }, [search, selectedCategory, selectedManufacturer, selectedForm, minPrice, maxPrice, maxPriceInData]);
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [selectedCategory, selectedManufacturer, selectedForm, minPrice, maxPrice, search, sort]);
+
+  const visibleProducts = filtered.slice(0, visibleCount);
 
   // If NO filters/search applied, we want to show ALL products (already true) but animate them.
   // const isPristine = !selectedCategory && !selectedManufacturer && !selectedForm && !search && sort === 'Featured' && Number(maxPrice) === 50;
@@ -136,6 +194,7 @@ export default function ShopByCategory() {
     setSelectedCategory('');
     setSelectedManufacturer('');
     setSelectedForm('');
+    setMinPrice(0);
     setMaxPrice(maxPriceInData);
     setSearch('');
     setSort('Featured');
@@ -143,6 +202,11 @@ export default function ShopByCategory() {
 
   return (
     <div className="shop-page root-bg">
+      <SEO
+        title="Shop Medicines"
+        description="Browse our complete range of healthcare products by category, manufacturer, and form — submit an inquiry on any medicine to get started."
+        path="/shop"
+      />
       <div className="container">
         {/* page header moved above the content so it appears under the logo/nav */}
         <div 
@@ -191,15 +255,16 @@ export default function ShopByCategory() {
             alignItems: 'center',
             gap: '8px'
           }}>
-            <span style={{
+            <label htmlFor="shop-sort-select" style={{
               color: '#6b7280',
               fontSize: '14px',
               fontWeight: '500'
             }}>
               Sort by:
-            </span>
-            <select 
-              value={sort} 
+            </label>
+            <select
+              id="shop-sort-select"
+              value={sort}
               onChange={e => setSort(e.target.value)}
               style={{
                 padding: '6px 12px',
@@ -217,6 +282,31 @@ export default function ShopByCategory() {
               <option>Price: High to Low</option>
               <option>Name: A-Z</option>
             </select>
+            <div className="view-toggle" role="group" aria-label="Switch product view">
+              <button
+                type="button"
+                className={`view-toggle-btn ${viewMode === 'grid' ? 'is-active' : ''}`}
+                aria-pressed={viewMode === 'grid'}
+                aria-label="Grid view"
+                onClick={() => setViewMode('grid')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
+                  <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className={`view-toggle-btn ${viewMode === 'list' ? 'is-active' : ''}`}
+                aria-pressed={viewMode === 'list'}
+                aria-label="List view"
+                onClick={() => setViewMode('list')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -240,8 +330,10 @@ export default function ShopByCategory() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ margin: 0 }}>Filters</h3>
-                <button 
+                <button
                   className="close-filters-btn"
+                  type="button"
+                  aria-label="Close filters"
                   onClick={() => setShowFilters(false)}
                   style={{ 
                     display: 'none',
@@ -298,8 +390,8 @@ export default function ShopByCategory() {
               </div>
 
               <div className="filter-section">
-                <div className="filter-title">Price Range</div>
-                <input className="price-range" type="range" min="0" max={maxPriceInData} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} />
+                <label className="filter-title" htmlFor="price-range">Price Range</label>
+                <input id="price-range" className="price-range" type="range" min="0" max={maxPriceInData} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} />
                 <div className="price-legend"><span>$0</span><span>${maxPrice}</span></div>
               </div>
 

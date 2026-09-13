@@ -38,8 +38,25 @@ export default function CategoryCarousel({ categories }) {
     [autoScroll.current]
   );
 
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  // AutoScroll runs continuously with stopOnInteraction: false, and its
+  // pointerDown/pointerUp listeners only cover drag gestures - a plain
+  // scrollPrev()/scrollNext() API call doesn't touch them at all, so the
+  // marquee was overriding a manual jump within a frame or two. Pausing
+  // explicitly around the jump (and resuming after a breather, not
+  // instantly) fixes that while leaving hover-to-pause/resume untouched.
+  const ARROW_RESUME_DELAY = 3500;
+
+  const scrollPrev = useCallback(() => {
+    autoScroll.current.stop();
+    emblaApi?.scrollPrev();
+    autoScroll.current.play(ARROW_RESUME_DELAY);
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    autoScroll.current.stop();
+    emblaApi?.scrollNext();
+    autoScroll.current.play(ARROW_RESUME_DELAY);
+  }, [emblaApi]);
 
   const onKeyDown = (event) => {
     if (event.key === 'ArrowLeft') {
@@ -84,7 +101,12 @@ export default function CategoryCarousel({ categories }) {
 
       <div
         ref={emblaRef}
-        className="overflow-hidden focus:outline-none"
+        // py-12 gives the clipping box enough headroom to contain the card's
+        // whileHover={{ y: -8 }} lift plus its hover shadow's blur radius
+        // (confirmed clipped without this - see CategoryCard.jsx); the
+        // matching -my-12 cancels the padding back out of the surrounding
+        // layout so this doesn't push the rest of the page down.
+        className="overflow-hidden py-12 -my-12 focus:outline-none"
         tabIndex={0}
         role="region"
         aria-roledescription="carousel"

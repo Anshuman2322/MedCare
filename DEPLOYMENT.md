@@ -79,17 +79,24 @@ cp server/.env.example server/.env   # fill in real values first
 docker compose up --build
 ```
 
-This brings up:
-- `server` on `http://localhost:5000`
-- `client` on `http://localhost:5173` (Nginx serving the Vite build)
-- `admin` on `http://localhost:5175` (Nginx serving the Vite build)
+`server`, `client`, and `admin` no longer publish host ports directly — a `caddy`
+service in front of them is the sole entrypoint (ports `80`/`443`), reverse-proxying
+each to the right container. With no domains configured, Caddy falls back to plain
+`localhost` ports: `client` on `:8080`, `admin` on `:8081`, `server`/API on `:8082`
+(see [`Caddyfile`](./Caddyfile)).
 
 To point the client/admin builds at a non-default API URL (e.g. deploying to
-a real domain), override the build arg:
+a real domain), set it in the root `.env` (or override the build arg directly) and
+rebuild:
 
 ```
 VITE_API_URL=https://api.yourdomain.com docker compose build client admin
+docker compose up -d
 ```
+
+Full detail — including production domain setup (`CLIENT_DOMAIN`/`ADMIN_DOMAIN`/
+`API_DOMAIN`, automatic Let's Encrypt certs) — is in the README's
+[Running with Docker](./README.md#running-with-docker) section.
 
 **Known limitation:** `server`'s no-database fallback mode reads/writes
 `client/src/data/medicines.json` and `categories.json` — a relative path
@@ -103,11 +110,17 @@ right in production and this doesn't come up.
 
 ## 4. Reverse proxy / TLS
 
-None of the above terminates TLS. Put a reverse proxy (Nginx, Caddy, your
-platform's built-in load balancer, Cloudflare, ...) in front of all three in
-production and terminate HTTPS there. The server already sets
-`app.set('trust proxy', 1)` so `secure` cookies and rate-limiting work
-correctly behind a standard reverse proxy.
+If you're using the Docker path above, this is already handled: `docker-compose.yml`
+includes a `caddy` service as the sole public entrypoint, terminating HTTPS with
+automatic Let's Encrypt certificates for whatever domains you set in the root
+`.env` (`CLIENT_DOMAIN` / `ADMIN_DOMAIN` / `API_DOMAIN`) — see [`Caddyfile`](./Caddyfile)
+and the README's [Running with Docker](./README.md#running-with-docker) section.
+
+If you're deploying outside Docker (manual builds, a platform without a built-in
+proxy), put a reverse proxy (Nginx, Caddy, your platform's built-in load balancer,
+Cloudflare, ...) in front of all three and terminate HTTPS there. The server
+already sets `app.set('trust proxy', 1)` so `secure` cookies and rate-limiting
+work correctly behind a standard reverse proxy.
 
 ## 5. Database
 

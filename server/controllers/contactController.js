@@ -1,7 +1,35 @@
 import ContactMessage from '../models/ContactMessage.js';
 import { escapeRegex } from '../utils/sanitize.js';
+import { sendEmail } from '../utils/sendEmail.js';
+import { logger } from '../config/logger.js';
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || '');
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+async function sendContactNotification(contactMessage) {
+  try {
+    const html = `
+      <h2>New contact message — CureNeed</h2>
+      <p><strong>Name:</strong> ${escapeHtml(contactMessage.name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(contactMessage.email)}</p>
+      <p><strong>Message:</strong></p>
+      <p>${escapeHtml(contactMessage.message).replace(/\n/g, '<br />')}</p>
+    `;
+    await sendEmail({
+      subject: 'New Contact Message — CureNeed',
+      html,
+      replyTo: contactMessage.email,
+    });
+  } catch (error) {
+    logger.error({ err: error }, '[Email] Contact notification failed');
+  }
+}
 
 export async function createContactMessage(req, res, next) {
   try {
@@ -21,6 +49,8 @@ export async function createContactMessage(req, res, next) {
     }
 
     const contactMessage = await ContactMessage.create({ name, email, message });
+
+    sendContactNotification(contactMessage).catch(() => {});
 
     res.status(201).json({ success: true, message: 'Message sent successfully.', id: contactMessage._id });
   } catch (error) {

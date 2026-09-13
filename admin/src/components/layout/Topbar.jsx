@@ -26,7 +26,7 @@ export default function Topbar() {
     <header className="sticky top-0 z-10 bg-slate-50/90 backdrop-blur border-b border-emerald-100">
       <div className="mx-auto max-w-6xl px-6 py-4 flex items-center gap-4 relative">
         <div>
-          <div className="text-xs uppercase tracking-[0.2em] text-emerald-600 font-semibold">MedCare Admin</div>
+          <div className="text-xs uppercase tracking-[0.2em] text-emerald-600 font-semibold">CureNeed Admin</div>
           <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
         </div>
         <div className="ml-auto flex items-center gap-3">

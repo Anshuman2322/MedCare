@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SEO from '../components/SEO.jsx';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
@@ -50,6 +51,11 @@ export default function Contact() {
 
   return (
     <div className="bg-white min-h-screen">
+      <SEO
+        title="Contact Us"
+        description="Have questions about a medicine or your inquiry? Reach the CureNeed team by email, phone, or the form below."
+        path="/contact"
+      />
       {/* Top Section */}
       <div className="w-full bg-sky-50/60 pb-2">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12">
@@ -80,8 +86,9 @@ export default function Contact() {
               <form onSubmit={handleSubmit}>
                 <h2 className="font-bold text-xl sm:text-2xl text-gray-900 mb-6">Send us a message</h2>
                 <div className="mb-4 sm:mb-5">
-                  <label className="block font-medium text-gray-900 mb-2">Name</label>
+                  <label htmlFor="contact-name" className="block font-medium text-gray-900 mb-2">Name</label>
                   <input
+                    id="contact-name"
                     type="text"
                     placeholder="Your name"
                     value={form.name}
@@ -91,8 +98,9 @@ export default function Contact() {
                   />
                 </div>
                 <div className="mb-4 sm:mb-5">
-                  <label className="block font-medium text-gray-900 mb-2">Email</label>
+                  <label htmlFor="contact-email" className="block font-medium text-gray-900 mb-2">Email</label>
                   <input
+                    id="contact-email"
                     type="email"
                     placeholder="your@email.com"
                     value={form.email}
@@ -102,8 +110,9 @@ export default function Contact() {
                   />
                 </div>
                 <div className="mb-6">
-                  <label className="block font-medium text-gray-900 mb-2">Message</label>
+                  <label htmlFor="contact-message" className="block font-medium text-gray-900 mb-2">Message</label>
                   <textarea
+                    id="contact-message"
                     placeholder="How can we help you?"
                     rows={4}
                     value={form.message}
@@ -257,9 +266,9 @@ export default function Contact() {
                 onMouseLeave={() => setFaqHover(([, b, c]) => [false, b, c])}
                 className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-7 shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-sky-200"
               >
-              <div className="font-semibold text-gray-900 mb-2 text-sm sm:text-base lg:text-lg">How long does shipping take?</div>
+              <div className="font-semibold text-gray-900 mb-2 text-sm sm:text-base lg:text-lg">How does ordering work?</div>
               <div className="text-gray-600 text-xs sm:text-sm lg:text-base leading-relaxed">
-                Standard shipping typically takes 3-5 business days. Express shipping is available for 1-2 day delivery.
+                CureNeed works on an inquiry basis rather than instant checkout. Submit an inquiry for the medicine you need from its product page, and our team will follow up directly by email or phone to confirm availability, pricing, and delivery details.
               </div>
             </div>
             </div>
@@ -273,9 +282,9 @@ export default function Contact() {
                 onMouseLeave={() => setFaqHover(([a, , c]) => [a, false, c])}
                 className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-7 shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-sky-200"
               >
-                <div className="font-semibold text-gray-900 mb-2 text-sm sm:text-base lg:text-lg">Do you ship internationally?</div>
+                <div className="font-semibold text-gray-900 mb-2 text-sm sm:text-base lg:text-lg">Do you ship to my location?</div>
                 <div className="text-gray-600 text-xs sm:text-sm lg:text-base leading-relaxed">
-                  Currently, we only ship within the United States. International shipping is coming soon.
+                  Delivery availability depends on the medicine and your location. Submit an inquiry and our team will confirm delivery options for you before your order is finalized.
                 </div>
               </div>
             </div>
@@ -291,7 +300,7 @@ export default function Contact() {
               >
                 <div className="font-semibold text-gray-900 mb-2 text-sm sm:text-base lg:text-lg">Are prescriptions required?</div>
                 <div className="text-gray-600 text-xs sm:text-sm lg:text-base leading-relaxed">
-                  Some medications require a valid prescription. You can upload your prescription during checkout or have your doctor send it directly to us.
+                  Some medications require a valid prescription. When you submit an inquiry for one of these, our team will follow up to arrange how to verify it — you can also have your doctor send it directly to us.
                 </div>
               </div>
             </div>

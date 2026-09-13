@@ -268,7 +268,7 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
           ×
         </button>
 
-        <div className="w-[40%] min-w-[320px] bg-slate-50 border-r border-slate-100 h-full p-6 flex flex-col gap-4 justify-between">
+        <div className="w-[40%] min-w-[320px] bg-slate-50 border-r border-slate-100 h-full max-h-full overflow-y-auto p-6 flex flex-col gap-4 justify-between">
           <div className="space-y-4">
             <div className="aspect-[4/3] rounded-xl overflow-hidden bg-white border border-slate-100 shadow-sm">
               {leftImage ? (
@@ -390,8 +390,9 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
 
                 <StepSection active={step === steps.notes}>
                   <div className="space-y-4">
-                    <div className="text-lg font-semibold text-gray-900">Additional requirement (optional)</div>
+                    <label htmlFor="inquiry-notes" className="block text-lg font-semibold text-gray-900">Additional requirement (optional)</label>
                     <textarea
+                      id="inquiry-notes"
                       rows="5"
                       value={formData.notes}
                       onChange={(e) => setField('notes', e.target.value)}
@@ -447,9 +448,10 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-slate-800">Quantity</label>
+                      <label htmlFor="inquiry-quantity" className="text-sm font-semibold text-slate-800">Quantity</label>
                       <div className="flex flex-wrap items-center gap-3">
                         <input
+                          id="inquiry-quantity"
                           type="number"
                           min="1"
                           inputMode="numeric"

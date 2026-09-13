@@ -1,4 +1,5 @@
 import React from 'react';
+import SEO from '../components/SEO.jsx';
 
 const sections = [
   {
@@ -34,6 +35,7 @@ const sections = [
 export default function TermsOfService() {
   return (
     <div className="bg-white min-h-screen">
+      <SEO title="Terms of Service" description="The terms governing your use of the CureNeed website and inquiry process." path="/terms-of-service" />
       <div className="w-full bg-sky-50/60 pb-2">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-8 text-center">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">

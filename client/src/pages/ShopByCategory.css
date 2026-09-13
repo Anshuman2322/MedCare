@@ -14,7 +14,7 @@
 .filters-card { width: 280px; border: 1px solid #e8eef2; border-radius: 12px; padding: 20px; background: #fff; }
 .filters-card h3 { font-size: 18px; margin-bottom: 12px; }
 .filter-section { margin-bottom: 18px; }
-.filter-title { font-weight: 600; color: #374151; margin-bottom: 8px; }
+.filter-title { display: block; font-weight: 600; color: #374151; margin-bottom: 8px; }
 .filter-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: #374151; cursor: pointer; }
 .filter-row { position: relative; padding-left: 26px; }
 .filter-row input { position: absolute; left: 0; opacity: 0; width: 0; height: 0; }

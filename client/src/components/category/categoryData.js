@@ -3,44 +3,31 @@ import {
   AntibioticsIllustration,
   ErectileDysfunctionIllustration,
   HeartCareIllustration,
-  MensHealthIllustration,
-  WomensHealthIllustration,
-  PrescriptionIllustration,
   VitaminsIllustration,
   SkinCareIllustration,
   DigestiveCareIllustration,
   ColdAndFluIllustration,
   DiabetesCareIllustration,
-  FirstAidIllustration,
-  MentalWellnessIllustration,
-  AllergyReliefIllustration,
-  BabyCareIllustration,
-  PersonalCareIllustration,
-  MedicalDevicesIllustration,
 } from './CategoryIllustrations.jsx';
 
-// Curated browse list for the homepage category carousel. This always
-// shows the full set of categories customers expect to be able to
-// explore on a premium US pharmacy site, rather than shrinking to
-// whatever 2-3 categories happen to have stock today - some may return
-// zero products until more inventory is seeded, same as any other filter.
+// Carousel entries are sourced directly from the real category taxonomy
+// (server/scripts/seedCategories.js / the Category model - the admin
+// medicine form's Category field is a <select> populated from that same
+// list, so any category added there in the future is guaranteed to line
+// up with one of these cards). Some may currently show 0 products until
+// inventory is seeded for them, same as any other filter - that's
+// expected. What's NOT okay is a card linking to a category name that
+// doesn't exist in the taxonomy at all, which is the bug this replaced:
+// 15 of the previous 18 entries (Heart Care, Baby Care, Cold & Flu, etc.)
+// used invented category names with zero path to ever matching a product.
 export const CAROUSEL_CATEGORIES = [
-  { name: 'Pain Relief', description: 'Fast pain relief medicines', illustration: PainReliefIllustration },
-  { name: "Men's Health", description: "Men's wellness products", illustration: MensHealthIllustration },
-  { name: "Women's Health", description: "Women's care essentials", illustration: WomensHealthIllustration },
-  { name: 'Heart Care', description: 'Heart health solutions', illustration: HeartCareIllustration },
-  { name: 'Diabetes Care', description: 'Blood sugar management support', illustration: DiabetesCareIllustration },
-  { name: 'Cold & Flu', description: 'Cold & flu relief', illustration: ColdAndFluIllustration },
-  { name: 'Skin Care', description: 'Skin health solutions', illustration: SkinCareIllustration },
-  { name: 'Digestive Health', description: 'Digestive care essentials', illustration: DigestiveCareIllustration },
-  { name: 'Vitamins & Supplements', description: 'Daily vitamin support', illustration: VitaminsIllustration },
-  { name: 'First Aid', description: 'Everyday first aid essentials', illustration: FirstAidIllustration },
-  { name: 'Prescription Medicines', description: 'Doctor recommended products', illustration: PrescriptionIllustration },
-  { name: 'Mental Wellness', description: 'Support for mind and mood', illustration: MentalWellnessIllustration },
-  { name: 'Allergy Relief', description: 'Fast seasonal allergy relief', illustration: AllergyReliefIllustration },
-  { name: 'Baby Care', description: 'Gentle care for your little one', illustration: BabyCareIllustration },
-  { name: 'Personal Care', description: 'Daily hygiene essentials', illustration: PersonalCareIllustration },
-  { name: 'Medical Devices', description: 'Trusted home health devices', illustration: MedicalDevicesIllustration },
   { name: 'Antibiotics', description: 'Trusted antibiotics', illustration: AntibioticsIllustration },
+  { name: 'Pain Relief', description: 'Fast pain relief medicines', illustration: PainReliefIllustration },
   { name: 'Erectile Dysfunction', description: "Men's wellness products", illustration: ErectileDysfunctionIllustration },
+  { name: 'Cardiology', description: 'Heart health medicines', illustration: HeartCareIllustration },
+  { name: 'Diabetes', description: 'Blood sugar management support', illustration: DiabetesCareIllustration },
+  { name: 'Multivitamins', description: 'Daily vitamin support', illustration: VitaminsIllustration },
+  { name: 'Dermatology', description: 'Skin health solutions', illustration: SkinCareIllustration },
+  { name: 'Respiratory Care', description: 'Relief for cold, cough & breathing', illustration: ColdAndFluIllustration },
+  { name: 'Gastro Care', description: 'Digestive health essentials', illustration: DigestiveCareIllustration },
 ];

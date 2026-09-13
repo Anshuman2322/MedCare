@@ -29,7 +29,7 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-slate-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md rounded-2xl bg-white shadow-xl border border-slate-100 p-8 space-y-6">
         <div className="space-y-2 text-center">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 font-bold text-lg">MC</div>
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 font-bold text-lg">CN</div>
           <h1 className="text-2xl font-semibold text-slate-900">Admin Login</h1>
           <p className="text-sm text-slate-600">Sign in to manage CureNeed</p>
         </div>

@@ -79,7 +79,12 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/inquiry', inquiryRoutes);
 app.use('/api/contact', contactRoutes);
-app.use('/api/test', testRoutes);
+// Internal diagnostic route (sends a real email via a paid provider on every
+// hit) — never mounted in production, so a hit against it there 404s before
+// any auth/rate-limit middleware even runs.
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api/test', testRoutes);
+}
 
 app.get('/api/health', (_req, res) => {
   const dbConnected = mongoose.connection.readyState === 1;
@@ -107,7 +112,12 @@ if (process.env.NODE_ENV === 'production') {
       },
     })
   );
-  app.get('*', (_req, res) => {
+  app.get('*', (req, res, next) => {
+    // Unmatched /api/* paths must fall through to the real JSON 404 handler
+    // below, not be swallowed by the SPA fallback — otherwise a route that's
+    // conditionally unmounted (e.g. /api/test in production) would render as
+    // an HTML 200 instead of a 404.
+    if (req.path.startsWith('/api/')) return next();
     res.setHeader('Cache-Control', 'no-cache');
     res.sendFile(path.join(clientPath, 'index.html'));
   });

@@ -1,0 +1,37 @@
+/* color/transform must live here, not in the inline style prop, so these
+   pseudo-classes can actually override them - inline styles beat any
+   external stylesheet rule regardless of selector specificity. */
+.footer-wordmark-btn {
+  color: #111111;
+  transition: all 200ms ease;
+}
+
+.footer-wordmark-btn:hover,
+.footer-wordmark-btn:focus-visible {
+  color: #059669;
+  transform: translateY(-2px);
+}
+
+.footer-wordmark-btn:active {
+  transform: translateY(0px);
+  transition: all 100ms ease;
+}
+
+/* Cursor-following spotlight reveal. Sits exactly on top of the base black
+   text via inset: 0, masked to a circle so only the patch under the cursor
+   shows emerald. pointer-events: none so it never blocks the click-to-
+   scroll-top or the button's own hover/focus hit-testing. --mx/--my are
+   written directly to this element's inline style from a requestAnimationFrame
+   loop in Footer.jsx (a CSS transition on mask-image does not smoothly
+   interpolate the embedded position in either Chromium or Firefox - it
+   snaps instantly - so the trailing motion is done in JS instead) and
+   default to off-screen via the var() fallback until the cursor actually
+   enters the wordmark. */
+.footer-wordmark-overlay {
+  position: absolute;
+  inset: 0;
+  color: #059669;
+  pointer-events: none;
+  mask-image: radial-gradient(circle clamp(90px, 18vw, 340px) at var(--mx, -999px) var(--my, -999px), black 0%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle clamp(90px, 18vw, 340px) at var(--mx, -999px) var(--my, -999px), black 0%, transparent 100%);
+}

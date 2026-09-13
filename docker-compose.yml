@@ -6,8 +6,6 @@ services:
     environment:
       NODE_ENV: production
       PORT: 5000
-    ports:
-      - "5000:5000"
     restart: unless-stopped
 
   client:
@@ -16,23 +14,50 @@ services:
       args:
         # Value the *browser* uses to reach the API — this is baked into the
         # static build at image-build time, not read at container runtime.
+        # Point this at the API_DOMAIN Caddy terminates below (see
+        # Caddyfile), not directly at the server container.
         # Override with: docker compose build --build-arg VITE_API_URL=https://api.example.com client
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
-    ports:
-      - "5173:80"
-    depends_on:
-      - server
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8082}
     restart: unless-stopped
 
   admin:
     build:
       context: ./admin
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8082}
         VITE_CLOUDINARY_CLOUD: ${VITE_CLOUDINARY_CLOUD:-}
         VITE_CLOUDINARY_PRESET: ${VITE_CLOUDINARY_PRESET:-}
+    restart: unless-stopped
+
+  # Sole entrypoint: terminates TLS (automatic HTTPS via Let's Encrypt for
+  # real domains) and reverse-proxies to the three services above, none of
+  # which publish a host port directly anymore. See Caddyfile for the
+  # per-service domain configuration.
+  caddy:
+    image: caddy:2-alpine
     ports:
-      - "5175:80"
+      - "80:80"
+      - "443:443"
+    # Bare-name passthrough: only sets these inside the container if they're
+    # actually defined in the host env / root .env. That matters here — if
+    # we instead wrote "CLIENT_DOMAIN: ${CLIENT_DOMAIN:-}", an unset var
+    # would still be passed through as an empty string, which is not the
+    # same as "unset" to the Caddyfile's {$CLIENT_DOMAIN:default} fallback
+    # and would break the local-default case below.
+    environment:
+      - CLIENT_DOMAIN
+      - ADMIN_DOMAIN
+      - API_DOMAIN
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
     depends_on:
+      - client
+      - admin
       - server
     restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

@@ -14,7 +14,10 @@ export default function Sidebar() {
     const base = [];
     if (can('dashboard')) base.push({ to: '/dashboard', label: 'Dashboard' });
     if (can('medicines')) {
-      base.push({ to: '/medicines', label: 'Medicines' });
+      // end: true so this doesn't also light up on /medicines/add (and
+      // other /medicines/* routes) - NavLink treats a link as active
+      // whenever the current path starts with `to` unless `end` is set.
+      base.push({ to: '/medicines', label: 'Medicines', end: true });
       base.push({ to: '/medicines/add', label: 'Add Medicine' });
     }
     if (can('categories')) base.push({ to: '/categories', label: 'Categories' });
@@ -42,10 +45,10 @@ export default function Sidebar() {
         <div className="flex flex-col h-full px-5 py-6">
           <div className="flex items-center gap-3 mb-8">
             <div className="h-10 w-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-lg">
-              MC
+              CN
             </div>
             <div>
-              <div className="text-sm uppercase tracking-[0.15em] text-emerald-600 font-semibold">MedCare</div>
+              <div className="text-sm uppercase tracking-[0.15em] text-emerald-600 font-semibold">CureNeed</div>
               <div className="text-base font-semibold text-slate-900">Admin Panel</div>
             </div>
           </div>
@@ -55,6 +58,7 @@ export default function Sidebar() {
               <NavLink
                 key={item.to}
                 to={item.to}
+                end={item.end}
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
                     isActive

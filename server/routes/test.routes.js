@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import { Resend } from 'resend';
 import { logger } from '../config/logger.js';
+import { protectAdmin } from '../middleware/auth.middleware.js';
+import { testEmailLimiter } from '../middleware/rateLimit.js';
 
 const router = Router();
 
-router.get('/email', async (_req, res) => {
+router.get('/email', testEmailLimiter, protectAdmin, async (_req, res) => {
   const { RESEND_API_KEY, ADMIN_EMAIL } = process.env;
 
   if (!RESEND_API_KEY || !ADMIN_EMAIL) {

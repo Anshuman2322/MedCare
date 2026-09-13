@@ -5,7 +5,15 @@ import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 import { useCurrency } from '../store/useStore.jsx';
 import { formatPrice } from '../utils/currency';
 import InquiryModal from '../components/InquiryModal.jsx';
+import SEO from '../components/SEO.jsx';
 import { fetchMedicine, fetchMedicines } from '../api/medicines';
+import { withCloudinaryTransform } from '../utils/medicineDisplay.js';
+
+function truncate(text, max) {
+  const clean = String(text || '').trim();
+  if (clean.length <= max) return clean;
+  return `${clean.slice(0, max - 1).trimEnd()}…`;
+}
 
 export default function MedicineDetails() {
   const { slug } = useParams();
@@ -247,6 +255,16 @@ export default function MedicineDetails() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEO
+        title={medicine.name}
+        description={truncate(
+          medicine.description || `${medicine.name}${primaryCategory ? ` — ${primaryCategory}` : ''}. ${priceLabel}. Submit an inquiry to check availability.`,
+          160
+        )}
+        image={withCloudinaryTransform(mainImage, 1200)}
+        path={`/medicine/${slug}`}
+        type="product"
+      />
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
         <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-8 lg:p-10 space-y-10">
           <Link to="/shop" className="inline-flex items-center text-sm text-emerald-700 hover:text-emerald-900">
@@ -259,8 +277,10 @@ export default function MedicineDetails() {
               <div className={`rounded-2xl bg-white p-5 relative shadow-md border border-gray-100 ${animationClasses.fadeLeft(imageVisible)}`}>
                 {mainImage ? (
                   <img
-                    src={mainImage}
+                    src={withCloudinaryTransform(mainImage, 900)}
                     alt={medicine?.name || ''}
+                    width="420"
+                    height="420"
                     className="w-full h-auto object-contain rounded-xl bg-gray-50"
                     loading="lazy"
                   />
@@ -304,7 +324,7 @@ export default function MedicineDetails() {
                         }`}
                         aria-label={`Show image ${i + 1}`}
                       >
-                        <img src={src} alt={`thumb ${i + 1}`} className="h-full w-full object-cover bg-white" loading="lazy" />
+                        <img src={withCloudinaryTransform(src, 160)} alt={`${medicine?.name || 'Medicine'} view ${i + 1}`} width="64" height="64" className="h-full w-full object-cover bg-white" loading="lazy" />
                       </button>
                     ))}
                   </div>
@@ -313,7 +333,14 @@ export default function MedicineDetails() {
             </div>
 
             <div ref={contentRef} className={`flex-1 space-y-5 ${animationClasses.fadeRight(contentVisible)}`}>
-              <div className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 rounded-full px-2.5 py-1 self-start">{primaryCategory}</div>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 rounded-full px-2.5 py-1">{primaryCategory}</div>
+                {medicine?.requiresPrescription && (
+                  <div className="inline-flex items-center text-xs font-bold uppercase tracking-wide text-red-700 bg-red-50 border border-red-200 rounded-full px-2.5 py-1">
+                    Rx Required
+                  </div>
+                )}
+              </div>
 
               <div className="flex flex-col gap-2">
                 <h1 className="text-2xl font-semibold text-gray-900 leading-tight">{medicine?.name}</h1>
@@ -327,7 +354,7 @@ export default function MedicineDetails() {
                 <div className="text-sm text-gray-600">Stock: {selectedVariant?.stock ?? 'N/A'}</div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8 pt-6 text-sm">
+              <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8 pt-6 text-sm">
                 {medicine?.manufacturer && (
                   <div>
                     <div className="text-xs text-gray-500 uppercase tracking-wide">Manufacturer</div>

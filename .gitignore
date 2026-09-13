@@ -246,3 +246,4 @@ coverage.xml
 !server/.env.example
 !client/.env.example
 !admin/.env.example
+e2e/.auth/

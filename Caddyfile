@@ -1,0 +1,34 @@
+# Single TLS-terminating entrypoint for all three services. Caddy obtains
+# and renews Let's Encrypt certificates automatically for any real, publicly
+# resolvable domain used as a site address below — no manual cert handling.
+#
+# Production: set CLIENT_DOMAIN / ADMIN_DOMAIN / API_DOMAIN (in the root
+# .env docker-compose reads) to real domains that already point at this
+# host's public IP, e.g.:
+#   CLIENT_DOMAIN=app.cureneed.com
+#   ADMIN_DOMAIN=admin.cureneed.com
+#   API_DOMAIN=api.cureneed.com
+# and make sure ports 80 and 443 reach this host (automatic HTTPS needs 80
+# for the ACME HTTP challenge as well as 443).
+#
+# Also update CORS_ORIGINS in server/.env to the same client/admin domains
+# (https://), and VITE_API_URL passed as a build arg to the client/admin
+# images to https://<API_DOMAIN> — see docker-compose.yml.
+#
+# Local `docker compose up` with no .env falls back to plain localhost
+# ports below; Caddy uses its own local CA for these (not a real cert), so
+# browsers will flag it as untrusted unless you run `caddy trust` — that's
+# expected for local testing and not a concern in production once real
+# domains are set.
+
+{$CLIENT_DOMAIN:localhost:8080} {
+	reverse_proxy client:80
+}
+
+{$ADMIN_DOMAIN:localhost:8081} {
+	reverse_proxy admin:80
+}
+
+{$API_DOMAIN:localhost:8082} {
+	reverse_proxy server:5000
+}

@@ -13,6 +13,34 @@ const RECOMMENDED_IN_PRODUCTION = [
   'CLOUD_API_SECRET',
 ];
 
+// Optional numeric overrides consumed via `Number(process.env.X) || default`
+// in rateLimit.js — that pattern silently falls back to the default on both
+// "unset" and "set but not a number", so validation here is what gives an
+// operator visibility into which case they're actually in.
+const OPTIONAL_NUMERIC = {
+  RATE_LIMIT_WINDOW_MS: 15 * 60 * 1000,
+  RATE_LIMIT_MAX: 300,
+  AUTH_RATE_LIMIT_MAX: 20,
+  INQUIRY_RATE_LIMIT_MAX: 30,
+};
+
+function validateOptionalNumericEnv() {
+  for (const [key, defaultValue] of Object.entries(OPTIONAL_NUMERIC)) {
+    const raw = process.env[key];
+
+    if (raw === undefined) {
+      logger.info(`${key} not set — using default of ${defaultValue}.`);
+      continue;
+    }
+
+    const parsed = Number(raw);
+    if (!Number.isInteger(parsed) || parsed <= 0) {
+      logger.fatal(`${key} must be a positive integer if set (got "${raw}").`);
+      process.exit(1);
+    }
+  }
+}
+
 export function validateEnv() {
   const missing = REQUIRED.filter((key) => !process.env[key]);
   if (missing.length) {
@@ -26,6 +54,8 @@ export function validateEnv() {
     logger.fatal('JWT_SECRET is too short (minimum 16 characters) — refusing to start with a weak signing secret.');
     process.exit(1);
   }
+
+  validateOptionalNumericEnv();
 
   const isProduction = process.env.NODE_ENV === 'production';
   if (!isProduction) return;

@@ -12,13 +12,14 @@ const FloatingHomeButton = () => {
   return (
     <Link
       to="/"
-      className="fixed bottom-6 right-6 z-50 inline-flex items-center justify-center w-14 h-14 bg-emerald-500 text-white rounded-full shadow-lg hover:bg-emerald-600 hover:scale-110 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-emerald-300 md:hidden"
-      title="Back to Home"
+      className="fixed bottom-5 right-5 z-50 inline-flex items-center justify-center w-11 h-11 bg-emerald-500 text-white rounded-full shadow-lg ring-4 ring-white/80 hover:bg-emerald-600 hover:scale-110 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-emerald-300 md:hidden"
+      aria-label="Back to Home"
     >
       <svg
-        className="w-6 h-6"
+        className="w-5 h-5"
         fill="currentColor"
         viewBox="0 0 20 20"
+        aria-hidden="true"
       >
         <path
           fillRule="evenodd"

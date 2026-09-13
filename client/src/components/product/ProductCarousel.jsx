@@ -73,7 +73,11 @@ export default function ProductCarousel({ products, onQuickInquiry }) {
       <div className="relative">
         <div
           ref={emblaRef}
-          className="overflow-hidden focus:outline-none"
+          // py-12 -my-12: gives the overflow-hidden clip box headroom to
+          // contain the card's hover lift + shadow blur (same technique as
+          // CategoryCarousel.jsx) without shifting surrounding layout, since
+          // the negative margin cancels the padding back out.
+          className="overflow-hidden py-12 -my-12 focus:outline-none"
           tabIndex={0}
           role="region"
           aria-roledescription="carousel"
