@@ -127,6 +127,7 @@ export default function CategoryCarousel({ categories }) {
                 name={c.name}
                 description={c.description}
                 Illustration={c.illustration}
+                count={c.count}
                 href={`/shop?category=${encodeURIComponent(c.name)}`}
                 tabIndex={hidden ? -1 : 0}
               />

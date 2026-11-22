@@ -4,23 +4,10 @@ import { motion } from 'framer-motion';
 import { useCurrency } from '../../store/useStore.jsx';
 import { formatPrice } from '../../utils/currency';
 import { parseMedicinePrice, resolveMedicineImage } from '../../utils/medicineDisplay.js';
-import { isWishlisted, toggleWishlist } from '../../utils/wishlist.js';
 import ImagePlaceholder from '../common/ImagePlaceholder.jsx';
-
-const HeartIcon = ({ filled }) => (
-  <svg
-    className="h-5 w-5"
-    viewBox="0 0 24 24"
-    fill={filled ? '#EF4444' : 'none'}
-    stroke={filled ? '#EF4444' : '#64748B'}
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 10-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z" />
-  </svg>
-);
+import FavoriteButton from '../common/FavoriteButton.jsx';
+import { showToast } from '../../store/toastStore.js';
+import { addToCart } from '../../store/cartStore.js';
 
 const StarIcon = ({ filled }) => (
   <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill={filled ? '#F59E0B' : '#E5E7EB'} aria-hidden="true">
@@ -31,9 +18,6 @@ const StarIcon = ({ filled }) => (
 // Real, data-driven badge only - never fabricated marketing claims like
 // "Best Seller" or "FDA Approved" with nothing behind them.
 function getBadge(product) {
-  if (product.requiresPrescription) {
-    return { label: 'Rx Only', className: 'bg-red-50 text-red-700 border-red-200' };
-  }
   const createdAt = product.createdAt ? new Date(product.createdAt) : null;
   const isNew = createdAt && Date.now() - createdAt.getTime() < 30 * 24 * 60 * 60 * 1000;
   if (isNew) {
@@ -49,8 +33,6 @@ function getBadge(product) {
 export default function ProductCard({ product, onQuickInquiry }) {
   const { currency } = useCurrency();
   const slug = product.slug || product._id;
-  const [wishlisted, setWishlisted] = useState(() => isWishlisted(slug));
-  const [bounce, setBounce] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const imageSrc = resolveMedicineImage(product, 480);
@@ -64,17 +46,15 @@ export default function ProductCard({ product, onQuickInquiry }) {
     ? product.categories[0]
     : product.category;
 
-  const handleWishlistClick = (event) => {
+  const handleAddToCart = (event) => {
     event.preventDefault();
-    const next = toggleWishlist(slug);
-    setWishlisted(next);
-    setBounce(true);
-    setTimeout(() => setBounce(false), 400);
+    addToCart(product, { quantity: 1 });
+    showToast({ text: 'Added to cart', actionLabel: 'View Cart', actionTo: '/cart' });
   };
 
   return (
     <motion.div
-      className="group relative flex h-full min-h-[520px] flex-col overflow-hidden rounded-[20px] border border-[#E5E7EB] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-[#0f7d54] hover:shadow-[0_24px_48px_-18px_rgba(16,163,74,0.25)]"
+      className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[20px] border border-[#E5E7EB] bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-[#0f7d54] hover:shadow-[0_24px_48px_-18px_rgba(16,163,74,0.25)] sm:min-h-[520px] sm:p-5"
       whileHover={{ y: -6 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
     >
@@ -84,8 +64,9 @@ export default function ProductCard({ product, onQuickInquiry }) {
         className="absolute inset-0 z-0 rounded-[20px] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0f7d54] focus-visible:ring-offset-2"
       />
 
-      <div className="relative z-10 flex h-full flex-col">
-        <div className="relative mb-4 h-56 w-full overflow-hidden rounded-2xl bg-[linear-gradient(180deg,#F8FAFC_0%,#EEFDF5_100%)]">
+      {/* Clicks fall through this layer to the card link underneath; only the buttons take them. */}
+      <div className="pointer-events-none relative z-10 flex h-full flex-col">
+        <div className="relative mb-4 aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[linear-gradient(180deg,#F8FAFC_0%,#EEFDF5_100%)] sm:aspect-auto sm:h-56">
           {!imageLoaded && !imageError && <div className="absolute inset-0 animate-pulse bg-slate-100/80" aria-hidden="true" />}
           {badge && (
             <span className={`absolute left-3 top-3 z-20 rounded-full border px-2.5 py-1 text-[11px] font-bold tracking-wide ${badge.className}`}>
@@ -109,9 +90,9 @@ export default function ProductCard({ product, onQuickInquiry }) {
           )}
         </div>
 
-        <div className="flex-1 pointer-events-none">
+        <div className="flex-1">
           <div className="text-xs font-medium uppercase tracking-[0.12em] text-[#64748B]">{category}</div>
-          <h3 className="mt-1 line-clamp-2 min-h-[3.5rem] text-[18px] font-semibold leading-snug text-[#0F172A]">
+          <h3 className="mt-1 line-clamp-2 min-h-[3rem] text-base font-semibold leading-snug text-[#0F172A] transition-colors group-hover:text-[#0f7d54] sm:min-h-[3.5rem] sm:text-[18px]">
             {product.name}
           </h3>
 
@@ -123,7 +104,7 @@ export default function ProductCard({ product, onQuickInquiry }) {
                 ))}
               </div>
               <span className="text-xs font-medium text-[#64748B]">
-                {rating.toFixed(1)}{reviewCount !== null ? ` (${reviewCount} Reviews)` : ''}
+                {rating.toFixed(1)}{reviewCount !== null ? ` (${reviewCount} review${reviewCount === 1 ? '' : 's'})` : ''}
               </span>
             </div>
           )}
@@ -138,7 +119,7 @@ export default function ProductCard({ product, onQuickInquiry }) {
           </div>
         </div>
 
-        <div className="relative z-20 mt-5 flex items-center gap-2">
+        <div className="pointer-events-auto relative z-20 mt-5 flex items-center gap-2">
           <button
             type="button"
             onClick={() => onQuickInquiry?.(product)}
@@ -146,18 +127,22 @@ export default function ProductCard({ product, onQuickInquiry }) {
           >
             Inquire Now
           </button>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            aria-label={`Add ${product.name} to cart`}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#E5E7EB] bg-white text-[#0f7d54] transition-colors duration-200 hover:border-[#0f7d54] hover:bg-emerald-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0f7d54] focus-visible:ring-offset-2"
+          >
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+            </svg>
+          </button>
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={handleWishlistClick}
-        aria-pressed={wishlisted}
-        aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
-        className={`absolute right-4 top-4 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 shadow-[0_8px_18px_rgba(15,23,42,0.12)] ring-1 ring-[#E5E7EB] transition-transform duration-200 hover:bg-white hover:ring-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0f7d54] ${bounce ? 'scale-125' : 'scale-100'}`}
-      >
-        <HeartIcon filled={wishlisted} />
-      </button>
+      <FavoriteButton product={product} className="absolute right-4 top-4 z-30" />
     </motion.div>
   );
 }

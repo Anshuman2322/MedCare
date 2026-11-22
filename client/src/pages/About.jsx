@@ -1,11 +1,24 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import aboutTeam from '../assets/about-team.jpg';
 import SEO from '../components/SEO.jsx';
+import useCatalogue from '../hooks/useCatalogue';
+import useOverallRating from '../hooks/useOverallRating';
+import { catalogueStats } from '../utils/catalogue';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
+import { BUSINESS } from '../config/business';
+import aboutTeam from '../assets/about-team.jpg';
+
+// Everything this page says about the business is either on public record
+// (GST, IEC, the IndiaMART profile and its reviews), supplied by the owner
+// (buyer countries), true of how the site works (free quotes, 24/7 chat), or
+// counted live from the catalogue. No certifications, licences or founding
+// dates that cannot be shown.
+const { indiamart, countries } = BUSINESS;
 
 const HeaderHero = () => {
   const [ref, isVisible] = useScrollAnimation(0.1);
+  const overall = useOverallRating();
 
   return (
     <section className="bg-sky-50 border-b border-gray-100">
@@ -15,10 +28,21 @@ const HeaderHero = () => {
       >
         <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900">About CureNeed</h1>
         <p className="mt-4 max-w-3xl mx-auto text-gray-600 text-base sm:text-lg leading-7">
-          Delivering trusted healthcare products to families across America
-          <br />
-          since 2010
+          Supplying branded generic medicines to buyers across the USA, UK, Canada,
+          <br className="hidden sm:block" />
+          {' '}Australia, India and beyond, with a clear quote for every request.
         </p>
+        <div className="mt-6 min-h-[38px]">
+          {overall.status !== 'loading' && (
+            <Link
+              to="/reviews"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-gray-200 hover:ring-emerald-300"
+            >
+              <span className="tracking-[2px] text-amber-500" aria-hidden="true">{'★★★★★'}</span>
+              Rated {overall.average.toFixed(1)}/5 by our buyers
+            </Link>
+          )}
+        </div>
       </div>
     </section>
   );
@@ -26,26 +50,25 @@ const HeaderHero = () => {
 
 const missionFeatures = [
   {
-    label: 'Quality Assured',
+    label: 'Free Quote Requests',
     icon: (
       <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-        <path d="M5 13l4 4L19 7" />
+        <path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0L3 13V3h10l7.6 7.6a2 2 0 010 2.8z" />
+        <circle cx="7.5" cy="7.5" r="1.5" />
       </svg>
     ),
   },
   {
-    label: 'Fast Delivery',
+    label: 'Clear Product Details',
     icon: (
       <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-        <path d="M3 7h11v10H3z" />
-        <path d="M14 10h4l3 3v4h-7z" />
-        <circle cx="8" cy="18" r="2" />
-        <circle cx="18" cy="18" r="2" />
+        <path d="M9 6h11M9 12h11M9 18h11" />
+        <path d="M4 6h.01M4 12h.01M4 18h.01" />
       </svg>
     ),
   },
   {
-    label: 'Licensed Pharmacy',
+    label: 'GST & IEC Registered',
     icon: (
       <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
         <path d="M12 3l7 3v5c0 4.8-3 9.2-7 10-4-0.8-7-5.2-7-10V6l7-3z" />
@@ -54,11 +77,10 @@ const missionFeatures = [
     ),
   },
   {
-    label: '24/7 Support',
+    label: '24/7 Chat Support',
     icon: (
       <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 7v5l3 3" />
+        <path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z" />
       </svg>
     ),
   },
@@ -101,8 +123,9 @@ const MissionSection = () => {
             <div className="aspect-[4/3] overflow-hidden rounded-[24px] shadow-[0_30px_60px_rgba(15,23,42,0.18)] ring-1 ring-gray-100">
               <img
                 src={aboutTeam}
-                alt="CureNeed professional team"
+                alt="Healthcare professionals in a pharmacy"
                 className="h-full w-full object-cover"
+                loading="lazy"
               />
             </div>
           </motion.div>
@@ -136,8 +159,9 @@ const MissionSection = () => {
               transition={{ duration: 0.6, delay: 0.16, ease: 'easeOut' }}
               className="mb-5 text-[18px] leading-[1.8] text-gray-600"
             >
-              At CureNeed, we believe everyone deserves access to quality healthcare products,
-              delivered quickly and affordably to their doorstep.
+              At CureNeed, we believe finding the right medicine should be simple: clear product
+              details, a fair quote, and a real person to answer your questions. That is how we
+              serve buyers in {countries.length}+ countries today.
             </motion.p>
 
             <motion.p
@@ -147,8 +171,8 @@ const MissionSection = () => {
               transition={{ duration: 0.6, delay: 0.24, ease: 'easeOut' }}
               className="mb-10 text-[18px] leading-[1.8] text-gray-600"
             >
-              Every product meets the highest safety standards, sourced only from certified
-              manufacturers and licensed distributors we trust.
+              Every listing names the active ingredient, strength and pack size. Send a free
+              request and our team replies with availability and price before anything is decided.
             </motion.p>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -196,7 +220,7 @@ const ValuesSection = () => {
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Quality</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">We never compromise on the quality of products. Every item is verified and stored under proper conditions to maintain efficacy.</p>
+            <p className="text-gray-600 text-sm leading-relaxed">We list branded medicines from established manufacturers and show the ingredient, strength and pack for each one, so you know exactly what you are asking about.</p>
           </div>
           <div 
             ref={card2Ref}
@@ -211,7 +235,7 @@ const ValuesSection = () => {
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Trust</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">Building lasting relationships with our customers through transparency, reliability, and consistent delivery of genuine products.</p>
+            <p className="text-gray-600 text-sm leading-relaxed">Clear quotes and straight answers about what we can and cannot supply. Our registration details are public and listed on this page.</p>
           </div>
           <div 
             ref={card3Ref}
@@ -228,7 +252,7 @@ const ValuesSection = () => {
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Accessibility</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">Making healthcare products accessible to everyone, regardless of location, through fast and secure delivery services.</p>
+            <p className="text-gray-600 text-sm leading-relaxed">Ask about any product from wherever you are. If it is not in the catalogue yet, send a request and our team will check whether we can source it.</p>
           </div>
         </div>
       </div>
@@ -239,14 +263,17 @@ const ValuesSection = () => {
 const BusinessDetailsSection = () => {
   const [sectionRef, sectionVisible] = useScrollAnimation(0.1);
 
+  // GST and IEC are shown masked (last 4 characters only) at the owner's
+  // request. Only the masked form is kept in the code, so the full numbers
+  // never reach the browser. They are shared with buyers on request.
   const details = [
-    { label: 'Nature of Business', value: 'Service Provider and Others' },
+    { label: 'GST Number', value: '•••••••••••N1ZD', masked: true, highlight: true },
+    { label: 'Import Export Code (IEC)', value: '••••••766N', masked: true },
     { label: 'Legal Status of Firm', value: 'Proprietorship' },
-    { label: 'Annual Turnover', value: '0 - 40 L' },
+    { label: 'Nature of Business', value: 'Service Provider and Others' },
     { label: 'GST Registration Date', value: '20-12-2024' },
+    { label: 'Annual Turnover', value: '0 - 40 L' },
     { label: 'Total Number of Employees', value: 'Upto 10 People' },
-    { label: 'Import Export Code (IEC)', value: 'GHJPP2766N' },
-    { label: 'GST Number', value: '09GHJPP2766N1ZD', highlight: true }
   ];
 
   return (
@@ -259,39 +286,46 @@ const BusinessDetailsSection = () => {
       >
         <div className="text-center mb-6">
           <h2 className="font-extrabold text-2xl sm:text-3xl text-gray-900 tracking-tight">Business Details</h2>
-          <p className="text-gray-600 text-sm sm:text-base">Verified registration and company profile information</p>
+          <p className="text-gray-600 text-sm sm:text-base">
+            Our registration details. Full GST and IEC numbers are shared with buyers on request.
+          </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {details.map((d) => (
             <div
               key={d.label}
-              className={`bg-white rounded-xl border p-4 shadow-sm flex items-start gap-3 ${
-                d.highlight ? 'ring-2 ring-emerald-400 bg-emerald-50/40' : 'border-gray-200'
+              className={`bg-white rounded-xl border p-4 shadow-sm ${
+                d.highlight ? 'border-emerald-300 ring-2 ring-emerald-400 bg-emerald-50/40 sm:col-span-2' : 'border-gray-200'
               }`}
             >
-              <div className="text-sm text-gray-500 flex-1">
-                <div className="mb-1 flex items-center gap-2">
-                  {d.label}
-                  {d.highlight && (
-                    <span className="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 text-[11px] font-semibold px-2 py-0.5 ring-1 ring-emerald-200">
-                      Important
-                    </span>
-                  )}
-                </div>
-                <div className={`${d.highlight ? 'text-emerald-700 font-semibold font-mono tracking-wide' : 'text-gray-900 font-medium'}`}>
-                  {d.value}
-                </div>
+              <div className="mb-1 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+                {d.label}
+                {d.highlight && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 text-emerald-700 text-[11px] font-semibold px-2 py-0.5 ring-1 ring-emerald-200">
+                    <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.7-9.3a1 1 0 00-1.4-1.4L9 10.6 7.7 9.3a1 1 0 00-1.4 1.4l2 2a1 1 0 001.4 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Verified by IndiaMART
+                  </span>
+                )}
               </div>
-              {d.highlight && (
-                <button
-                  type="button"
-                  className="h-8 px-2 text-xs rounded-md border border-emerald-300 text-emerald-700 hover:bg-emerald-50"
-                  onClick={() => navigator.clipboard?.writeText(d.value)}
-                  title="Copy GST Number"
-                >
-                  Copy
-                </button>
-              )}
+              <div
+                className={`flex items-center gap-2 ${
+                  d.masked ? 'font-mono font-semibold tracking-wider' : 'font-medium'
+                } ${d.highlight ? 'text-emerald-700' : 'text-gray-900'}`}
+              >
+                {d.masked && (
+                  <svg className="h-4 w-4 shrink-0 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <rect x="5" y="11" width="14" height="10" rx="2" />
+                    <path d="M8 11V7a4 4 0 018 0v4" />
+                  </svg>
+                )}
+                <span>
+                  {d.masked && <span className="sr-only">Ending in </span>}
+                  <span aria-hidden={d.masked || undefined}>{d.value}</span>
+                  {d.masked && <span className="sr-only">{d.value.replace(/•/g, '')}</span>}
+                </span>
+              </div>
             </div>
           ))}
         </div>
@@ -300,7 +334,18 @@ const BusinessDetailsSection = () => {
   );
 };
 
+// A plain status line under each IndiaMART badge (not a link).
+const BadgeStatus = ({ children }) => (
+  <div className="mt-3 inline-flex items-center text-emerald-600 font-semibold text-sm">
+    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+    </svg>
+    {children}
+  </div>
+);
+
 const TrustSection = () => {
+  const overall = useOverallRating();
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
   const [card1Ref, card1Visible] = useScrollAnimation(0.1, 100);
   const [card2Ref, card2Visible] = useScrollAnimation(0.1, 200);
@@ -322,72 +367,64 @@ const TrustSection = () => {
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
                 </svg>
-                IndiaMART Certified Partner
+                IndiaMART Supplier
               </div>
               <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-                Official IndiaMART Certifications
+                Our IndiaMART Badges
               </h3>
               <p className="text-gray-700 text-lg max-w-2xl mx-auto">
-                Verified business credentials and trusted supplier status on India's largest B2B marketplace
+                Shown on our supplier profile on IndiaMART, India's largest B2B marketplace
               </p>
             </div>
 
             <div className="w-full flex justify-center">
-              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center max-w-lg mx-auto">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center sm:items-stretch max-w-lg mx-auto">
                 <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 sm:p-5 shadow-lg border border-white/50 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-64">
                   <div className="mb-4">
-                    <img 
-                      src="/indiamart_two.png" 
-                      alt="IndiaMART Trust Seal Verified" 
+                    <img
+                      src="/indiamart_one.png"
+                      alt="IndiaMART TrustSEAL badge"
                       className="h-12 sm:h-16 w-auto mx-auto object-contain hover:scale-110 transition-transform duration-300"
                       style={{ imageRendering: 'crisp-edges' }}
                     />
                   </div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">Trust Seal Verified</h4>
-                  <p className="text-gray-700 text-sm leading-relaxed">Verified and trusted supplier with authenticated business credentials on IndiaMART marketplace</p>
-                  <div className="mt-3 inline-flex items-center text-emerald-600 font-semibold text-sm">
-                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-                    </svg>
-                    Verified ✓
-                  </div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">TrustSEAL</h4>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    IndiaMART verified our {indiamart.trustSeal.verified.join(', ')}. Certificate no. {indiamart.trustSeal.id}.
+                  </p>
+                  <BadgeStatus>TrustSEAL verified</BadgeStatus>
                 </div>
 
                 <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 sm:p-5 shadow-lg border border-white/50 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-64">
                   <div className="mb-4">
-                    <img 
-                      src="/indiamart_one.png" 
-                      alt="IndiaMART Verified Exporter" 
+                    <img
+                      src="/indiamart_two.png"
+                      alt="IndiaMART Verified Exporter badge"
                       className="h-12 sm:h-16 w-auto mx-auto object-contain hover:scale-110 transition-transform duration-300"
                       style={{ imageRendering: 'crisp-edges' }}
                     />
                   </div>
                   <h4 className="text-lg font-bold text-gray-900 mb-2">Verified Exporter</h4>
-                  <p className="text-gray-700 text-sm leading-relaxed">Certified exporter with verified export capabilities and international business credentials</p>
-                  <div className="mt-3 inline-flex items-center text-emerald-600 font-semibold text-sm">
-                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-                    </svg>
-                    Certified ✓
-                  </div>
+                  <p className="text-gray-700 text-sm leading-relaxed">IndiaMART shows this badge for suppliers registered to export from India.</p>
+                  <BadgeStatus>Export verified</BadgeStatus>
                 </div>
               </div>
             </div>
 
             {/* Trust Indicators */}
             <div className="mt-8 text-center">
-              <div className="inline-flex items-center space-x-6 text-sm text-gray-600 bg-white/60 backdrop-blur-sm rounded-full px-6 py-3">
+              <div className="inline-flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-600 bg-white/60 backdrop-blur-sm rounded-full px-6 py-3">
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                  Business Verified
+                  GST verified
                 </div>
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-emerald-600 rounded-full mr-2"></div>
-                  Export Ready
+                  IEC holder
                 </div>
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-emerald-700 rounded-full mr-2"></div>
-                  Trusted Partner
+                  Verified exporter
                 </div>
               </div>
             </div>
@@ -401,10 +438,10 @@ const TrustSection = () => {
           }`}
         >
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Trust CureNeed</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">We maintain the highest standards in healthcare product delivery</p>
+          <p className="text-gray-600 max-w-2xl mx-auto">Facts you can check for yourself</p>
         </div>
         {/* Standard Trust Cards */}
-        <div className="flex flex-wrap justify-center gap-6 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-items-center gap-6 mb-16">
           <div 
             ref={card1Ref}
             className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
@@ -414,8 +451,8 @@ const TrustSection = () => {
             <div className="mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
               <svg className="w-8 h-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V7l-8-5-8 5v5c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">FDA Approved</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">All products certified by FDA and meet US healthcare standards</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">TrustSEAL Verified</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">IndiaMART checked our GST registration, bank account and business address before awarding its TrustSEAL.</p>
           </div>
           <div 
             ref={card2Ref}
@@ -424,10 +461,10 @@ const TrustSection = () => {
             }`}
           >
             <div className="mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
-              <svg className="w-8 h-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2l3 7h7l-5.5 4 2 7-6.5-4.5L5.5 20l2-7L2 9h7z"/></svg>
+              <svg className="w-8 h-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 010 18a14 14 0 010-18z"/></svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">WHO Compliant</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">Following World Health Organization quality guidelines</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Registered Exporter</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">We hold an Import Export Code (IEC), the registration India requires to export goods.</p>
           </div>
           <div 
             ref={card3Ref}
@@ -436,10 +473,15 @@ const TrustSection = () => {
             }`}
           >
             <div className="mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
-              <svg className="w-8 h-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 11c1.657 0 3-1.567 3-3.5S17.657 4 16 4 13 5.567 13 7.5 14.343 11 16 11z"/><path d="M2 20v-1a7 7 0 0114 0v1"/></svg>
+              <svg className="w-8 h-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.9 6.4 20l1.4-6.2L3 9.5l6.4-.6z"/></svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Expert Team</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">Licensed pharmacists and healthcare professionals on staff</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Rated {overall.average.toFixed(1)} / 5</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Average across all our review platforms.{' '}
+              <Link to="/reviews" className="font-semibold text-emerald-700 hover:underline">
+                Read every review
+              </Link>
+            </p>
           </div>
           <div 
             ref={card4Ref}
@@ -448,10 +490,10 @@ const TrustSection = () => {
             }`}
           >
             <div className="mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
-              <svg className="w-8 h-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 10-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg>
+              <svg className="w-8 h-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><path d="M16 4.5a3.5 3.5 0 010 7"/><path d="M18.5 14.5a6.5 6.5 0 013 5.5"/></svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Customer First</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">Dedicated support team available to help with any questions</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Buyers in {countries.length}+ Countries</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">Including the USA, UK, Canada, Australia, New Zealand and India.</p>
           </div>
         </div>
       </div>
@@ -488,6 +530,9 @@ const CTASection = () => {
 const StatsSection = () => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef(null);
+  const { status, medicines } = useCatalogue();
+  const counts = useMemo(() => (status === 'ready' ? catalogueStats(medicines) : null), [status, medicines]);
+  const overall = useOverallRating();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -506,6 +551,9 @@ const StatsSection = () => {
     return () => observer.disconnect();
   }, [isVisible]);
 
+  // The product count is live from the catalogue and is left out if it cannot load.
+  const showProducts = status !== 'error' && !(counts && !counts.products);
+
   return (
     <section className="bg-sky-50/60 overflow-hidden">
       <div 
@@ -515,27 +563,24 @@ const StatsSection = () => {
         }`}
       >
         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 lg:gap-20">
-          <Stat value="500K+" label="Happy Customers" />
-          <Stat value="2000+" label="Products Available" />
-          <Stat value="50+" label="Partner Brands" />
-          <Stat value="24/7" label="Customer Support" />
+          {showProducts && <Stat value={counts?.products ?? null} suffix="+" label="Products Listed" />}
+          <Stat value={countries.length} suffix="+" label="Countries Served" />
+          <Stat value={overall.status === 'loading' ? null : overall.average} decimals={1} suffix="/5" label="Overall Rating" />
+          <Stat text="24/7" label="Online Chat Support" />
         </div>
       </div>
     </section>
   );
 };
 
-const Stat = ({ value, label }) => {
+// value: a number, or null while it loads (shown as a dash, never a guess).
+// text: shown as-is instead of a counted number.
+const Stat = ({ value, decimals = 0, suffix = '', text, label }) => {
   const [animatedValue, setAnimatedValue] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef(null);
-
-  // Check if this is a time value (contains "/") - don't animate these
-  const isTimeValue = value.includes('/');
-  
-  // Extract numeric value and suffix
-  const numericValue = parseInt(value.replace(/\D/g, '')) || 0;
-  const suffix = value.replace(/\d/g, '');
+  const numericValue = Number(value) || 0;
+  const scale = 10 ** decimals;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -555,7 +600,7 @@ const Stat = ({ value, label }) => {
   }, [isVisible]);
 
   useEffect(() => {
-    if (isVisible && numericValue > 0 && !isTimeValue) {
+    if (isVisible && numericValue > 0) {
       let startTime = null;
       const duration = 2500; // 2.5 seconds for smoother animation
 
@@ -565,7 +610,7 @@ const Stat = ({ value, label }) => {
         
         // Easing function for smooth animation
         const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-        const currentValue = Math.floor(easeOutQuart * numericValue);
+        const currentValue = Math.floor(easeOutQuart * numericValue * scale) / scale;
         
         setAnimatedValue(currentValue);
 
@@ -576,13 +621,10 @@ const Stat = ({ value, label }) => {
 
       requestAnimationFrame(animate);
     }
-  }, [isVisible, numericValue, isTimeValue]);
+  }, [isVisible, numericValue, scale]);
 
-  // For time values, show the full value immediately when visible
-  // For numeric values, show animation or 0 based on visibility
-  const displayValue = isTimeValue 
-    ? (isVisible ? value : value) 
-    : (isVisible ? `${animatedValue}${suffix}` : `0${suffix}`);
+  const shown = (isVisible ? animatedValue : 0).toFixed(decimals);
+  const displayValue = text || (value === null ? '–' : `${shown}${suffix}`);
 
   return (
     <div ref={ref} className="text-center min-w-[140px]">
@@ -609,7 +651,7 @@ export default function About() {
     <div className="bg-white">
       <SEO
         title="About Us"
-        description="Learn about CureNeed's mission to deliver trusted, verified healthcare products through transparent sourcing and an inquiry-based marketplace."
+        description="CureNeed is a GST-registered Indian business sourcing branded generic medicines from established manufacturers. Send a free request and get a clear quote."
         path="/about"
       />
       {/* Header hero - clean and simple */}

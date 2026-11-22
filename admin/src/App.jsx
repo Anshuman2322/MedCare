@@ -7,12 +7,16 @@ import MedicineForm from './pages/MedicineForm.jsx';
 import Categories from './pages/Categories.jsx';
 import Inquiries from './pages/Inquiries.jsx';
 import Messages from './pages/Messages.jsx';
+import SupportChat from './pages/SupportChat.jsx';
+import Reviews from './pages/Reviews.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Login from './pages/Login.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
 import AdminManagement from './pages/AdminManagement.jsx';
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
+  { path: '/forgot-password', element: <ForgotPassword /> },
   {
     path: '/',
     element: (
@@ -75,6 +79,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredPermission="inquiries">
             <Messages />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'support-chat',
+        element: (
+          <ProtectedRoute requiredPermission="inquiries">
+            <SupportChat />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'reviews',
+        element: (
+          <ProtectedRoute requiredPermission="inquiries">
+            <Reviews />
           </ProtectedRoute>
         ),
       },

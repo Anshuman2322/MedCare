@@ -3,7 +3,10 @@ const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').r
 async function handleResponse(res) {
   if (!res.ok) {
     const message = await res.text();
-    throw new Error(message || res.statusText);
+    const error = new Error(message || res.statusText);
+    // Callers can tell "this doesn't exist" (404) from "the server is struggling" (5xx).
+    error.status = res.status;
+    throw error;
   }
   return res.json();
 }
@@ -11,6 +14,11 @@ async function handleResponse(res) {
 function buildUrl(path) {
   return `${API_BASE_URL}${path}`;
 }
+
+// The home page mounts several components that all load the full list at once
+// (navbar search, brand strip, stats, featured). They share one request while it
+// is in flight; nothing is cached after it settles, so data is never stale.
+const inFlight = new Map();
 
 export async function fetchMedicines(params = {}) {
   const searchParams = new URLSearchParams();
@@ -20,8 +28,16 @@ export async function fetchMedicines(params = {}) {
 
   const query = searchParams.toString();
   const url = buildUrl(`/api/medicines${query ? `?${query}` : ''}`);
-  const res = await fetch(url);
-  return handleResponse(res);
+  let request = inFlight.get(url);
+  if (!request) {
+    request = fetch(url)
+      .then(handleResponse)
+      .finally(() => inFlight.delete(url));
+    inFlight.set(url, request);
+  }
+  const data = await request;
+  // Each caller gets its own array, so sorting or filtering in one cannot affect another.
+  return Array.isArray(data) ? data.slice() : data;
 }
 
 export async function fetchMedicine(slug) {

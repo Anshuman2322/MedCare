@@ -8,7 +8,7 @@ class MockIntersectionObserver {
   unobserve() {}
   disconnect() {}
 }
-global.IntersectionObserver = MockIntersectionObserver;
+globalThis.IntersectionObserver = MockIntersectionObserver;
 
 // embla-carousel also watches slide/container size via ResizeObserver,
 // which jsdom doesn't implement either.
@@ -17,7 +17,7 @@ class MockResizeObserver {
   unobserve() {}
   disconnect() {}
 }
-global.ResizeObserver = MockResizeObserver;
+globalThis.ResizeObserver = MockResizeObserver;
 
 // jsdom doesn't implement matchMedia either, which embla-carousel reads on
 // init to evaluate its responsive breakpoint options (CategoryCarousel) —

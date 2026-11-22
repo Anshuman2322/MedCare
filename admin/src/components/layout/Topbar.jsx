@@ -8,6 +8,11 @@ function usePageTitle() {
   if (pathname.startsWith('/medicines/edit')) return 'Edit Medicine';
   if (pathname.startsWith('/medicines')) return 'Medicines';
   if (pathname.startsWith('/categories')) return 'Categories';
+  if (pathname.startsWith('/inquiries')) return 'Inquiries';
+  if (pathname.startsWith('/messages')) return 'Messages';
+  if (pathname.startsWith('/support-chat')) return 'Support Chat';
+  if (pathname.startsWith('/reviews')) return 'Reviews';
+  if (pathname.startsWith('/manage-admins')) return 'Admin Management';
   return 'Dashboard';
 }
 
@@ -24,28 +29,33 @@ export default function Topbar() {
 
   return (
     <header className="sticky top-0 z-10 bg-slate-50/90 backdrop-blur border-b border-emerald-100">
-      <div className="mx-auto max-w-6xl px-6 py-4 flex items-center gap-4 relative">
-        <div>
-          <div className="text-xs uppercase tracking-[0.2em] text-emerald-600 font-semibold">CureNeed Admin</div>
-          <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
+      {/* pl-24 on phones keeps the title clear of the fixed "Menu" button (hidden from lg up). */}
+      <div className="mx-auto max-w-6xl py-3 pl-24 pr-4 sm:py-4 sm:pr-6 lg:pl-6 flex items-center gap-3 sm:gap-4 relative">
+        <div className="min-w-0">
+          <div className="hidden sm:block text-xs uppercase tracking-[0.2em] text-emerald-600 font-semibold">CureNeed Admin</div>
+          <h1 className="truncate text-lg sm:text-2xl font-semibold text-slate-900">{title}</h1>
         </div>
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
           <Link
             to="/medicines/add"
-            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-card hover:bg-emerald-700"
+            aria-label="New Medicine"
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-card hover:bg-emerald-700 sm:px-4"
           >
-            + New Medicine
+            <span aria-hidden="true">+<span className="hidden sm:inline"> New Medicine</span></span>
           </Link>
           <div className="relative">
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
+              aria-label={`Account menu for ${admin?.email || 'admin'}`}
+              aria-haspopup="menu"
+              aria-expanded={open}
               className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-1 shadow-card hover:border-emerald-200"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 font-semibold">
                 {(admin?.email || 'MC').slice(0, 1).toUpperCase()}
               </span>
-              <div className="text-left">
+              <div className="hidden text-left sm:block">
                 <div className="text-sm font-semibold text-slate-900">{admin?.email || 'Admin'}</div>
                 <RoleBadge role={admin?.role} />
               </div>
@@ -54,16 +64,7 @@ export default function Topbar() {
 
             {open && (
               <div className="absolute right-0 mt-2 w-52 rounded-xl border border-slate-100 bg-white shadow-card py-2 z-20">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOpen(false);
-                    navigate('/profile');
-                  }}
-                  className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-emerald-50"
-                >
-                  My Profile
-                </button>
+                <div className="px-4 py-2 text-xs text-slate-500 sm:hidden">{admin?.email}</div>
                 <button
                   type="button"
                   onClick={handleLogout}

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import AuthShell, { Banner, authButtonClass, authInputClass } from '../components/auth/AuthShell.jsx';
+import PasswordField from '../components/auth/PasswordField.jsx';
 
 export default function Login() {
   const { login, setError, error } = useAuth();
@@ -10,6 +12,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/dashboard';
+  const notice = location.state?.notice;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -26,56 +29,47 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-slate-100 flex items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl border border-slate-100 p-8 space-y-6">
-        <div className="space-y-2 text-center">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 font-bold text-lg">CN</div>
-          <h1 className="text-2xl font-semibold text-slate-900">Admin Login</h1>
-          <p className="text-sm text-slate-600">Sign in to manage CureNeed</p>
+    <AuthShell title="Admin Login" subtitle="Sign in to manage CureNeed">
+      {notice && !error && <Banner tone="success">{notice}</Banner>}
+      {error && <Banner>{error}</Banner>}
+
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <div className="space-y-1">
+          <label htmlFor="login-email" className="text-sm font-semibold text-slate-700">Email</label>
+          <input
+            id="login-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className={authInputClass}
+            placeholder="admin@example.com"
+            autoComplete="email"
+          />
         </div>
 
-        {error && (
-          <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            {error}
-          </div>
-        )}
+        <PasswordField
+          id="login-password"
+          label="Password"
+          value={password}
+          onChange={setPassword}
+          autoComplete="current-password"
+          labelAction={
+            <Link
+              to="/forgot-password"
+              state={{ email }}
+              onClick={() => setError('')}
+              className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline"
+            >
+              Forgot password?
+            </Link>
+          }
+        />
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-1">
-            <label className="text-sm font-semibold text-slate-700">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-              placeholder="admin@example.com"
-              autoComplete="email"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-sm font-semibold text-slate-700">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-              placeholder="••••••••"
-              autoComplete="current-password"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-card hover:bg-emerald-700 disabled:opacity-60"
-          >
-            {loading ? 'Signing in...' : 'Login'}
-          </button>
-        </form>
-      </div>
-    </div>
+        <button type="submit" disabled={loading} className={authButtonClass}>
+          {loading ? 'Signing in...' : 'Login'}
+        </button>
+      </form>
+    </AuthShell>
   );
 }

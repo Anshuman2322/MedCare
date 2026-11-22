@@ -6,8 +6,16 @@ import { useCurrency } from '../store/useStore.jsx';
 import { formatPrice } from '../utils/currency';
 import InquiryModal from '../components/InquiryModal.jsx';
 import SEO from '../components/SEO.jsx';
+import NotFound from './NotFound.jsx';
 import { fetchMedicine, fetchMedicines } from '../api/medicines';
 import { withCloudinaryTransform } from '../utils/medicineDisplay.js';
+import { usePublishChatProduct } from '../components/chat/chatProductStore.js';
+import FavoriteButton from '../components/common/FavoriteButton.jsx';
+import { showToast } from '../store/toastStore.js';
+import RequestModal from '../components/request/RequestModal.jsx';
+import { addToCart } from '../store/cartStore.js';
+import ProductReviews from '../components/reviews/ProductReviews.jsx';
+import Stars from '../components/reviews/Stars.jsx';
 
 function truncate(text, max) {
   const clean = String(text || '').trim();
@@ -20,6 +28,8 @@ export default function MedicineDetails() {
   const [medicine, setMedicine] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // A slug that matches no published medicine shows the site's 404 page, not a "try again later".
+  const [notFound, setNotFound] = useState(false);
   const [related, setRelated] = useState([]);
   const [qty, setQty] = useState(1);
   const [selectedStrength, setSelectedStrength] = useState('');
@@ -28,7 +38,10 @@ export default function MedicineDetails() {
   const [imgIndex, setImgIndex] = useState(0);
   const [tab, setTab] = useState('Dosage');
   const [showInquiry, setShowInquiry] = useState(false);
+  const [showBestPrice, setShowBestPrice] = useState(false);
   const { currency } = useCurrency();
+
+  usePublishChatProduct(medicine);
 
   const [imageRef, imageVisible] = useScrollAnimation(0.1, 80);
   const [contentRef, contentVisible] = useScrollAnimation(0.1, 140);
@@ -38,26 +51,6 @@ export default function MedicineDetails() {
   const [showPrev, setShowPrev] = useState(false);
   const [showNext, setShowNext] = useState(false);
 
-  const CATEGORY_DESCRIPTIONS = {
-    'Antibiotics': '',
-    'Pain Relief': 'Fast-acting analgesics for headaches, muscle aches and minor pains. Use the lowest effective dose.',
-    'Vitamins': 'Daily nutritional support to maintain general health and wellness.',
-    'Skincare': 'Dermatologically inspired products to protect, soothe and nourish your skin.',
-    'Hormones & Steroids': 'Specialized hormone modulators and steroid therapies. Use only under medical supervision.',
-    'Anti Cancer': 'Targeted oncology treatments. Handling and dosing must follow professional guidance.',
-    'Anti Viral': 'Medicines formulated to combat viral infections. Complete prescribed regimens.',
-    'Anti Malarial': 'Therapies for prevention and treatment of malaria. Follow regional guidelines.',
-    'Injections': 'Sterile injectable formulations. Administration should be performed by qualified personnel.',
-    'Skin / Allergy / Asthma': 'Products addressing dermatologic, allergic and respiratory conditions.',
-    'Supplements & Hair': 'Supportive supplements for general well-being and hair health.',
-    'Chronic / Cardiac': 'Long-term therapies supporting cardiovascular and chronic condition management.',
-    'Erectile Dysfunction': 'Prescription medications for erectile dysfunction. Consult healthcare provider for proper dosing and contraindications.',
-    'Antidepressant / Anti-Anxiety': 'Mental health medications for depression and anxiety disorders. Regular monitoring and gradual dosing changes required.',
-    'Sleep Disorders': 'Medications for insomnia and sleep disturbances. Use as directed and avoid long-term dependency.',
-    'Gastrointestinal': 'Treatments for digestive issues and gastrointestinal disorders. Take as prescribed with appropriate dietary considerations.',
-    'Uncategorized': ''
-  };
-
   const categoriesList = useMemo(() => {
     if (!medicine) return ['Uncategorized'];
     return Array.isArray(medicine.categories) && medicine.categories.length
@@ -66,11 +59,6 @@ export default function MedicineDetails() {
   }, [medicine]);
 
   const primaryCategory = categoriesList[0] || 'Uncategorized';
-
-  const categoryDescription = useMemo(() => {
-    if (!medicine) return '';
-    return CATEGORY_DESCRIPTIONS[primaryCategory] || CATEGORY_DESCRIPTIONS.Uncategorized;
-  }, [medicine, primaryCategory]);
 
   const variants = useMemo(() => {
     const normalizeVariant = (v = {}) => ({
@@ -160,6 +148,7 @@ export default function MedicineDetails() {
       try {
         setLoading(true);
         setError('');
+        setNotFound(false);
         const med = await fetchMedicine(slug);
         if (!active) return;
         setMedicine(med);
@@ -172,8 +161,12 @@ export default function MedicineDetails() {
           console.error('Failed to load related medicines', relErr);
         }
       } catch (err) {
-        console.error('Failed to load medicine', err);
-        if (active) setError('Unable to load medicine details right now.');
+        if (err?.status === 404) {
+          if (active) setNotFound(true);
+        } else {
+          console.error('Failed to load medicine', err);
+          if (active) setError('Unable to load medicine details right now. Please try again in a moment.');
+        }
       } finally {
         if (active) setLoading(false);
       }
@@ -221,6 +214,33 @@ export default function MedicineDetails() {
   const openInquiry = () => setShowInquiry(true);
   const closeInquiry = () => setShowInquiry(false);
 
+  const handleAddToCart = () => {
+    addToCart(medicine, { variant: selectedVariant, quantity: qty });
+    showToast({ text: 'Added to cart', actionLabel: 'View Cart', actionTo: '/cart' });
+  };
+
+  // A best-price request from this page is the same combined-request flow the
+  // cart uses, with a single line.
+  const bestPriceItems = medicine
+    ? [
+        {
+          lineId: medicine.slug || medicine._id,
+          medicineId: String(medicine._id || medicine.id || ''),
+          slug: medicine.slug,
+          name: medicine.name,
+          image: medicine.image || medicine.images?.[0] || '',
+          listedPrice: Number.isFinite(Number(selectedVariant?.price)) ? Number(selectedVariant.price) : null,
+          quantity: qty,
+          variant: {
+            strength: selectedVariant?.strength || '',
+            form: selectedVariant?.form || '',
+            packSize: selectedVariant?.packSize || '',
+            packagingType: selectedVariant?.packagingType || '',
+          },
+        },
+      ]
+    : [];
+
   const resolvedPrice = selectedVariant?.price ?? null;
   const priceLabel = resolvedPrice !== null && resolvedPrice !== undefined ? formatPrice(resolvedPrice, currency) : 'Price on request';
   const variantStockValue = Number.isFinite(Number(selectedVariant?.stock)) ? Number(selectedVariant?.stock) : null;
@@ -234,6 +254,8 @@ export default function MedicineDetails() {
       </div>
     );
   }
+
+  if (notFound) return <NotFound />;
 
   if (error || !medicine) {
     return (
@@ -266,7 +288,7 @@ export default function MedicineDetails() {
         type="product"
       />
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
-        <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-8 lg:p-10 space-y-10">
+        <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-4 sm:p-8 lg:p-10 space-y-8 sm:space-y-10">
           <Link to="/shop" className="inline-flex items-center text-sm text-emerald-700 hover:text-emerald-900">
             <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
             Back to Medicines
@@ -335,15 +357,23 @@ export default function MedicineDetails() {
             <div ref={contentRef} className={`flex-1 space-y-5 ${animationClasses.fadeRight(contentVisible)}`}>
               <div className="flex flex-wrap items-center gap-2">
                 <div className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 rounded-full px-2.5 py-1">{primaryCategory}</div>
-                {medicine?.requiresPrescription && (
-                  <div className="inline-flex items-center text-xs font-bold uppercase tracking-wide text-red-700 bg-red-50 border border-red-200 rounded-full px-2.5 py-1">
-                    Rx Required
-                  </div>
-                )}
               </div>
 
               <div className="flex flex-col gap-2">
                 <h1 className="text-2xl font-semibold text-gray-900 leading-tight">{medicine?.name}</h1>
+                {medicine?.reviewCount > 0 ? (
+                  <a href="#reviews" className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-emerald-700">
+                    <Stars value={medicine.rating} size="sm" />
+                    <span className="font-semibold text-slate-800">{Number(medicine.rating).toFixed(1)}</span>
+                    <span className="underline-offset-2 hover:underline">
+                      {medicine.reviewCount} review{medicine.reviewCount === 1 ? '' : 's'}
+                    </span>
+                  </a>
+                ) : (
+                  <a href="#reviews" className="inline-flex text-sm font-medium text-emerald-700 underline-offset-2 hover:underline">
+                    Be the first to review
+                  </a>
+                )}
                 <div className="rounded-xl bg-gray-50 p-5">
                   <div className="text-sm uppercase tracking-wide text-gray-500 mb-2">Overview</div>
                   <p className="text-gray-800 leading-7">{medicine?.description}</p>
@@ -460,8 +490,21 @@ export default function MedicineDetails() {
 
                 <button
                   type="button"
+                  onClick={handleAddToCart}
+                  className="inline-flex flex-1 items-center justify-center gap-2 px-5 py-3 rounded-xl border border-emerald-600 bg-white text-emerald-700 text-base font-medium whitespace-nowrap transition-colors hover:bg-emerald-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 sm:flex-none"
+                >
+                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="9" cy="21" r="1" />
+                    <circle cx="20" cy="21" r="1" />
+                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+                  </svg>
+                  Add to Cart
+                </button>
+
+                <button
+                  type="button"
                   onClick={openInquiry}
-                  className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-emerald-600 text-white text-base font-medium shadow-sm hover:bg-emerald-700 transition-colors"
+                  className="inline-flex flex-1 items-center justify-center gap-3 px-6 py-3 rounded-xl bg-emerald-600 text-white text-base font-medium whitespace-nowrap shadow-sm hover:bg-emerald-700 transition-colors sm:flex-none"
                 >
                   <svg
                     className="w-5 h-5 shrink-0"
@@ -473,6 +516,21 @@ export default function MedicineDetails() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                   Send Inquiry
+                </button>
+
+                <FavoriteButton product={medicine} size="lg" />
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-100 bg-emerald-50/60 px-4 py-3">
+                <p className="text-sm font-medium text-emerald-900">
+                  Want our best available quote for your quantity?
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowBestPrice(true)}
+                  className="rounded-xl border border-emerald-600 bg-white px-4 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                >
+                  Request Best Price
                 </button>
               </div>
             </div>
@@ -581,7 +639,7 @@ export default function MedicineDetails() {
                       if (!items.length) return null;
 
                       return (
-                        <div key={`${section.title}-${sectionIndex}`} className="rounded-xl bg-gray-50 p-6 space-y-2 shadow-sm">
+                        <div key={`${section.title}-${sectionIndex}`} className="rounded-xl bg-gray-50 p-4 sm:p-6 space-y-2 shadow-sm">
                           <div className="flex items-center gap-2 mb-2">
                             <div className={`w-1 h-5 rounded ${section.accent}`}></div>
                             <h3 className="text-lg font-semibold text-gray-900">{section.title}</h3>
@@ -608,6 +666,8 @@ export default function MedicineDetails() {
             )}
           </div>
         </div>
+
+        <ProductReviews medicine={medicine} />
 
         {related.filter((m) => {
           const mcats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];
@@ -680,6 +740,14 @@ export default function MedicineDetails() {
           currency={currency}
         />
       )}
+
+      <RequestModal
+        isOpen={showBestPrice}
+        requestType="best_price"
+        items={bestPriceItems}
+        currency={currency}
+        onClose={() => setShowBestPrice(false)}
+      />
     </div>
   );
 }

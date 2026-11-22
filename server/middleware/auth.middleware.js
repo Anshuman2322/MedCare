@@ -39,7 +39,7 @@ export async function protectAdmin(req, res, next) {
 
     const admin = await Admin.findById(decoded.id).select('-password');
 
-    if (!admin) {
+    if (!admin || !admin.isTokenCurrent(decoded)) {
       return unauthorized(res);
     }
 

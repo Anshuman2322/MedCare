@@ -49,7 +49,7 @@ export default function InquiryWizardPage() {
         const derived = deriveVariants(med);
         setVariants(derived);
         setError(derived.length ? '' : 'No variants available for this medicine.');
-      } catch (err) {
+      } catch {
         setError('Unable to load this medicine right now.');
       } finally {
         if (active) setLoading(false);

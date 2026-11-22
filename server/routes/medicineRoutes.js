@@ -5,6 +5,7 @@ import {
 	getMedicineBySlug,
 	updateMedicineById,
 	deleteMedicineById,
+	setMedicineVisibility,
 } from '../controllers/medicineController.js';
 import { protectAdmin, requirePermission } from '../middleware/auth.middleware.js';
 
@@ -15,6 +16,7 @@ router.post('/', protectAdmin, requirePermission('medicines'), createMedicine);
 router.get('/', getAllMedicines);
 router.get('/:slug', getMedicineBySlug);
 router.put('/:id', protectAdmin, requirePermission('medicines'), updateMedicineById);
+router.patch('/:id/visibility', protectAdmin, requirePermission('medicines'), setMedicineVisibility);
 router.delete('/:id', protectAdmin, requirePermission('medicines'), deleteMedicineById);
 
 export default router;

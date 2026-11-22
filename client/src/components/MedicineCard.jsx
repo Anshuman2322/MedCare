@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCurrency } from '../store/useStore.jsx';
 import { formatPrice } from '../utils/currency';
 import { resolveMedicineImage } from '../utils/medicineDisplay.js';
 import { getCategoryBadgeStyle } from '../utils/categoryColors.js';
 import ImagePlaceholder from './common/ImagePlaceholder.jsx';
+import FavoriteButton from './common/FavoriteButton.jsx';
+import { showToast } from '../store/toastStore.js';
+import { addToCart } from '../store/cartStore.js';
+import Stars from './reviews/Stars.jsx';
 import './medicineCard.css';
 
 function CartIcon() {
@@ -37,15 +41,16 @@ export default function MedicineCard({ product, layout = 'grid' }) {
   const variant = product?.variants?.[0];
   const pack = packLabel(variant);
 
+  const slugOrId = product?.slug || product?._id;
+  const detailsPath = slugOrId ? `/medicine/${slugOrId}` : null;
   const goToDetails = () => {
-    const slugOrId = product?.slug || product?._id;
-    if (slugOrId) navigate(`/medicine/${slugOrId}`);
+    if (detailsPath) navigate(detailsPath);
   };
 
   const handleAddToCart = (event) => {
     event.stopPropagation();
-    // No cart system exists yet on the site - this is a UI placeholder that
-    // gives feedback without persisting anything.
+    addToCart(product, { variant, quantity: 1 });
+    showToast({ text: 'Added to cart', actionLabel: 'View Cart', actionTo: '/cart' });
     setJustAdded(true);
     window.setTimeout(() => setJustAdded(false), 1600);
   };
@@ -53,7 +58,7 @@ export default function MedicineCard({ product, layout = 'grid' }) {
   return (
     <div className={`card card--${layout} ${loaded ? 'is-loaded' : 'is-loading'}`}>
       <div className="card-image">
-        {product.requiresPrescription && <span className="card-rx-badge">Rx Required</span>}
+        <FavoriteButton product={product} size="sm" className="card-favorite" />
         {!loaded && !imageError && <div className="img-skeleton" aria-hidden />}
         {imageSrc && !imageError ? (
           <img
@@ -81,7 +86,22 @@ export default function MedicineCard({ product, layout = 'grid' }) {
             {category}
           </span>
         )}
-        <div className="card-title">{product.name}</div>
+        {/* The title link stretches over the whole card, so a click anywhere opens the product. */}
+        {detailsPath ? (
+          <Link to={detailsPath} className="card-title card-link">
+            {product.name}
+          </Link>
+        ) : (
+          <div className="card-title">{product.name}</div>
+        )}
+        {product.reviewCount > 0 && (
+          <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
+            <Stars value={product.rating} size="xs" />
+            <span>
+              {Number(product.rating).toFixed(1)} ({product.reviewCount} review{product.reviewCount === 1 ? '' : 's'})
+            </span>
+          </div>
+        )}
         {pack && <div className="card-pack">{pack}</div>}
         <div className="card-price" key={`price-${currency}`}>
           {formatPrice(product?.variants?.[0]?.price ?? product.price ?? 0, currency)}

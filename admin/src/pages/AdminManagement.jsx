@@ -318,6 +318,9 @@ export default function AdminManagement() {
                     <div className="text-sm font-semibold text-slate-800">{perm.label}</div>
                     <button
                       type="button"
+                      role="switch"
+                      aria-checked={enabled}
+                      aria-label={`${perm.label} access`}
                       onClick={() => togglePermission(perm.key)}
                       disabled={savingPermissions || selectedAdmin.role === 'super_admin'}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${

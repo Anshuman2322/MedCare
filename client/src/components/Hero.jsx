@@ -1,38 +1,85 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import gsap from 'gsap';
+import useCatalogue from '../hooks/useCatalogue';
+import useOverallRating from '../hooks/useOverallRating';
+import { catalogueStats } from '../utils/catalogue';
+import { BUSINESS } from '../config/business';
+import { initials } from './reviews/format.js';
 import './heroSection.css';
 
+const { countries } = BUSINESS;
+
+// Every caption states something the business can stand behind.
 const slides = [
-  { image: '/hero/hero-trusted-medicines.webp', eyebrow: 'Trusted medicines', title: 'Confidence in every order' },
-  { image: '/hero/hero-quality-assurance.webp', eyebrow: 'Quality assurance', title: 'Standards you can see' },
-  { image: '/hero/hero-verified-suppliers.webp', eyebrow: 'Verified suppliers', title: 'Sourced with certainty' },
-  { image: '/hero/hero-product-catalog.webp', eyebrow: 'Product catalog', title: 'One marketplace, more choice' },
-  { image: '/hero/hero-fast-delivery.webp', eyebrow: 'Fast delivery', title: 'Reliable by design' },
-  { image: '/hero/hero-global-network.webp', eyebrow: 'Global network', title: 'Healthcare without borders' },
+  { image: '/hero/hero-trusted-medicines.webp', eyebrow: 'Branded generics', title: 'Names you can look up' },
+  { image: '/hero/hero-quality-assurance.webp', eyebrow: 'Full product details', title: 'Ingredient, strength and pack' },
+  { image: '/hero/hero-verified-suppliers.webp', eyebrow: 'Indian manufacturers', title: 'Brands from established makers' },
+  { image: '/hero/hero-product-catalog.webp', eyebrow: 'Product catalogue', title: 'Browse by therapy area' },
+  { image: '/hero/hero-fast-delivery.webp', eyebrow: 'Free quotes', title: 'See the price before you commit' },
+  { image: '/hero/hero-global-network.webp', eyebrow: 'Global buyers', title: `Shipping to ${countries.length}+ countries` },
 ];
-const stats = [{ value: 5000, suffix: '+', label: 'Medicines' }, { value: 150, suffix: '+', label: 'Brands' }, { value: 50, suffix: '+', label: 'Countries' }, { value: 24, suffix: '/7', label: 'Support' }];
 const ease = [0.22, 1, 0.36, 1];
+
+// Overall rating across every review platform, beside the initials of the
+// latest real reviewers; links to the page with every review.
+function RatingRow({ enter }) {
+  const { status, average, latest } = useOverallRating();
+  return (
+    <div className="hero-review-slot">
+      {status !== 'loading' && (
+        <Motion.div {...enter(0)}>
+          <Link to="/reviews" className="hero-review">
+            <span className="review-avatars" aria-hidden="true">
+              {latest.slice(0, 4).map((r) => (
+                <b key={r.id}>{initials(r.author)}</b>
+              ))}
+            </span>
+            <span>
+              <span className="review-stars" aria-hidden="true">{'★★★★★'}</span>
+              <span className="review-text">
+                Rated <strong>{average.toFixed(1)}/5</strong> by our buyers
+              </span>
+            </span>
+          </Link>
+        </Motion.div>
+      )}
+    </div>
+  );
+}
 const Motion = motion;
 const wrap = (n) => (n + slides.length) % slides.length;
 const distanceFrom = (index, active) => { let n = index - active; if (n > slides.length / 2) n -= slides.length; if (n < -slides.length / 2) n += slides.length; return n; };
 
-function CountUp({ value, suffix, active, reducedMotion }) {
+function CountUp({ value, prefix = '', suffix = '', text, active, reducedMotion }) {
   const [count, setCount] = useState(reducedMotion ? value : 0);
   useEffect(() => {
-    if (!active) return undefined;
-    if (reducedMotion) { setCount(value); return undefined; }
+    if (!active || value == null) return undefined;
+    if (reducedMotion || value === 0) { setCount(value); return undefined; }
     const data = { n: 0 };
     const tween = gsap.to(data, { n: value, duration: 1.25, ease: 'power3.out', onUpdate: () => setCount(Math.round(data.n)) });
     return () => tween.kill();
   }, [active, reducedMotion, value]);
-  return <>{count.toLocaleString()}{suffix}</>;
+  if (text) return <>{text}</>;
+  // A dash while the catalogue loads keeps the layout steady without showing a made-up number.
+  return value === null ? <>{'–'}</> : <>{prefix}{(count ?? 0).toLocaleString()}{suffix}</>;
 }
 
+// Counted live from the public catalogue, so the numbers always match what visitors can browse.
 function Stats({ reducedMotion }) {
   const ref = useRef(null); const visible = useInView(ref, { once: true, amount: .4 });
-  return <div ref={ref} className="coverflow-stats">{stats.map((stat, index) => <Motion.div key={stat.label} className="coverflow-stat" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={visible ? { opacity: 1, y: 0 } : {}} transition={{ duration: .5, delay: index * .07, ease }}><strong><CountUp {...stat} active={visible} reducedMotion={reducedMotion} /></strong><span>{stat.label}</span></Motion.div>)}</div>;
+  const { status, medicines } = useCatalogue();
+  const counts = useMemo(() => (status === 'ready' ? catalogueStats(medicines) : null), [status, medicines]);
+  if (status === 'error' || (counts && !counts.products)) return null;
+  // Support chat on every page answers at any hour, hence 24/7.
+  const stats = [
+    { value: counts?.products ?? null, suffix: '+', label: 'Products' },
+    { value: counts?.brands ?? null, suffix: '+', label: 'Brands' },
+    { value: countries.length, suffix: '+', label: 'Countries' },
+    { text: '24/7', label: 'Online chat' },
+  ];
+  return <div ref={ref} className="coverflow-stats" aria-busy={status === 'loading'}>{stats.map((stat, index) => <Motion.div key={stat.label} className="coverflow-stat" initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={visible ? { opacity: 1, y: 0 } : {}} transition={{ duration: .5, delay: index * .07, ease }}><strong><CountUp {...stat} active={visible} reducedMotion={reducedMotion} /></strong><span>{stat.label}</span></Motion.div>)}</div>;
 }
 
 function Coverflow({ reducedMotion }) {
@@ -55,5 +102,5 @@ function Coverflow({ reducedMotion }) {
 
 export default function Hero() {
   const reducedMotion = useReducedMotion(); const enter = (delay) => reducedMotion ? {} : { initial: { opacity: 0, y: 22 }, animate: { opacity: 1, y: 0 }, transition: { duration: .72, delay, ease } };
-  return <section className="premium-hero" aria-labelledby="hero-title"><div className="hero-ambient" aria-hidden="true"><i className="hero-glow" /><i className="hero-blur hero-blur-one" /><i className="hero-blur hero-blur-two" /><span className="hero-particle particle-one" /><span className="hero-particle particle-two" /><span className="hero-particle particle-three" /></div><div className="hero-shell"><div className="hero-copy"><Motion.div {...enter(0)} className="hero-trust-pill"><span>{'\u2713'}</span> Verified Healthcare Marketplace</Motion.div><Motion.h1 id="hero-title" {...enter(.08)}><span>Trusted medicines.</span><span className="hero-highlight">Delivered with clarity.</span></Motion.h1><Motion.p {...enter(.16)}>Discover verified pharmaceutical products, trusted suppliers and transparent healthcare procurement{'\u2014'}all in one modern marketplace.</Motion.p><Motion.div {...enter(.24)} className="hero-actions"><Link to="/shop" className="hero-primary">Explore Medicines <span>{'\u2192'}</span></Link><Link to="/contact" className="hero-secondary"><i>{'\u2197'}</i> Talk to an Expert</Link></Motion.div><Motion.div {...enter(.31)} className="hero-review"><div className="review-avatars" aria-hidden="true"><b>AM</b><b>DR</b><b>SK</b><b>JT</b></div><div><span>{'\u2605\u2605\u2605\u2605\u2605'}</span><p>Trusted by healthcare professionals worldwide</p></div></Motion.div><Motion.div {...enter(.4)}><Stats reducedMotion={reducedMotion} /></Motion.div></div><Coverflow reducedMotion={reducedMotion} /></div></section>;
+  return <section className="premium-hero" aria-labelledby="hero-title"><div className="hero-ambient" aria-hidden="true"><i className="hero-glow" /><i className="hero-blur hero-blur-one" /><i className="hero-blur hero-blur-two" /><span className="hero-particle particle-one" /><span className="hero-particle particle-two" /><span className="hero-particle particle-three" /></div><div className="hero-shell"><div className="hero-copy"><Motion.div {...enter(0)} className="hero-trust-pill"><span>{'\u2713'}</span> IndiaMART TrustSEAL verified supplier</Motion.div><Motion.h1 id="hero-title" {...enter(.08)}><span>Trusted medicines.</span><span className="hero-highlight">Delivered with clarity.</span></Motion.h1><Motion.p {...enter(.16)}>Branded generics from established Indian manufacturers, supplied to buyers across the USA, UK, Canada, Australia and beyond. Send a free request and our team replies with a clear quote.</Motion.p><Motion.div {...enter(.24)} className="hero-actions"><Link to="/shop" className="hero-primary">Explore Medicines <span>{'\u2192'}</span></Link><Link to="/contact" className="hero-secondary"><i>{'\u2197'}</i> Talk to an Expert</Link></Motion.div><RatingRow enter={enter} /><Motion.div {...enter(.4)}><Stats reducedMotion={reducedMotion} /></Motion.div></div><Coverflow reducedMotion={reducedMotion} /></div></section>;
 }

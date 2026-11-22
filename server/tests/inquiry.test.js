@@ -41,6 +41,41 @@ describe('POST /api/inquiries', () => {
     expect(res.status).toBe(400);
   });
 
+  it('needs an email or a phone number to reply to', async () => {
+    const med = await createTestMedicine();
+    const none = validPayload(med._id.toString());
+    none.customer.email = '';
+    none.customer.phone = '';
+    const res = await request(app).post('/api/inquiries').send(none);
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/email or a phone/);
+
+    const phoneOnly = validPayload(med._id.toString());
+    phoneOnly.customer.email = '';
+    expect((await request(app).post('/api/inquiries').send(phoneOnly)).status).toBe(201);
+  });
+
+  it("accepts the product's own pack and records its size and listed price", async () => {
+    const Inquiry = (await import('../models/Inquiry.js')).default;
+    const drops = await createTestMedicine({
+      slug: 'eye-drops',
+      variants: [{ strength: '10 ml', form: 'Eye Drops', packSize: '10 ml Bottle', packagingType: 'Bottle', price: 18.4, stock: 5 }],
+    });
+    const payload = validPayload(drops._id.toString());
+    payload.product = { quantity: 3, packagingType: 'bottle', strength: '10 ml' };
+    expect((await request(app).post('/api/inquiries').send(payload)).status).toBe(201);
+    const saved = await Inquiry.findOne({ slug: 'eye-drops' }).lean();
+    expect(saved.selectedVariant).toMatchObject({ packagingType: 'bottle', packSize: '10 ml Bottle', price: 18.4, form: 'Eye Drops' });
+    expect(saved.quantity).toBe(3);
+
+    // A different pack is quoted, so no listed price is attached to it.
+    payload.product.packagingType = 'box';
+    expect((await request(app).post('/api/inquiries').send(payload)).status).toBe(201);
+    const boxed = await Inquiry.findOne({ slug: 'eye-drops', 'selectedVariant.packagingType': 'box' }).lean();
+    expect(boxed.selectedVariant.price).toBeUndefined();
+    expect(boxed.selectedVariant.packSize).toBe('');
+  });
+
   it('404s when the medicine does not exist', async () => {
     const res = await request(app).post('/api/inquiries').send(validPayload('507f1f77bcf86cd799439011'));
     expect(res.status).toBe(404);
@@ -52,6 +87,31 @@ describe('POST /api/inquiries', () => {
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.referenceId).toMatch(/^CN-\d{4}-\d{4}$/);
+  });
+
+  it('never reuses a reference id after an older inquiry is removed', async () => {
+    const Inquiry = (await import('../models/Inquiry.js')).default;
+    const med = await createTestMedicine();
+    const ids = [];
+    for (let i = 0; i < 3; i += 1) {
+      ids.push((await request(app).post('/api/inquiries').send(validPayload(med._id.toString()))).body.referenceId);
+    }
+    expect(ids.map((id) => id.split('-').pop())).toEqual(['0001', '0002', '0003']);
+
+    // Cleaning out an old record (e.g. in the database console) must not make 0003 come round again.
+    await Inquiry.deleteOne({ referenceId: ids[0] });
+    const next = await request(app).post('/api/inquiries').send(validPayload(med._id.toString()));
+    expect(next.status).toBe(201);
+    expect(next.body.referenceId.split('-').pop()).toBe('0004');
+  });
+
+  it('gives every one of several simultaneous inquiries its own reference id', async () => {
+    const med = await createTestMedicine();
+    const results = await Promise.all(
+      Array.from({ length: 6 }, () => request(app).post('/api/inquiries').send(validPayload(med._id.toString())))
+    );
+    expect(results.map((r) => r.status)).toEqual([201, 201, 201, 201, 201, 201]);
+    expect(new Set(results.map((r) => r.body.referenceId)).size).toBe(6);
   });
 
   // Regression test: generateReferenceId() used to build its uniqueness-check

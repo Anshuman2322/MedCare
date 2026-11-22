@@ -29,6 +29,10 @@ export function withCloudinaryTransform(url, width) {
   return url.replace('/upload/', `/upload/f_auto,q_auto,w_${width}/`);
 }
 
+export function variantLabel(variant = {}) {
+  return [variant.strength, variant.form, variant.packSize].filter(Boolean).join(' · ');
+}
+
 export function resolveMedicineImage(medicine, width) {
   const url = medicine?.image || medicine?.images?.[0] || '';
   return withCloudinaryTransform(url, width);

@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
+import useCatalogue from '../hooks/useCatalogue';
 import CategoryCarousel from './category/CategoryCarousel.jsx';
-import { CAROUSEL_CATEGORIES } from './category/categoryData.js';
+import { CAROUSEL_CATEGORIES, categoriesWithProducts } from './category/categoryData.js';
 
-// A curated, always-full browse list (not derived from current inventory)
-// so the section reads like a premium pharmacy's full category directory
-// rather than shrinking to whatever 2-3 categories happen to have stock
-// today. Categories with no matching products yet still link through to
-// the shop page's expected empty state, same as any other filter.
+// A curated browse list in a fixed order, trimmed to the categories that
+// have products on the public site, so no card leads to an empty page.
 const CategorySection = () => {
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
+  const { status, medicines } = useCatalogue();
+  const categories = useMemo(
+    () => categoriesWithProducts(CAROUSEL_CATEGORIES, medicines, status === 'ready'),
+    [medicines, status]
+  );
 
   return (
     <section className="w-full bg-[#F8FAFC]">
@@ -20,11 +23,11 @@ const CategorySection = () => {
         >
           <h2 className="text-[32px] font-bold text-[#0F172A] tracking-tight">Shop by Category</h2>
           <p className="mt-3 text-base font-medium text-[#64748B]">
-            Find trusted healthcare products organized by your needs.
+            Browse our catalogue by therapy area.
           </p>
         </div>
 
-        <CategoryCarousel categories={CAROUSEL_CATEGORIES} />
+        {categories.length > 0 && <CategoryCarousel categories={categories} />}
       </div>
     </section>
   );

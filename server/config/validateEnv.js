@@ -11,6 +11,8 @@ const RECOMMENDED_IN_PRODUCTION = [
   'CLOUD_NAME',
   'CLOUD_API_KEY',
   'CLOUD_API_SECRET',
+  'RESEND_API_KEY',
+  'RESEND_FROM',
 ];
 
 // Optional numeric overrides consumed via `Number(process.env.X) || default`
@@ -22,6 +24,8 @@ const OPTIONAL_NUMERIC = {
   RATE_LIMIT_MAX: 300,
   AUTH_RATE_LIMIT_MAX: 20,
   INQUIRY_RATE_LIMIT_MAX: 30,
+  PASSWORD_RESET_RATE_LIMIT_MAX: 10,
+  OTP_VERIFY_RATE_LIMIT_MAX: 20,
 };
 
 function validateOptionalNumericEnv() {
@@ -68,6 +72,12 @@ export function validateEnv() {
   if (missingRecommended.length) {
     logger.warn(
       `Running in production without: ${missingRecommended.join(', ')}. The features that depend on them will be degraded or unavailable.`
+    );
+  }
+
+  if (process.env.RESEND_FROM?.includes('@resend.dev')) {
+    logger.warn(
+      "RESEND_FROM uses Resend's test sender, which only delivers to the Resend account owner. Password-reset codes and notifications to anyone else will be rejected."
     );
   }
 

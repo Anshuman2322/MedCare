@@ -35,6 +35,7 @@ export const animationClasses = {
 // div + an info div meant to form one card) don't get flattened into
 // separate siblings - that flattening is what breaks CSS Grid layouts,
 // since each sibling becomes its own grid item instead of one combined card.
+// eslint-disable-next-line no-unused-vars
 export const AnimatedCard = ({ children, className = '', index, delay, stagger, ...rest }) => (
   <div className={className} {...rest}>{children}</div>
 );

@@ -1,0 +1,19 @@
+# What must never reach the image: the host's node_modules (Windows/macOS
+# binaries would overwrite the ones installed inside the image) and every
+# secret. server/.env is read at runtime through docker-compose's env_file.
+node_modules
+npm-debug.log*
+.env
+.env.*
+!.env.example
+
+# Not needed to run
+tests
+jest.config.js
+coverage
+logs
+*.log
+.git
+.gitignore
+.dockerignore
+Dockerfile

@@ -1,5 +1,6 @@
-import Medicine from '../models/Medicine.js';
+import Medicine, { PUBLIC_MEDICINE_FILTER } from '../models/Medicine.js';
 import Category from '../models/Category.js';
+import Review from '../models/Review.js';
 import mongoose from 'mongoose';
 import { readFile, writeFile } from 'fs/promises';
 import path from 'path';
@@ -186,6 +187,7 @@ export async function createMedicine(req, res, next) {
       image,
       images,
       inStock,
+      isPublished,
       description,
       manufacturer,
       requiresPrescription,
@@ -277,6 +279,7 @@ export async function createMedicine(req, res, next) {
       image: image || '',
       images: Array.isArray(images) ? images : [],
       inStock: resolvedInStock,
+      isPublished: isPublished !== false,
       description,
       manufacturer,
       requiresPrescription,
@@ -299,7 +302,10 @@ export async function createMedicine(req, res, next) {
   }
 }
 
-export async function getAllMedicines(req, res, next) {
+export const getAllMedicines = (req, res, next) => listMedicines(req, res, next, PUBLIC_MEDICINE_FILTER);
+export const getAllMedicinesForAdmin = (req, res, next) => listMedicines(req, res, next, {});
+
+async function listMedicines(req, res, next, visibility) {
   try {
     const { search, category, sort } = req.query || {};
 
@@ -309,7 +315,7 @@ export async function getAllMedicines(req, res, next) {
       return res.json(sortFallbackMedicines(filteredMedicines, sort));
     }
 
-    const filter = {};
+    const filter = { ...visibility };
     if (search) {
       filter.name = { $regex: escapeRegex(search), $options: 'i' };
     }
@@ -322,13 +328,26 @@ export async function getAllMedicines(req, res, next) {
     if (sort === 'price_desc') sortOption = { 'variants.price': -1 };
 
     const meds = await Medicine.find(filter).sort(sortOption);
-    res.json(meds);
+    res.json(await withRatings(meds));
   } catch (error) {
     next(error);
   }
 }
 
-export async function getMedicineBySlug(req, res, next) {
+// Adds `rating` (average of approved reviews) and `reviewCount` to products
+// that have reviews; products without reviews are returned unchanged.
+async function withRatings(meds) {
+  const ratings = await Review.ratingsFor(meds.map((m) => m._id));
+  return meds.map((m) => {
+    const r = ratings.get(String(m._id));
+    return r ? { ...m.toJSON(), rating: r.average, reviewCount: r.count } : m;
+  });
+}
+
+export const getMedicineBySlug = (req, res, next) => readMedicine(req, res, next, PUBLIC_MEDICINE_FILTER);
+export const getMedicineBySlugForAdmin = (req, res, next) => readMedicine(req, res, next, {});
+
+async function readMedicine(req, res, next, visibility) {
   try {
     const { slug } = req.params;
     if (mongoose.connection.readyState !== 1) {
@@ -351,13 +370,14 @@ export async function getMedicineBySlug(req, res, next) {
       or.push({ _id: slug });
     }
 
-    const medicine = await Medicine.findOne({ $or: or });
+    const medicine = await Medicine.findOne({ ...visibility, $or: or });
 
     if (!medicine) {
       return res.status(404).json({ error: 'Medicine not found' });
     }
 
-    res.json(medicine);
+    const [withRating] = await withRatings([medicine]);
+    res.json(withRating);
   } catch (error) {
     next(error);
   }
@@ -499,6 +519,35 @@ function deriveInStock(variants = []) {
   return variants.some((v) => Number(v?.stock) > 0);
 }
 
+// Changes isPublished and nothing else. The general update route also
+// recalculates inStock, which a visibility toggle must not do.
+export async function setMedicineVisibility(req, res, next) {
+  try {
+    const { isPublished } = req.body || {};
+    if (typeof isPublished !== 'boolean') {
+      return res.status(400).json({ error: 'isPublished must be true or false' });
+    }
+
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ error: 'Database is unavailable. Please try again shortly.' });
+    }
+
+    const medicine = await Medicine.findOneAndUpdate(
+      buildMedicineLookupQuery(req.params.id),
+      { $set: { isPublished } },
+      { new: true }
+    ).select('slug isPublished');
+
+    if (!medicine) {
+      return res.status(404).json({ error: 'Medicine not found' });
+    }
+
+    res.json({ success: true, slug: medicine.slug, isPublished: medicine.isPublished });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function deleteMedicineById(req, res, next) {
   try {
     const { id } = req.params;
@@ -528,7 +577,7 @@ export async function deleteMedicineById(req, res, next) {
   }
 }
 
-function buildMedicineLookupQuery(identifier) {
+export function buildMedicineLookupQuery(identifier) {
   const slug = String(identifier || '').trim();
   const query = { slug };
 

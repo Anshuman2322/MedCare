@@ -33,15 +33,13 @@ Medicine create must include `slug`, `name`, and valid `variants`. A representat
 {"slug":"example-tablet","name":"Example Tablet","category":"Antibiotic","images":["https://..."],"variants":[{"strength":"500 mg","form":"Tablet","packSize":"10","packagingType":"Box","price":12.5,"sku":"EX-500","stock":10}]}
 ```
 
-## Public leads, orders, uploads
+## Public leads and uploads
 
 | Method/route | Auth | Request | Success/errors |
 |---|---|---|---|
 | POST `/api/inquiries` and `/api/inquiry` | Public; inquiry limiter | nested inquiry body below | `201 {success,message,inquiryId,referenceId}`; 400,404,429 |
 | POST `/api/contact` | Public; inquiry limiter | `{name,email,message}` | `201 {success,message,id}`; 400,429 |
-| POST `/api/orders` | Public | `{medicineId,customerName,customerEmail,customerPhone,quantity,notes}` | `201` order; 404/500 |
-| GET `/api/orders` | Admin | none | order array with populated medicine; 401 |
-| POST `/api/upload` | Admin | multipart field `image` | `{imageUrl}`; 500 |
+| POST `/api/upload` | Admin | multipart field `image` (JPEG, PNG, WebP or GIF, max 10 MB) | `{imageUrl}`; 400 (not an image), 401, 500 |
 
 Supported inquiry example:
 

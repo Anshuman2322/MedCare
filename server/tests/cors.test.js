@@ -18,7 +18,7 @@ describe('CORS', () => {
       .get('/api/health')
       .set('Origin', 'https://not-an-allowed-origin.example');
 
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(403);
     expect(res.body.error).toMatch(/not allowed by cors/i);
     expect(res.headers['access-control-allow-origin']).toBeUndefined();
   });

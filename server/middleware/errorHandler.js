@@ -9,7 +9,8 @@ export function errorHandler(err, req, res, _next) {
   const status = err.status || 500;
   const isProduction = process.env.NODE_ENV === 'production';
 
-  logger.error(
+  // Faults are errors; a refused or invalid request (4xx) is routine and only a warning.
+  logger[status >= 500 ? 'error' : 'warn'](
     { err, status, method: req.method, url: req.originalUrl, reqId: req.id },
     err.message
   );

@@ -7,9 +7,12 @@ import Hero from "./components/Hero";
 import BrandMarquee from "./components/BrandMarquee";
 import CategorySection from "./components/CategorySection";
 import FeaturedMedicines from "./components/FeaturedMedicines";
+import Testimonials from "./components/Testimonials";
 import Footer from "./components/Footer";
 import FloatingHomeButton from "./components/FloatingHomeButton";
 import SEO from "./components/SEO.jsx";
+import ChatWidget from "./components/chat/ChatWidget.jsx";
+import ToastViewport from "./components/common/Toast.jsx";
 import { CurrencyProvider } from "./store/useStore.jsx";
 import "./App.css";
 
@@ -20,7 +23,10 @@ import "./App.css";
 const ShopByCategory = lazy(() => import("./pages/ShopByCategory"));
 const MedicineDetails = lazy(() => import("./pages/MedicineDetails"));
 const InquiryWizardPage = lazy(() => import("./pages/InquiryWizardPage"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Favorites = lazy(() => import("./pages/Favorites"));
 const About = lazy(() => import("./pages/About"));
+const CustomerReviews = lazy(() => import("./pages/Reviews"));
 const Contact = lazy(() => import("./pages/Contact"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
@@ -53,20 +59,24 @@ function App() {
                 element={
                   <>
                     <SEO
-                      description="Trusted medicines, verified suppliers and transparent healthcare procurement — all in one modern marketplace. Submit an inquiry and our team follows up directly."
+                      description="Branded generic medicines from established Indian manufacturers, supplied to buyers in the USA, UK, Canada, Australia and beyond. Highly rated by our buyers. Request a free quote."
                       path="/"
                     />
                     <Hero />
                     <BrandMarquee />
                     <CategorySection />
                     <FeaturedMedicines />
+                    <Testimonials />
                   </>
                 }
               />
               <Route path="/shop" element={<ShopByCategory />} />
               <Route path="/medicine/:slug" element={<MedicineDetails />} />
               <Route path="/inquiry/:slug" element={<InquiryWizardPage />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/favorites" element={<Favorites />} />
               <Route path="/about" element={<About />} />
+              <Route path="/reviews" element={<CustomerReviews />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
@@ -76,6 +86,8 @@ function App() {
           </Suspense>
           <Footer />
           <FloatingHomeButton />
+          <ChatWidget />
+          <ToastViewport />
         </div>
       </CurrencyProvider>
     </MotionConfig>

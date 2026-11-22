@@ -29,3 +29,14 @@ export async function createInquiry(payload) {
   });
   return handleResponse(res);
 }
+
+// One combined inquiry or best-price request covering one or many medicines.
+// Only ids and quantities matter — the server re-reads names and prices.
+export async function createBulkRequest(payload) {
+  const res = await fetch(buildUrl('/api/inquiries/bulk'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+}

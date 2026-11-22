@@ -28,4 +28,28 @@ describe('Admin Login page', () => {
     expect(screen.getByPlaceholderText('admin@example.com')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
   });
+
+  it('links to the forgot password page', async () => {
+    render(
+      <MemoryRouter>
+        <AuthProvider>
+          <Login />
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole('link', { name: 'Forgot password?' })).toHaveAttribute('href', '/forgot-password');
+  });
+
+  it('confirms a completed password reset', async () => {
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/login', state: { notice: 'Your password has been updated.' } }]}>
+        <AuthProvider>
+          <Login />
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Your password has been updated.');
+  });
 });

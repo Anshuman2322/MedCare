@@ -23,7 +23,11 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // JSX usage (<motion.div>, <Illustration />) isn't seen by no-unused-vars without
+      // eslint-plugin-react, so names used only in JSX are exempted here.
+      'no-unused-vars': ['error', { varsIgnorePattern: '^(motion|[A-Z_])', argsIgnorePattern: '^[A-Z_]' }],
+      // Context files export a provider plus its hook on purpose; only dev hot-reload is affected.
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
   },
 ])

@@ -23,6 +23,26 @@ const LEGACY_CATEGORY_MAP = new Map([
 ]);
 const normalizeCategoryLabel = (label) => LEGACY_CATEGORY_MAP.get(label) || label;
 
+// Rows per batch, and the grid's column count at each width (matches the
+// .shop-grid breakpoints in ShopByCategory.css).
+const ROWS_PER_BATCH = 4;
+const MOBILE_BATCH = 6;
+const LIST_BATCH = 8;
+const gridColumns = (width) => (width <= 640 ? 1 : width <= 768 ? 2 : 3);
+const viewportWidth = () => (typeof window === 'undefined' ? 1024 : window.innerWidth);
+
+function usePageSize(viewMode) {
+  const [width, setWidth] = useState(viewportWidth);
+  useEffect(() => {
+    const onResize = () => setWidth(viewportWidth());
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  if (viewMode === 'list') return LIST_BATCH;
+  const columns = gridColumns(width);
+  return columns === 1 ? MOBILE_BATCH : columns * ROWS_PER_BATCH;
+}
+
 export default function ShopByCategory() {
   const [searchParams] = useSearchParams();
   const [medicines, setMedicines] = useState([]);
@@ -51,8 +71,9 @@ export default function ShopByCategory() {
   const [sort, setSort] = useState('Featured');
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('grid');
-  const PAGE_SIZE = 9;
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  // Products are shown in batches of whole rows ("Show more" adds a batch).
+  const pageSize = usePageSize(viewMode);
+  const [pages, setPages] = useState(1);
 
   useEffect(() => {
     let active = true;
@@ -112,35 +133,6 @@ export default function ShopByCategory() {
     return Array.from(new Set(medicines.map(m => m.form).filter(Boolean))).sort();
   }, [medicines]);
 
-  // Product counts per filter option, so the sidebar can show "Antibiotics (12)"
-  // etc. without a separate API call - derived from the same in-memory list
-  // (minus deletedAt) that backs the filters themselves.
-  const activeMedicines = useMemo(() => medicines.filter(m => !m.deletedAt), [medicines]);
-  const categoryCounts = useMemo(() => {
-    const map = new Map();
-    for (const m of activeMedicines) {
-      const cats = Array.isArray(m.categories) && m.categories.length ? m.categories : [m.category];
-      cats.map(toLabel).filter(Boolean).map(normalizeCategory).forEach(c => {
-        map.set(c, (map.get(c) || 0) + 1);
-      });
-    }
-    return map;
-  }, [activeMedicines]);
-  const manufacturerCounts = useMemo(() => {
-    const map = new Map();
-    for (const m of activeMedicines) {
-      if (m.manufacturer) map.set(m.manufacturer, (map.get(m.manufacturer) || 0) + 1);
-    }
-    return map;
-  }, [activeMedicines]);
-  const formCounts = useMemo(() => {
-    const map = new Map();
-    for (const m of activeMedicines) {
-      if (m.form) map.set(m.form, (map.get(m.form) || 0) + 1);
-    }
-    return map;
-  }, [activeMedicines]);
-
   const filtered = useMemo(() => {
     let list = medicines.filter(m => !m.deletedAt).slice();
     const selectedCategoryNorm = normalizeString(selectedCategory);
@@ -168,24 +160,14 @@ export default function ShopByCategory() {
     return list;
   }, [medicines, selectedCategory, selectedManufacturer, selectedForm, minPrice, maxPrice, search, sort]);
 
-  // Active filter chips shown above the grid, each individually removable.
-  const activeFilters = useMemo(() => {
-    const chips = [];
-    if (search) chips.push({ key: 'search', label: `"${search}"`, clear: () => setSearch('') });
-    if (selectedCategory) chips.push({ key: 'category', label: selectedCategory, clear: () => setSelectedCategory('') });
-    if (selectedManufacturer) chips.push({ key: 'manufacturer', label: selectedManufacturer, clear: () => setSelectedManufacturer('') });
-    if (selectedForm) chips.push({ key: 'form', label: selectedForm, clear: () => setSelectedForm('') });
-    if (Number(minPrice) > 0 || Number(maxPrice) < maxPriceInData) {
-      chips.push({ key: 'price', label: `$${minPrice} - $${maxPrice}`, clear: () => { setMinPrice(0); setMaxPrice(maxPriceInData); } });
-    }
-    return chips;
-  }, [search, selectedCategory, selectedManufacturer, selectedForm, minPrice, maxPrice, maxPriceInData]);
-
+  // New filters, search or sort start again from the first batch.
   useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
+    setPages(1);
   }, [selectedCategory, selectedManufacturer, selectedForm, minPrice, maxPrice, search, sort]);
 
+  const visibleCount = pages * pageSize;
   const visibleProducts = filtered.slice(0, visibleCount);
+  const remaining = Math.max(0, filtered.length - visibleCount);
 
   // If NO filters/search applied, we want to show ALL products (already true) but animate them.
   // const isPristine = !selectedCategory && !selectedManufacturer && !selectedForm && !search && sort === 'Featured' && Number(maxPrice) === 50;
@@ -242,12 +224,16 @@ export default function ShopByCategory() {
           borderBottom: '1px solid #e5e7eb',
           marginBottom: '24px'
         }}>
-          <div className="product-count" style={{
+          <div className="product-count" role="status" aria-live="polite" style={{
             color: '#6b7280',
             fontSize: '14px',
             fontWeight: '500'
           }}>
-            Showing {filtered.length} products {isLoading ? '(loading...)' : ''}
+            {isLoading
+              ? 'Loading products...'
+              : remaining > 0
+                ? `Showing ${visibleProducts.length} of ${filtered.length} products`
+                : `Showing ${filtered.length} product${filtered.length === 1 ? '' : 's'}`}
           </div>
           
           <div className="sort-section" style={{
@@ -406,10 +392,10 @@ export default function ShopByCategory() {
             ref={productsRef}
             className={`products`}
           >
-            <div className="shop-grid">
-              {filtered.map((med, index) => (
+            <div className={`shop-grid ${viewMode === 'list' ? 'shop-grid--list' : ''}`}>
+              {visibleProducts.map((med, index) => (
                 <AnimatedCard key={med.slug || med._id} index={index} delay={0} stagger={false}>
-                  <MedicineCard product={med} />
+                  <MedicineCard product={med} layout={viewMode} />
                 </AnimatedCard>
               ))}
               {filtered.length === 0 && !isLoading && (
@@ -423,6 +409,15 @@ export default function ShopByCategory() {
                 </div>
               )}
             </div>
+
+            {remaining > 0 && (
+              <div className="show-more">
+                <button type="button" className="show-more-btn" onClick={() => setPages((p) => p + 1)}>
+                  Show more products
+                  <span className="show-more-count">{remaining} more</span>
+                </button>
+              </div>
+            )}
           </main>
         </div>
       </div>

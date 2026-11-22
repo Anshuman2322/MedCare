@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
+import { CONTACT } from '../config/contact.js';
 import './footerWordmarkButton.css';
 
 const OFFSCREEN = -999;
@@ -65,8 +66,9 @@ const Footer = () => {
   };
 
   useEffect(() => {
+    const state = spotlightState.current;
     return () => {
-      if (spotlightState.current.raf) cancelAnimationFrame(spotlightState.current.raf);
+      if (state.raf) cancelAnimationFrame(state.raf);
     };
   }, []);
 
@@ -82,7 +84,7 @@ const Footer = () => {
             <div className="sm:col-span-2 lg:col-span-1">
               <img src="/logo.png" alt="CureNeed logo" className="h-[92px] sm:h-[112px] w-auto mb-2" />
               <p className="text-gray-600 text-sm leading-5 max-w-xs">
-                Your trusted online pharmacy delivering quality healthcare products across the USA.
+                Branded generic medicines from established Indian manufacturers. Send a free request and get a clear quote.
               </p>
             </div>
             <div>
@@ -90,6 +92,7 @@ const Footer = () => {
               <ul className="mt-1.5 space-y-3 text-base">
                 <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/shop">Shop</Link></li>
                 <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/about">About Us</Link></li>
+                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/reviews">Customer Reviews</Link></li>
                 <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/contact">Contact</Link></li>
               </ul>
             </div>
@@ -104,9 +107,9 @@ const Footer = () => {
             <div>
               <h4 className="text-sm font-semibold tracking-wide text-gray-900">Contact</h4>
               <ul className="mt-1.5 space-y-3 text-base text-gray-600">
-                <li>Email: <a className="hover:text-emerald-600 transition-colors break-all" href="mailto:support@cureneed.com">support@cureneed.com</a></li>
-                <li>Phone: <a className="hover:text-emerald-600 transition-colors" href="tel:1-800-MED-CARE">1-800-MED-CARE</a></li>
-                <li>Hours: Mon-Fri 9AM-6PM EST</li>
+                <li>Email: <a className="hover:text-emerald-600 transition-colors break-all" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
+                <li>Phone: <a className="hover:text-emerald-600 transition-colors" href={CONTACT.phoneHref}>{CONTACT.phone}</a></li>
+                <li>{CONTACT.address.join(', ')}</li>
               </ul>
             </div>
           </div>

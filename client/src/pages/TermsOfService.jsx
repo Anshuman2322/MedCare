@@ -1,5 +1,6 @@
 import React from 'react';
 import SEO from '../components/SEO.jsx';
+import { CONTACT } from '../config/contact.js';
 
 const sections = [
   {
@@ -58,8 +59,8 @@ export default function TermsOfService() {
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Contact Us</h2>
           <p className="text-gray-600 text-base leading-relaxed">
             Questions about these terms can be sent to{' '}
-            <a href="mailto:support@cureneed.com" className="text-emerald-600 hover:text-emerald-700">
-              support@cureneed.com
+            <a href={`mailto:${CONTACT.email}`} className="text-emerald-600 hover:text-emerald-700">
+              {CONTACT.email}
             </a>.
           </p>
         </div>

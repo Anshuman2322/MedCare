@@ -10,6 +10,13 @@ const __dirname = path.dirname(__filename);
 const FALLBACK_MEDICINES_PATH = path.resolve(__dirname, '../../client/src/data/medicines.json');
 const FALLBACK_CATEGORIES_PATH = path.resolve(__dirname, '../../client/src/data/categories.json');
 
+// The first positive price listed on a medicine's variants, or null when none is.
+function listedPrice(medicine) {
+  const variant = (medicine?.variants || []).find((item) => Number(item?.price) > 0);
+  if (variant) return Number(variant.price);
+  return Number(medicine?.price) > 0 ? Number(medicine.price) : null;
+}
+
 async function loadFallbackMedicines() {
   const raw = await readFile(FALLBACK_MEDICINES_PATH, 'utf8');
   const medicines = JSON.parse(raw);
@@ -59,7 +66,8 @@ export async function getDashboardStats(_req, res, next) {
         Medicine.find()
           .sort({ createdAt: -1 })
           .limit(5)
-          .select('name category price inStock createdAt slug'),
+          .select('name category price variants inStock createdAt slug')
+          .lean(),
       ]);
 
     const totalCategories = Math.max(categoryCountFromCollection, distinctCategories.length);
@@ -69,7 +77,11 @@ export async function getDashboardStats(_req, res, next) {
       inStock,
       outOfStock,
       totalCategories,
-      recentMedicines,
+      // Prices are listed on the variants (in US dollars), not on the medicine itself.
+      recentMedicines: recentMedicines.map((medicine) => ({
+        ...medicine,
+        price: listedPrice(medicine),
+      })),
     });
   } catch (error) {
     next(error);

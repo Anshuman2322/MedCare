@@ -130,7 +130,7 @@ export default function Dashboard() {
                     <tr key={item._id || item.slug} className="align-middle">
                       <td className="py-3 pr-4 font-semibold text-slate-900">{item.name}</td>
                       <td className="py-3 pr-4 text-slate-700">{item.category || '--'}</td>
-                      <td className="py-3 pr-4 text-slate-700">Rs. {Number(item.price || 0).toFixed(2)}</td>
+                      <td className="py-3 pr-4 text-slate-700">{Number(item.price) > 0 ? '$' + Number(item.price).toFixed(2) : '--'}</td>
                       <td className="py-3 pr-4">
                         <Badge tone={item.inStock ? 'success' : 'danger'}>
                           {item.inStock ? 'In stock' : 'Out of stock'}

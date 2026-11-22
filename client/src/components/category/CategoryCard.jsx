@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 // real CSS :hover (border tint, shadow) layered under a Framer Motion
 // lift so keyboard/focus and touch users get the same affordance as a
 // mouse hover.
-export default function CategoryCard({ name, description, Illustration, href, tabIndex }) {
+export default function CategoryCard({ name, description, Illustration, href, tabIndex, count }) {
   return (
     <motion.div
       className="group h-[320px] w-[250px]"
@@ -29,7 +29,7 @@ export default function CategoryCard({ name, description, Illustration, href, ta
         <p className="mt-2 text-sm font-medium leading-relaxed text-[#64748B] line-clamp-2">{description}</p>
 
         <div className="mt-auto flex items-center gap-1.5 pt-4 text-sm font-semibold text-[#16A34A]">
-          Browse Category
+          {count ? `Browse ${count} product${count === 1 ? '' : 's'}` : 'Browse Category'}
           <svg
             className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-1"
             viewBox="0 0 24 24"

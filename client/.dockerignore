@@ -1,0 +1,25 @@
+# The host's node_modules would overwrite the ones installed inside the image
+# (wrong platform binaries for vite/esbuild/rollup), and .env holds local-only values.
+node_modules
+dist
+npm-debug.log*
+.env
+.env.*
+!.env.example
+
+# Not needed to build
+src/tests
+coverage
+*.log
+.git
+.gitignore
+.dockerignore
+Dockerfile
+
+# Never referenced by the storefront. Product images come from Cloudinary; these
+# are legacy local copies (about 135 MB), an unused video and the source PNGs
+# behind the hero WebP files. Keeping them out keeps the image small.
+public/medicines
+public/medicines_web2
+public/videos
+public/hero/*.png

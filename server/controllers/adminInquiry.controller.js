@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { escapeRegex } from '../utils/sanitize.js';
 
 const ALLOWED_STATUSES = ['new', 'contacted', 'closed'];
+const ALLOWED_REQUEST_TYPES = ['inquiry', 'best_price'];
 
 export async function listAdminInquiries(req, res, next) {
   try {
@@ -22,6 +23,13 @@ export async function listAdminInquiries(req, res, next) {
     const filter = {};
     if (ALLOWED_STATUSES.includes(status)) {
       filter.status = status;
+    }
+
+    // Inquiries created before requestType existed have no such field, so the
+    // "inquiry" filter has to mean "anything that isn't a best-price request".
+    const requestType = (req.query.requestType || '').toLowerCase();
+    if (ALLOWED_REQUEST_TYPES.includes(requestType)) {
+      filter.requestType = requestType === 'best_price' ? 'best_price' : { $ne: 'best_price' };
     }
 
     if (search) {

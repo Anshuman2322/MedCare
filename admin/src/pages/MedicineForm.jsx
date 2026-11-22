@@ -33,6 +33,7 @@ const initialForm = {
   image: '',
   images: [],
   inStock: true,
+  isPublished: true,
   description: '',
   metaTitle: '',
   metaDescription: '',
@@ -103,7 +104,7 @@ export default function MedicineForm({ mode }) {
     if (!isEdit || !id) return;
     (async () => {
       try {
-        const { data } = await api.get(`/api/medicines/${id}`);
+        const { data } = await api.get(`/api/admin/medicines/${id}`);
         const incomingCustomFields = Array.isArray(data.customFields)
           ? data.customFields.map((field) => ({ ...field, id: makeId() }))
           : [];
@@ -584,6 +585,15 @@ export default function MedicineForm({ mode }) {
               />
               Requires prescription
             </label>
+            <label className="inline-flex w-fit items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
+              <input
+                type="checkbox"
+                checked={form.isPublished !== false}
+                onChange={(e) => handleChange('isPublished', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+              />
+              Show on website
+            </label>
             <CustomFields
               section="Medical Info"
               fields={customFieldsBySection['Medical Info']}
@@ -767,8 +777,8 @@ function LivePreview({ form, previewImage, previewDescription, customFieldsBySec
 
   const primaryVariant = (form.variants && form.variants[0]) || {};
   const priceLabel = primaryVariant.price !== '' && !Number.isNaN(Number(primaryVariant.price))
-    ? `₹${Number(primaryVariant.price).toFixed(2)}`
-    : '₹0.00';
+    ? `$${Number(primaryVariant.price).toFixed(2)}`
+    : '$0.00';
 
   return (
     <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 space-y-4">

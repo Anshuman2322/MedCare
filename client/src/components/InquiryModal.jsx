@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createInquiry } from '../services/api';
 import { formatPrice } from '../utils/currency';
+import { titleCase, unitName } from '../utils/packs.js';
+import { downloadInquiryPdf, SITE_URL } from '../utils/inquiryPdf.js';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -14,6 +16,19 @@ const normalizeVariant = (v = {}) => ({
   stock: v.stock ?? (v.inStock ? 1 : null),
   brand: v.brand || '',
 });
+
+// A product's listed price is for its own pack (e.g. "Strip of 10 Tablets").
+// That pack is offered first with its price; the other common pack (box or
+// strip) can still be requested, but its price comes with the quote.
+function packagingOptions(variant) {
+  const own = (variant?.packagingType || '').trim().toLowerCase() || 'box';
+  const other = own === 'box' ? 'strip' : 'box';
+  const hasPrice = Number.isFinite(variant?.price);
+  return [
+    { key: own, label: titleCase(own), detail: variant?.packSize || '', priced: hasPrice },
+    { key: other, label: titleCase(other), detail: '', priced: false },
+  ];
+}
 
 const steps = {
   customer: 1,
@@ -46,6 +61,9 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
   const [referenceId, setReferenceId] = useState('');
+  // What was submitted, kept for the PDF and the confirmation line.
+  const [receipt, setReceipt] = useState(null);
+  const [pdfState, setPdfState] = useState('idle');
 
   const variants = useMemo(() => {
     if (!medicine?.variants?.length) return [];
@@ -74,18 +92,22 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
 
     const preselectedStrength = hasMultipleStrengths ? '' : strengthOptions[0] || '';
     const preselectedBrand = hasMultipleBrands ? '' : brandOptions[0] || '';
+    const firstVariant = variants.find((v) => v.strength === preselectedStrength) || variants[0];
 
     setFormData({
       ...initialForm,
       strength: preselectedStrength,
       brand: preselectedBrand,
+      packagingType: packagingOptions(firstVariant)[0].key,
     });
     setErrors({});
     setServerError('');
     setReferenceId('');
+    setReceipt(null);
+    setPdfState('idle');
     setStep(steps.customer);
     requestAnimationFrame(() => shellRef.current?.focus());
-  }, [isOpen, medicine, hasMultipleStrengths, hasMultipleBrands, strengthOptions, brandOptions]);
+  }, [isOpen, medicine, hasMultipleStrengths, hasMultipleBrands, strengthOptions, brandOptions, variants]);
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -110,9 +132,21 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
     return byBrand[0] || variants[0] || null;
   }, [formData.brand, formData.strength, variants]);
 
-  const priceLabel = selectedVariant?.price !== null && selectedVariant?.price !== undefined
-    ? formatPrice(selectedVariant.price, currency)
-    : 'Price on request';
+  const packOptions = useMemo(() => packagingOptions(selectedVariant), [selectedVariant]);
+  const chosenPack = packOptions.find((o) => o.key === formData.packagingType) || packOptions[0];
+  const qty = Math.max(1, Number(formData.quantity) || 1);
+  const unitPrice = chosenPack.priced ? selectedVariant.price : null;
+  const estimatedTotal = unitPrice !== null ? unitPrice * qty : null;
+  const unitPriceLabel = unitPrice !== null ? `${formatPrice(unitPrice, currency)} per ${chosenPack.key}` : 'On request';
+  const totalLabel = estimatedTotal !== null ? formatPrice(estimatedTotal, currency) : 'Quoted on request';
+  const quantityLabel = `${qty} ${unitName(chosenPack.key, qty)}`;
+
+  // If a different strength changes the pack, fall back to that pack.
+  useEffect(() => {
+    if (!packOptions.some((o) => o.key === formData.packagingType)) {
+      setFormData((prev) => ({ ...prev, packagingType: packOptions[0].key }));
+    }
+  }, [packOptions, formData.packagingType]);
 
   const visibleSteps = useMemo(() => {
     const flow = [steps.customer, steps.quantity];
@@ -169,13 +203,13 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
       if (!trimmed.brand) nextErrors.brand = 'Choose a brand';
     }
 
+    // At least one way to reply is required; whatever is given must be valid.
     if (currentStep === steps.contact) {
       if (!trimmed.email && !trimmed.phone) {
-        // both optional, so no errors
-      } else {
-        if (trimmed.email && !validEmail(trimmed.email)) nextErrors.email = 'Enter a valid email';
-        if (trimmed.phone && !validPhone(trimmed.phone)) nextErrors.phone = 'Enter a valid phone';
+        nextErrors.contact = 'Please add your email or phone number so we can send your quote.';
       }
+      if (trimmed.email && !validEmail(trimmed.email)) nextErrors.email = 'Enter a valid email';
+      if (trimmed.phone && !validPhone(trimmed.phone)) nextErrors.phone = 'Enter a valid phone number';
     }
 
     if (!silent) setErrors(nextErrors);
@@ -236,6 +270,10 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
 
       const res = await createInquiry(payload);
       setReferenceId(res.referenceId || '');
+      setReceipt({
+        emailedTo: res.confirmationEmail ? payload.customer.email : '',
+        summary: buildSummary(res.referenceId || ''),
+      });
       setStep(steps.success);
     } catch (err) {
       setServerError(err?.message || 'Unable to submit inquiry right now.');
@@ -244,20 +282,67 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
     }
   };
 
-  const packagingLabel = formData.packagingType === 'strip' ? 'Strip' : 'Box';
+  const packagingLabel = chosenPack.detail ? `${chosenPack.label} (${chosenPack.detail})` : chosenPack.label;
   const variantLabel = [selectedVariant?.strength, selectedVariant?.form, selectedVariant?.packSize].filter(Boolean).join(' · ');
 
   const leftImage = medicine?.image || medicine?.images?.[0];
 
+  // Everything the PDF shows, as the customer saw it. The pack size belongs to
+  // the product's own pack, so it is left out when another pack was chosen.
+  function buildSummary(reference) {
+    const ownPack = chosenPack.key === packOptions[0].key;
+    const manufacturer = (medicine?.manufacturer || medicine?.brand || '').trim();
+    return {
+      kind: 'inquiry',
+      referenceId: reference,
+      submittedAt: new Date(),
+      currency,
+      image: leftImage || '',
+      lines: [
+        {
+          name: medicine?.name || 'Medicine',
+          url: medicine?.slug ? `${SITE_URL}/medicine/${encodeURIComponent(medicine.slug)}` : '',
+          manufacturer,
+          variant: [selectedVariant?.strength, selectedVariant?.form, ownPack ? selectedVariant?.packSize : ''].filter(Boolean).join(' · '),
+          packaging: packagingLabel,
+          unitPrice: unitPrice !== null ? unitPriceLabel : 'On request',
+          quantity: quantityLabel,
+          total: estimatedTotal !== null ? totalLabel : null,
+        },
+      ],
+      total: totalLabel,
+      totalNote: unitPrice === null ? `${chosenPack.label} pricing isn't listed. Our team will include it in your quote.` : '',
+      brand: formData.brand,
+      customer: {
+        name: formData.customerName.trim(),
+        city: formData.city.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+      },
+      notes: formData.notes.trim(),
+    };
+  }
+
+  const handleDownloadPdf = async () => {
+    if (!receipt || pdfState === 'busy') return;
+    setPdfState('busy');
+    try {
+      await downloadInquiryPdf(receipt.summary);
+      setPdfState('idle');
+    } catch {
+      setPdfState('error');
+    }
+  };
+
   if (!isOpen || !medicine) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm px-6 py-8" aria-modal="true" role="dialog">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/45 backdrop-blur-sm p-3 sm:px-6 sm:py-8" aria-modal="true" role="dialog">
       <div className="absolute inset-0" onClick={() => (!submitting ? onClose?.() : null)} />
       <div
         ref={shellRef}
         tabIndex={-1}
-        className="relative w-[75vw] max-w-[1100px] h-[80vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex"
+        className="relative flex h-[92vh] w-full max-w-[1100px] overflow-hidden rounded-2xl bg-white shadow-2xl md:h-[80vh] md:w-[90vw] lg:w-[75vw]"
       >
         <button
           type="button"
@@ -268,7 +353,7 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
           ×
         </button>
 
-        <div className="w-[40%] min-w-[320px] bg-slate-50 border-r border-slate-100 h-full max-h-full overflow-y-auto p-6 flex flex-col gap-4 justify-between">
+        <div className="hidden md:flex w-[40%] min-w-[300px] bg-slate-50 border-r border-slate-100 h-full max-h-full overflow-y-auto p-6 flex-col gap-4 justify-between">
           <div className="space-y-4">
             <div className="aspect-[4/3] rounded-xl overflow-hidden bg-white border border-slate-100 shadow-sm">
               {leftImage ? (
@@ -280,23 +365,28 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
             <div className="space-y-1">
               <div className="text-sm uppercase tracking-[0.1em] text-emerald-600 font-semibold">Medicine</div>
               <div className="text-xl font-semibold text-slate-900 leading-snug">{medicine?.name}</div>
-              <div className="text-sm text-slate-600">{medicine?.manufacturer || medicine?.brand || 'Trusted supplier'}</div>
+              {(medicine?.manufacturer || medicine?.brand) && (
+                <div className="text-sm text-slate-600">{medicine.manufacturer || medicine.brand}</div>
+              )}
             </div>
             <div className="rounded-xl bg-white border border-slate-100 p-4 shadow-sm space-y-2">
               <InfoRow label="Variant" value={variantLabel || 'Select a strength'} />
               <InfoRow label="Packaging" value={packagingLabel} />
-              <InfoRow label="Price" value={priceLabel} />
-              <InfoRow label="Quantity" value={formData.quantity} />
+              <InfoRow label="Unit price" value={unitPriceLabel} />
+              <InfoRow label="Quantity" value={quantityLabel} />
+              <div className="border-t border-slate-100 pt-2">
+                <InfoRow label="Estimated total" value={<span className="text-emerald-700">{totalLabel}</span>} />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="w-[60%] h-full p-8 flex flex-col bg-white">
+        <div className="flex h-full w-full flex-col bg-white p-4 pt-14 sm:p-6 sm:pt-14 md:w-[60%] md:p-8">
           <div className="space-y-2 mb-4">
             <div className="text-xs uppercase tracking-[0.14em] text-slate-500 font-semibold">Send Inquiry</div>
-            <div className="flex items-center justify-between">
-              <div className="text-2xl font-semibold text-slate-900">{medicine?.name}</div>
-              <div className="text-sm text-slate-600">
+            <div className="flex items-start justify-between gap-3">
+              <div className="text-lg font-semibold leading-snug text-slate-900 sm:text-2xl">{medicine?.name}</div>
+              <div className="shrink-0 pt-1 text-sm text-slate-600">
                 {step === steps.success ? 'Completed' : `Step ${currentStepIndex + 1} of ${visibleSteps.length}`}
               </div>
             </div>
@@ -311,21 +401,17 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
             )}
 
             <div className="relative w-full h-full">
-              <div className="absolute inset-0 transition-all duration-200 ease-out opacity-100 space-y-0">
+              <div className="absolute inset-0 overflow-y-auto transition-all duration-200 ease-out opacity-100 space-y-0">
                 <StepSection active={step === steps.success}>
-                  <div className="h-full flex flex-col items-center justify-center text-center space-y-4 px-1">
-                    <div className="h-14 w-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold">✓</div>
-                    <div className="text-2xl font-semibold text-gray-900">Thank you for your inquiry</div>
-                    <p className="text-sm text-gray-600 max-w-md">Our team will reach out shortly with availability and pricing.</p>
-                    {referenceId && <div className="text-xs font-semibold text-emerald-700">Reference ID: {referenceId}</div>}
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700"
-                    >
-                      Close
-                    </button>
-                  </div>
+                  <SubmittedPanel
+                    title="Thank you for your inquiry"
+                    message="Our team will reach out shortly with availability and pricing."
+                    referenceId={referenceId}
+                    emailedTo={receipt?.emailedTo}
+                    pdfState={pdfState}
+                    onDownload={handleDownloadPdf}
+                    onClose={onClose}
+                  />
                 </StepSection>
 
                 <StepSection active={step === steps.review}>
@@ -334,11 +420,12 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
                       <InfoRow label="Name" value={formData.customerName || '—'} />
                       <InfoRow label="City" value={formData.city || '—'} />
-                      <InfoRow label="Quantity" value={formData.quantity} />
+                      <InfoRow label="Quantity" value={quantityLabel} />
                       <InfoRow label="Packaging" value={packagingLabel} />
                       {formData.strength && <InfoRow label="Strength" value={formData.strength} />}
                       {formData.brand && <InfoRow label="Brand" value={formData.brand} />}
-                      <InfoRow label="Price" value={priceLabel} />
+                      <InfoRow label="Unit price" value={unitPriceLabel} />
+                      <InfoRow label="Estimated total" value={totalLabel} />
                       {formData.email && <InfoRow label="Email" value={formData.email} />}
                       {formData.phone && <InfoRow label="Phone" value={formData.phone} />}
                     </div>
@@ -377,14 +464,21 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
                   <div className="space-y-4">
                     <div>
                       <div className="text-lg font-semibold text-gray-900">How should we contact you?</div>
-                      <p className="text-sm text-gray-600">Optional: add email or phone so we can reply fast.</p>
+                      <p className="text-sm text-gray-600">
+                        Add your email or phone number <span className="font-semibold text-slate-800">(at least one)</span> so we can send your quote.
+                      </p>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <TextField label="Email" type="email" value={formData.email} onChange={(v) => setField('email', v)} error={errors.email} placeholder="you@example.com" />
                       <TextField label="Phone" type="tel" value={formData.phone} onChange={(v) => setField('phone', v)} error={errors.phone} placeholder="+1 555 123 4567" />
                     </div>
-                    <div className="rounded-lg bg-slate-50 border border-slate-100 p-3 text-xs text-slate-600">We respect your privacy. Provide contact details only if you want a callback.</div>
-                    <FooterNav onBack={handleBack} onNext={handleNext} nextDisabled={!validateStep(steps.contact, { silent: true })} />
+                    {errors.contact && (
+                      <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700">
+                        {errors.contact}
+                      </div>
+                    )}
+                    <div className="rounded-lg bg-slate-50 border border-slate-100 p-3 text-xs text-slate-600">We respect your privacy and only use these details to reply to this inquiry.</div>
+                    <FooterNav onBack={handleBack} onNext={handleNext} />
                   </div>
                 </StepSection>
 
@@ -448,8 +542,47 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
                     </div>
 
                     <div className="space-y-2">
-                      <label htmlFor="inquiry-quantity" className="text-sm font-semibold text-slate-800">Quantity</label>
-                      <div className="flex flex-wrap items-center gap-3">
+                      <div id="inquiry-packaging-label" className="text-sm font-semibold text-slate-800">Packaging</div>
+                      <div role="radiogroup" aria-labelledby="inquiry-packaging-label" className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        {packOptions.map((option) => {
+                          const active = chosenPack.key === option.key;
+                          return (
+                            <button
+                              key={option.key}
+                              type="button"
+                              role="radio"
+                              aria-checked={active}
+                              onClick={() => setField('packagingType', option.key)}
+                              className={`rounded-xl border px-4 py-3 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
+                                active ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500' : 'border-slate-200 bg-white hover:border-emerald-300'
+                              }`}
+                            >
+                              <span className="block text-sm font-semibold text-slate-900">{option.label}</span>
+                              <span className="mt-0.5 block text-xs text-slate-500">
+                                {option.priced
+                                  ? `${formatPrice(selectedVariant.price, currency)} per ${option.key}${option.detail ? ` · ${option.detail}` : ''}`
+                                  : 'Price on request'}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label htmlFor="inquiry-quantity" className="text-sm font-semibold text-slate-800">
+                        Number of {unitName(chosenPack.key, 2)}
+                      </label>
+                      <div className="inline-flex items-center overflow-hidden rounded-xl border border-slate-200 bg-white">
+                        <button
+                          type="button"
+                          aria-label="Decrease quantity"
+                          disabled={qty <= 1}
+                          onClick={() => setField('quantity', Math.max(1, qty - 1))}
+                          className="h-11 w-11 text-lg text-slate-700 hover:bg-slate-50 disabled:text-slate-300"
+                        >
+                          −
+                        </button>
                         <input
                           id="inquiry-quantity"
                           type="number"
@@ -457,19 +590,32 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
                           inputMode="numeric"
                           value={formData.quantity}
                           onChange={(e) => setField('quantity', Math.max(1, Math.floor(Number(e.target.value) || 1)))}
-                          className="w-28 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-base font-semibold text-slate-900 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          className="h-11 w-20 border-x border-slate-200 text-center text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
-
-                        <Pill active={formData.packagingType === 'box'} onClick={() => setField('packagingType', 'box')} label="Box" />
-                        <Pill active={formData.packagingType === 'strip'} onClick={() => setField('packagingType', 'strip')} label="Strip" />
+                        <button
+                          type="button"
+                          aria-label="Increase quantity"
+                          onClick={() => setField('quantity', qty + 1)}
+                          className="h-11 w-11 text-lg text-slate-700 hover:bg-slate-50"
+                        >
+                          +
+                        </button>
                       </div>
                     </div>
                     {errors.quantity && <div className="text-sm text-rose-600 font-medium">{errors.quantity}</div>}
                     {errors.packagingType && <div className="text-sm text-rose-600 font-medium">{errors.packagingType}</div>}
 
-                    <div className="rounded-lg bg-slate-50 border border-slate-100 p-3 text-sm text-slate-700">
-                      <div className="font-semibold text-slate-900">Estimated Price</div>
-                      <div className="text-base font-semibold text-emerald-700">{priceLabel}</div>
+                    <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4" aria-live="polite">
+                      <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <div className="text-sm font-semibold text-slate-900">Estimated total</div>
+                        <div className="text-xl font-bold text-emerald-700">{totalLabel}</div>
+                      </div>
+                      <div className="mt-1 text-sm text-slate-600">
+                        {unitPrice !== null
+                          ? `${formatPrice(unitPrice, currency)} per ${chosenPack.key} × ${quantityLabel}`
+                          : `${chosenPack.label} pricing isn't listed. Our team will include it in your quote.`}
+                      </div>
+                      <div className="mt-1 text-xs text-slate-500">The final price is confirmed in your quote.</div>
                     </div>
 
                     <FooterNav onBack={handleBack} onNext={handleNext} nextDisabled={!validateStep(steps.quantity, { silent: true })} />
@@ -484,7 +630,67 @@ export default function InquiryModal({ isOpen, onClose, medicine, currency }) {
   );
 }
 
-function StepSection({ active, children }) {
+function DownloadIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
+      <path d="M10 3v9m0 0-3.5-3.5M10 12l3.5-3.5M4 14.5V16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// The "done" screen shared by the inquiry and request modals: reference ID,
+// where the confirmation email went, and a PDF copy of the request.
+export function SubmittedPanel({ title, message, referenceId, emailedTo, pdfState, onDownload, onClose }) {
+  const busy = pdfState === 'busy';
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-4 px-1 py-4 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-7 w-7">
+          <path d="m5 12.5 4.5 4.5L19 7.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+      <div className="text-2xl font-semibold text-gray-900">{title}</div>
+      <p className="max-w-md text-sm text-gray-600">{message}</p>
+      {referenceId && (
+        <div className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-sm font-semibold text-emerald-800">
+          Reference ID: {referenceId}
+        </div>
+      )}
+      {emailedTo && (
+        <p className="max-w-md text-sm text-slate-600">
+          A confirmation with these details is on its way to <span className="font-semibold text-slate-900 [overflow-wrap:anywhere]">{emailedTo}</span>.
+        </p>
+      )}
+      <div className="flex w-full flex-col gap-2 pt-1 sm:w-auto sm:flex-row">
+        <button
+          type="button"
+          onClick={onDownload}
+          disabled={busy}
+          className={`inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white shadow-sm ${
+            busy ? 'cursor-wait bg-emerald-400' : 'bg-emerald-600 hover:bg-emerald-700'
+          }`}
+        >
+          <DownloadIcon />
+          {busy ? 'Preparing PDF…' : 'Download PDF'}
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-lg border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+        >
+          Close
+        </button>
+      </div>
+      {pdfState === 'error' && (
+        <p role="alert" className="text-sm font-medium text-rose-600">
+          We couldn't create the PDF. Please try again.
+        </p>
+      )}
+    </div>
+  );
+}
+
+export function StepSection({ active, children }) {
   return (
     <div style={{ display: active ? 'block' : 'none' }} className="w-full h-full">
       {children}
@@ -492,7 +698,7 @@ function StepSection({ active, children }) {
   );
 }
 
-function Pill({ active, label, onClick }) {
+export function Pill({ active, label, onClick }) {
   return (
     <button
       type="button"
@@ -506,7 +712,7 @@ function Pill({ active, label, onClick }) {
   );
 }
 
-function TextField({ label, value, onChange, required, error, type = 'text', placeholder }) {
+export function TextField({ label, value, onChange, required, error, type = 'text', placeholder }) {
   return (
     <label className="flex flex-col gap-1 text-sm font-medium text-slate-800">
       <span>
@@ -527,7 +733,7 @@ function TextField({ label, value, onChange, required, error, type = 'text', pla
   );
 }
 
-function FooterNav({ onBack, onNext, nextDisabled, nextLabel = 'Next' }) {
+export function FooterNav({ onBack, onNext, nextDisabled, nextLabel = 'Next' }) {
   return (
     <div className="flex items-center justify-end gap-2 pt-2">
       {onBack && (
@@ -555,7 +761,7 @@ function FooterNav({ onBack, onNext, nextDisabled, nextLabel = 'Next' }) {
   );
 }
 
-function InfoRow({ label, value }) {
+export function InfoRow({ label, value }) {
   return (
     <div className="flex flex-col">
       <span className="text-xs uppercase tracking-wide text-slate-500 font-semibold">{label}</span>

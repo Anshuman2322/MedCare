@@ -24,6 +24,8 @@ const medicineSchema = new mongoose.Schema(
     images: [{ type: String }],
     image: { type: String, default: '' },
     inStock: { type: Boolean, default: true },
+    // false keeps the product in the admin catalogue only. See PUBLIC_MEDICINE_FILTER.
+    isPublished: { type: Boolean, default: true },
     requiresPrescription: { type: Boolean, default: false },
     composition: { type: String, default: '' },
     usage: { type: String, default: '' },
@@ -31,6 +33,9 @@ const medicineSchema = new mongoose.Schema(
     precautions: { type: String, default: '' },
     storage: { type: String, default: '' },
     shelfLife: { type: String, default: '' },
+    metaTitle: { type: String, default: '', trim: true },
+    metaDescription: { type: String, default: '', trim: true },
+    keywords: { type: String, default: '', trim: true },
     customFields: [
       {
         section: { type: String, default: '', trim: true },
@@ -72,5 +77,9 @@ medicineSchema.pre('validate', function ensureVariant(next) {
 // variants.price via ?sort=price_asc|price_desc.
 medicineSchema.index({ createdAt: -1 });
 medicineSchema.index({ 'variants.price': 1 });
+
+// Every query that serves visitors must include this. "$ne: false" rather than
+// "true" so documents saved before the field existed stay visible.
+export const PUBLIC_MEDICINE_FILTER = { isPublished: { $ne: false } };
 
 export default mongoose.model('Medicine', medicineSchema);

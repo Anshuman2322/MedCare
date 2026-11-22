@@ -30,6 +30,9 @@ const adminSchema = new mongoose.Schema(
     },
     failedLoginAttempts: { type: Number, default: 0 },
     lockUntil: { type: Date, default: null },
+    // Embedded in each JWT. Bumping it (on password reset) revokes every session
+    // issued before the change.
+    tokenVersion: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
@@ -39,6 +42,11 @@ const LOCK_DURATION_MS = (Number(process.env.LOGIN_LOCKOUT_MINUTES) || 15) * 60 
 
 adminSchema.methods.isLocked = function isLocked() {
   return Boolean(this.lockUntil && this.lockUntil.getTime() > Date.now());
+};
+
+// Tokens issued before tokenVersion existed carry no `tv`, and count as version 0.
+adminSchema.methods.isTokenCurrent = function isTokenCurrent(decodedToken) {
+  return (decodedToken.tv ?? 0) === (this.tokenVersion ?? 0);
 };
 
 adminSchema.methods.registerFailedLogin = async function registerFailedLogin() {

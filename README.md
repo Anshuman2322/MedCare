@@ -51,9 +51,10 @@ none of these ports are exposed directly — a Caddy reverse proxy is the sole
 entrypoint on `80`/`443` and routes each domain to the right container.
 
 - **Database**: MongoDB Atlas (or any MongoDB 6+ instance — nothing is Atlas-specific).
-  If `MONGO_URI` is unset or unreachable, the server falls back to read-only sample
-  data from `client/src/data/medicines.json` instead of crashing — write operations
-  and admin features require a real connection.
+  If `MONGO_URI` is unset or unreachable, in **development** the server falls back to
+  read-only sample data from `client/src/data/medicines.json` instead of crashing.
+  In **production** it answers `503 Service temporarily unavailable` for the catalogue
+  and admin routes, so an outage never shows sample products.
 - **Media**: Cloudinary. The server has an authenticated upload endpoint
   (`POST /api/upload`), and the admin panel also uploads images directly from the
   browser to Cloudinary via an unsigned upload preset. Product-facing images are
@@ -144,7 +145,10 @@ cp admin/.env.example admin/.env
 | `MONGO_URI` | MongoDB connection string. Omit for read-only fallback mode. |
 | `CORS_ORIGINS` | Comma-separated allowed origins in production. Defaults to localhost dev ports only — a deliberate fail-closed default. |
 | `CLOUD_NAME` / `CLOUD_API_KEY` / `CLOUD_API_SECRET` | Cloudinary, for image uploads. |
-| `RESEND_API_KEY` / `ADMIN_EMAIL` | Resend, for inquiry and contact-message email notifications. `ADMIN_EMAIL` doubles as the notification recipient. |
+| `RESEND_API_KEY` / `RESEND_FROM` | Resend, for password-reset codes and notifications. `RESEND_FROM` must be on a domain verified in Resend. |
+| `ADMIN_EMAIL` | The one team inbox: inquiries, best-price requests, contact messages and support-chat handoffs all go here, with no copies to any other address. Customers who leave an email also get a "thank you" confirmation of their inquiry; their replies come back to this inbox. Password-reset emails always go to the account's own address. |
+| `PUBLIC_SITE_URL` | Optional. Storefront address for links in inquiry emails (default `https://www.cureneed.com`). The client's PDF uses `VITE_PUBLIC_SITE_URL` with the same default. |
+| `ANTHROPIC_API_KEY` / `CHAT_AI` | Optional. With a key, Claude answers the support chat (grounded in the live catalogue and the site's facts, in the customer's language) and writes review drafts. Without it, or on any failure, the built-in rule-based assistant answers. `CHAT_AI=off` keeps the chat rule-based even with a key. |
 | `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_WHATSAPP_FROM` / `ADMIN_WHATSAPP_TO` | Optional WhatsApp alerts via Twilio. |
 | `ADMIN_PASSWORD` | Optional emergency fallback login, only used if MongoDB is unreachable at login time. Leave unset unless you specifically need it. |
 
@@ -176,6 +180,20 @@ account to `super_admin` instead, see `server/promoteToSuperAdmin.js`.
 > server itself fails with a `querySrv ECONNREFUSED` error, try setting
 > `DNS_SERVERS=system` in `server/.env`, or point your machine at a public DNS
 > resolver (8.8.8.8 / 1.1.1.1).
+
+### Admin password reset
+
+The admin login page has a **Forgot password?** flow: email → 6-digit code → new
+password. It needs a working database and `RESEND_API_KEY`.
+
+- Codes expire after 10 minutes, allow 5 attempts, and can be resent after 60
+  seconds, up to 5 per account per hour. The API responds the same way whether or
+  not an email belongs to an admin.
+- A successful reset clears any account lockout, signs out every existing session
+  and emails a "password changed" notice.
+- `onboarding@resend.dev` only delivers to your own Resend account's address. To
+  send codes to every admin, verify a domain in Resend and set `RESEND_FROM` to a
+  sender on it. If a code doesn't arrive, the server log has the provider's error.
 
 ## Running Locally
 
@@ -278,18 +296,18 @@ cd client && npm test   # Vitest
 cd admin  && npm test   # Vitest
 ```
 
-As of this update, all three pass cleanly on a fresh checkout: server 26/26
-(8 suites), client 4/4, admin 1/1.
+As of the last QA pass (2026-11-23), all three pass on a clean install: server 205
+tests (20 suites), client 50 (11 files), admin 12 (2 files).
 
 ## Known Limitations / Not Yet Implemented
 
 - **No cart or checkout, by design.** An earlier "Add to Cart" UI existed but only
   wrote to `localStorage` with no page to ever view or check out that cart, while
-  the server's `POST/GET /api/orders` endpoints have no client caller anywhere.
-  The cart UI has been removed; **the inquiry flow is the intended and only
-  purchase-adjacent mechanism** in this app. `/api/orders` still exists
-  server-side but is unused — it's a candidate for removal if you're not planning
-  to build it out into a real checkout flow.
+  the server's `POST/GET /api/orders` endpoints had no client caller anywhere.
+  **The inquiry flow is the intended and only purchase-adjacent mechanism** in this
+  app (the request list on `/cart` only collects products into one quote request).
+  The unused `/api/orders` endpoints were removed in the 2026-11-23 QA pass because
+  they accepted customer data publicly with no validation.
 - **Contact page messages have no reply mechanism.** Submissions from the Contact
   page are stored, emailed to the admin, and viewable in the admin panel's
   "Messages" view, but there's no in-app way to reply — you'd reply via the

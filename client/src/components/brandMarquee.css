@@ -1,18 +1,33 @@
-.brand-marquee-section{position:relative;width:100%;background:#fff;padding:clamp(30px,4vw,44px) 0 clamp(38px,5vw,52px);border-top:1px solid #eef2f0}
+.brand-marquee-section{position:relative;width:100%;background:#fff;padding:clamp(30px,4vw,44px) 0 clamp(26px,3.4vw,36px);border-top:1px solid #eef2f0}
 .brand-marquee-head{max-width:1400px;margin:0 auto clamp(18px,2.4vw,26px);padding:0 clamp(20px,5vw,80px);text-align:center}
-.brand-marquee-eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#5c6a66}
+.brand-marquee-eyebrow{display:inline-block;margin:0;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#5c6a66}
 
-.brand-marquee{position:relative;width:100%;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-.brand-marquee-track{display:flex;align-items:center;width:max-content;gap:clamp(34px,5.5vw,68px);animation:brand-marquee-scroll 32s linear infinite}
+/* min-height keeps the page from jumping while the catalogue loads */
+.brand-marquee{position:relative;width:100%;min-height:30px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.brand-marquee-track{display:flex;align-items:center;width:max-content;animation:brand-marquee-scroll var(--marquee-duration,60s) linear infinite}
 .brand-marquee:hover .brand-marquee-track,.brand-marquee:focus-within .brand-marquee-track{animation-play-state:paused}
+/* Trailing padding equals the gap, so both copies are the same width and -50% loops exactly */
+.brand-marquee-list{display:flex;align-items:center;gap:clamp(34px,5.5vw,68px);margin:0;padding:0 clamp(34px,5.5vw,68px) 0 0;list-style:none}
+.brand-marquee-item{flex:0 0 auto}
 
-.brand-logo{display:inline-flex;align-items:center;gap:9px;flex:0 0 auto;transition:transform .4s ease}
-.brand-logo:hover{transform:translateY(-2px)}
+.brand-logo{display:inline-flex;align-items:center;gap:9px;padding:2px 0;border-radius:6px;text-decoration:none;transition:transform .4s ease}
+.brand-logo:hover,.brand-logo:focus-visible{transform:translateY(-2px)}
+.brand-logo:focus-visible{outline:2px solid #00a86b;outline-offset:4px}
 .brand-logo svg{width:clamp(20px,2.3vw,26px);height:clamp(20px,2.3vw,26px);flex-shrink:0;color:var(--brand-color,#64748b);filter:grayscale(100%);opacity:.6;transition:filter .4s ease,opacity .4s ease}
-.brand-logo:hover svg{filter:grayscale(0%);opacity:1}
-.brand-logo span{font-size:clamp(14px,1.35vw,17px);font-weight:750;letter-spacing:-.02em;white-space:nowrap;color:#1f2937}
+.brand-logo:hover svg,.brand-logo:focus-visible svg{filter:grayscale(0%);opacity:1}
+.brand-logo span{font-size:clamp(14px,1.35vw,17px);font-weight:750;letter-spacing:-.02em;white-space:nowrap;color:#1f2937;transition:color .3s ease}
+.brand-logo:hover span,.brand-logo:focus-visible span{color:var(--brand-color,#1f2937)}
+
+.brand-marquee-note{max-width:1400px;margin:clamp(16px,2vw,22px) auto 0;padding:0 clamp(20px,5vw,80px);text-align:center;font-size:11px;line-height:1.5;color:#8a9692}
 
 @keyframes brand-marquee-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-@media(prefers-reduced-motion:reduce){.brand-marquee-track{animation:none}}
-@media(max-width:640px){.brand-marquee-section{padding:26px 0 32px}.brand-marquee-track{gap:30px}.brand-logo span{font-size:13px}}
+/* No motion: one static, wrapped list instead of a scrolling strip */
+@media(prefers-reduced-motion:reduce){
+  .brand-marquee{-webkit-mask-image:none;mask-image:none}
+  .brand-marquee-track{width:auto;animation:none;justify-content:center;padding:0 16px}
+  .brand-marquee-list{flex-wrap:wrap;justify-content:center;row-gap:14px;padding:0}
+  .brand-marquee-copy{display:none}
+}
+@media(max-width:640px){.brand-marquee-section{padding:26px 0 24px}.brand-marquee-list{gap:30px;padding-right:30px}.brand-logo span{font-size:13px}}
+@media(max-width:640px) and (prefers-reduced-motion:reduce){.brand-marquee-list{column-gap:24px;padding-right:0}}

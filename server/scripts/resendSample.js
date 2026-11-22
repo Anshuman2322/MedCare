@@ -7,7 +7,13 @@ dotenv.config();
 const resend = new Resend(process.env.RESEND_API_KEY || 're_xxxxxxxxx');
 
 async function sendSample() {
-  const toAddress = process.env.ADMIN_EMAIL || 'anshuman2322singh@gmail.com';
+  // Team mail only ever goes to ADMIN_EMAIL.
+  const toAddress = process.env.ADMIN_EMAIL;
+  if (!toAddress) {
+    console.error('Set ADMIN_EMAIL in server/.env before running this script.');
+    process.exitCode = 1;
+    return;
+  }
 
   const { data, error } = await resend.emails.send({
     from: 'onboarding@resend.dev',

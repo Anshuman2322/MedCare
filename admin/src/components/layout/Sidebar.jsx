@@ -1,10 +1,39 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { getReviews, REVIEWS_CHANGED } from '../../api/reviewsApi.js';
+import useSupportChatAlerts from '../../hooks/useSupportChatAlerts.js';
+
+const PENDING_REFRESH_MS = 60000;
+
+// Number of reviews posted since an admin last opened the Reviews page.
+function useNewReviews(enabled) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!enabled) return undefined;
+    let active = true;
+    const refresh = () =>
+      getReviews({ limit: 1 })
+        .then((res) => active && setCount(res.data?.counts?.unseen || 0))
+        .catch(() => {});
+    refresh();
+    const timer = window.setInterval(refresh, PENDING_REFRESH_MS);
+    window.addEventListener(REVIEWS_CHANGED, refresh);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+      window.removeEventListener(REVIEWS_CHANGED, refresh);
+    };
+  }, [enabled]);
+  return count;
+}
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const { admin } = useAuth();
+  const canReviews = admin?.role === 'super_admin' || admin?.permissions?.inquiries === true;
+  const newReviews = useNewReviews(canReviews);
+  const chat = useSupportChatAlerts(canReviews);
 
   const navItems = useMemo(() => {
     const perms = admin?.permissions || {};
@@ -23,6 +52,8 @@ export default function Sidebar() {
     if (can('categories')) base.push({ to: '/categories', label: 'Categories' });
     if (can('inquiries')) base.push({ to: '/inquiries', label: 'Inquiries' });
     if (can('inquiries')) base.push({ to: '/messages', label: 'Messages' });
+    if (can('inquiries')) base.push({ to: '/support-chat', label: 'Support Chat', badge: 'supportChat' });
+    if (can('inquiries')) base.push({ to: '/reviews', label: 'Reviews', badge: 'newReviews' });
     if (isSuper) base.push({ to: '/manage-admins', label: 'Admin Management' });
     return base;
   }, [admin?.permissions, admin?.role]);
@@ -70,6 +101,22 @@ export default function Sidebar() {
               >
                 <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400" aria-hidden />
                 <span>{item.label}</span>
+                {item.badge === 'supportChat' && chat.needsReply > 0 && (
+                  <span
+                    className="ml-auto inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-bold text-white"
+                    title={`${chat.needsReply} customer${chat.needsReply === 1 ? '' : 's'} waiting for a reply`}
+                  >
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" aria-hidden />
+                    {chat.needsReply}
+                    <span className="sr-only"> customers waiting for a reply</span>
+                  </span>
+                )}
+                {item.badge === 'newReviews' && newReviews > 0 && (
+                  <span className="ml-auto rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-bold text-white" title={`${newReviews} new review${newReviews === 1 ? '' : 's'}`}>
+                    {newReviews}
+                    <span className="sr-only"> new reviews</span>
+                  </span>
+                )}
               </NavLink>
             ))}
           </nav>

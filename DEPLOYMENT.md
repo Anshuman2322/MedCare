@@ -4,17 +4,100 @@ MedCare is three independently deployable pieces:
 
 | App | What it is | Local dev port | Prod artifact |
 |---|---|---|---|
-| `server/` | Express API + MongoDB | 5000 | Node process |
-| `client/` | Customer storefront (React/Vite) | 5173 | Static build |
-| `admin/`  | Admin dashboard (React/Vite) | 5175 | Static build |
+| `server/` | Express API + MongoDB | 5000 | Node process / container |
+| `client/` | Customer storefront (React/Vite) | 5173 | Static build (nginx container) |
+| `admin/`  | Admin dashboard (React/Vite) | 5175 | Static build (nginx container) |
 
 `client` and `admin` are static single-page apps once built — they can be
-served by anything that serves static files (Nginx, Vercel, Netlify, S3+CDN,
-Render's static site product, etc). `server` needs a long-running Node
-process, so it goes wherever you can run `node server.js` continuously
-(Render/Railway web service, a VPS, a container platform, ...). Nothing here
-is tied to a specific host — see the Docker section below for the portable
-path.
+served by anything that serves static files. `server` needs a long-running Node
+process. The Docker path below runs all three behind Caddy (automatic HTTPS) and
+is the tested, recommended way to deploy.
+
+**Requires Node 22+** (Node 20 reached end-of-life in April 2026; the Dockerfiles
+use `node:22-alpine`).
+
+---
+
+## 0. Go-live checklist
+
+Work through this top to bottom the first time. Items marked ⚠ were found during
+QA and are easy to miss.
+
+**Accounts and services**
+
+- [ ] **MongoDB Atlas → Network Access:** add the production server's public IP.
+      ⚠ This is the most common first-deploy failure: with the IP missing, the API
+      can't reach the database and every catalogue/admin request returns `503`.
+- [ ] **Resend:** the sending domain in `RESEND_FROM` (currently
+      `mail.cureneed.com`) shows *Verified* in the Resend dashboard.
+- [ ] **Cloudinary:** the unsigned upload preset used by the admin panel allows only
+      image formats and a sensible size/folder (it is called straight from the browser).
+- [ ] **Backups:** Atlas backups are on (the free tier has none; use a paid tier or a
+      scheduled `mongodump`).
+
+**`server/.env`** (copy from `server/.env.example`; never commit it)
+
+- [ ] ⚠ `JWT_SECRET` is **32+ random characters** — generate one:
+      `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+      (the server refuses anything under 16 and warns under 32). Changing it signs
+      every admin out once.
+- [ ] ⚠ `CORS_ORIGINS` lists the real origins, with scheme and no trailing slash:
+      `https://www.cureneed.com,https://admin.cureneed.com`. Without it the browser
+      blocks every call from the live site (the API answers `403 Not allowed by CORS`).
+- [ ] `MONGO_URI`, `MONGO_DB`, `RESEND_API_KEY`, `RESEND_FROM`, `ADMIN_EMAIL`,
+      `CLOUD_NAME`, `CLOUD_API_KEY`, `CLOUD_API_SECRET` are set.
+- [ ] `ADMIN_PASSWORD` is **unset** (it enables a no-database login fallback).
+- [ ] `BUSINESS_EMAIL` / `CRM_EMAIL` are removed — nothing reads them any more; all
+      team email goes to `ADMIN_EMAIL` only.
+- [ ] Optional: `ANTHROPIC_API_KEY` (smarter support chat and review drafts),
+      `PUBLIC_SITE_URL` (defaults to `https://www.cureneed.com`).
+- [ ] `NODE_ENV` does not need setting for Docker (compose sets `production`).
+
+**Root `.env`** (for `docker compose`; see `.env.example`)
+
+- [ ] `CLIENT_DOMAIN=www.cureneed.com`, `ADMIN_DOMAIN=admin.cureneed.com`,
+      `API_DOMAIN=api.cureneed.com`
+- [ ] `VITE_API_URL=https://api.cureneed.com` (baked into the builds — rebuild after
+      changing it)
+- [ ] `VITE_CLOUDINARY_CLOUD`, `VITE_CLOUDINARY_PRESET` for the admin panel
+
+**DNS (you do this at your DNS provider)**
+
+- [ ] `www`, `admin` and `api` each get an A (and/or AAAA) record pointing at the
+      server's public IP, and ports **80 and 443** are open. Caddy needs port 80
+      for the Let's Encrypt challenge.
+- [ ] ⚠ `www.cureneed.com` currently serves a different site (an older "CureNeed
+      Global Solutions" page). Pointing it here replaces that site — keep a copy of
+      anything you still need first.
+- [ ] All three hostnames must share one registrable domain (`cureneed.com`): the
+      admin login cookie is `SameSite=Lax`, so it is only sent between
+      subdomains of the same site.
+
+**Data hygiene before real customers arrive**
+
+- [ ] ⚠ The database still holds test data: about 26 inquiries, 7 contact messages,
+      55 support chats and 5 website reviews. **Only the reviews are public** (they show
+      on `/reviews` and in the "Rated x/5" figure): delete the ones that aren't from
+      real customers in the admin panel → Reviews. The admin panel has no delete for
+      inquiries, messages or chats: mark the test ones *Closed*, or remove them in the
+      Atlas Data Explorer (safe: new reference numbers continue after the highest one
+      still in the database).
+- [ ] Product *Ocumoist Max Eye Drops* has an empty "strength" — fill it in.
+
+**After the first deploy — smoke test**
+
+```bash
+curl -s https://api.cureneed.com/api/health          # {"ok":true,...,"db":"connected"}
+curl -sI https://www.cureneed.com | grep -iE "content-security-policy|x-frame-options|strict-transport"
+curl -s -o /dev/null -w "%{http_code}\n" https://www.cureneed.com/shop        # 200 (SPA fallback)
+curl -s -o /dev/null -w "%{http_code}\n" https://api.cureneed.com/api/orders  # 404 (endpoint removed)
+```
+
+Then, in a browser: browse a product, send an inquiry (check `ADMIN_EMAIL` receives it
+and the customer gets the thank-you email), open the chat, log in to
+`https://admin.cureneed.com` and reply to a chat.
+
+---
 
 ## 1. Environment variables
 
@@ -28,136 +111,118 @@ cp client/.env.example client/.env
 cp admin/.env.example admin/.env
 ```
 
-**server/.env** — the only hard requirement is `JWT_SECRET` (the server
-refuses to start without one, or with one under 16 characters — see
-`server/config/validateEnv.js`). Everything else degrades gracefully if
-unset: no `MONGO_URI` → read-only fallback catalog data instead of a crash;
-no Cloudinary/Resend/Twilio vars → those features just no-op with a logged
-warning instead of failing silently. In production, set `CORS_ORIGINS` to
-your real client/admin domains — without it, only `localhost` dev origins
-are allowed, which is a deliberate fail-closed default, not a bug.
+**server/.env** — the only hard requirement is `JWT_SECRET`. Everything else
+degrades gracefully if unset: no Cloudinary/Resend/Twilio vars → those features
+no-op with a logged warning. **No `MONGO_URI` (or an unreachable database):**
+in development the API falls back to a bundled sample catalogue; **in production
+it answers `503 Service temporarily unavailable`** instead, so an outage never
+shows sample products or saves admin edits to a file.
 
-**client/.env** and **admin/.env** — `VITE_API_URL` is the only one that
-matters for most deployments (it's the URL the browser uses to reach the
-API). Vite inlines `VITE_*` variables into the JS bundle **at build time**,
-not at container/server start time — if you change `VITE_API_URL`, you must
-rebuild, not just restart.
+**client/.env** and **admin/.env** — `VITE_API_URL` is the one that matters (the URL
+the browser uses to reach the API). Vite inlines `VITE_*` variables into the bundle
+**at build time**: change it → rebuild, don't just restart.
 
 ## 2. Building for production
 
 ```
-# server — no build step, just install and run
-cd server && npm install && npm start
-
-# client
-cd client && npm install && npm run build   # outputs client/dist
-cd client && npm run preview                # optional: serve it locally to sanity-check
-
-# admin
-cd admin && npm install && npm run build    # outputs admin/dist
+cd server && npm ci && npm start
+cd client && npm ci && npm run build   # outputs client/dist
+cd admin  && npm ci && npm run build   # outputs admin/dist
 ```
 
-Serve `client/dist` and `admin/dist` with any static file server. If you
-point a webserver's SPA fallback at `index.html` for unknown paths (both
-apps use client-side routing via React Router), everything works; without
-that, direct links to e.g. `/shop` or `/medicine/some-slug` will 404 on
-refresh. `client/nginx.conf` and `admin/nginx.conf` show the fallback rule
-if you're rolling your own Nginx config outside Docker.
+Serve `client/dist` and `admin/dist` with any static file server and point its SPA
+fallback at `index.html` for unknown paths (both apps use client-side routing).
+`client/nginx.conf` and `admin/nginx.conf` show the rule.
 
-`server` also has a built-in option to serve `client/dist` itself when
-`NODE_ENV=production` (see the bottom of `server/app.js`) — useful if you'd
-rather ship client+server as a single deployable unit instead of two. This
-does **not** cover `admin`; it's always a separate static deploy.
+`server` can also serve `client/dist` itself when `NODE_ENV=production` **and**
+`client/dist/index.html` exists next to it (see the bottom of `server/app.js`).
+This does not cover `admin`.
 
-## 3. Docker (portable path — works the same on any host)
-
-Each app has a `Dockerfile`; `docker-compose.yml` at the repo root runs all
-three together as a local production-like stack:
+## 3. Docker (recommended)
 
 ```
 cp server/.env.example server/.env   # fill in real values first
-docker compose up --build
+cp .env.example .env                 # domains + VITE_* build args
+docker compose up --build -d
 ```
 
-`server`, `client`, and `admin` no longer publish host ports directly — a `caddy`
-service in front of them is the sole entrypoint (ports `80`/`443`), reverse-proxying
-each to the right container. With no domains configured, Caddy falls back to plain
-`localhost` ports: `client` on `:8080`, `admin` on `:8081`, `server`/API on `:8082`
-(see [`Caddyfile`](./Caddyfile)).
+`caddy` is the sole public entrypoint (`80`/`443`) and reverse-proxies to the
+`client`, `admin` and `server` containers, none of which publish a port. With no
+domains configured it falls back to `localhost:8080/8081/8082` for local testing.
 
-To point the client/admin builds at a non-default API URL (e.g. deploying to
-a real domain), set it in the root `.env` (or override the build arg directly) and
-rebuild:
+What the images do:
+
+- **Lockfile-aware installs:** each Dockerfile runs `npm ci` when `package-lock.json`
+  is in the build context (commit it — see §7) and `npm install` otherwise.
+- **`.dockerignore`** keeps `node_modules`, `.env`, tests and ~135 MB of unused
+  legacy images out of the build. Never remove it: without it the host's
+  `node_modules` overwrites the image's and secrets end up in the image.
+- **`server`** runs as the unprivileged `node` user and has a `HEALTHCHECK` on
+  `/api/health`.
+- **nginx** sends the security headers (CSP, `X-Frame-Options`, …) on **every**
+  response, including the HTML. Cache rules there use `expires`, never
+  `add_header` — an `add_header` inside a `location` silently discards all the
+  server-level headers.
+
+Useful commands:
 
 ```
-VITE_API_URL=https://api.yourdomain.com docker compose build client admin
-docker compose up -d
+docker compose ps                      # server shows (healthy) once the API is up
+docker compose logs -f server
+docker compose build --no-cache client admin   # after changing VITE_API_URL
+docker compose up -d                   # roll out
 ```
 
-Full detail — including production domain setup (`CLIENT_DOMAIN`/`ADMIN_DOMAIN`/
-`API_DOMAIN`, automatic Let's Encrypt certs) — is in the README's
+**Rollback:** `docker compose up -d` the previous git revision (rebuild), or keep the
+previous images tagged. The database is not modified by deploys.
+
+Full detail (domains, automatic Let's Encrypt) is in the README's
 [Running with Docker](./README.md#running-with-docker) section.
-
-**Known limitation:** `server`'s no-database fallback mode reads/writes
-`client/src/data/medicines.json` and `categories.json` — a relative path
-assuming `client/` sits next to `server/` on disk. That's true in this repo
-and in the `docker compose` setup above (each service still builds from a
-checkout that has both directories), but if you deploy `server` as a
-standalone container/artifact without the rest of the repo, that fallback
-path won't resolve. This only matters if `MONGO_URI` is wrong or MongoDB is
-unreachable — with a working `MONGO_URI` it's never touched. Get `MONGO_URI`
-right in production and this doesn't come up.
 
 ## 4. Reverse proxy / TLS
 
-If you're using the Docker path above, this is already handled: `docker-compose.yml`
-includes a `caddy` service as the sole public entrypoint, terminating HTTPS with
-automatic Let's Encrypt certificates for whatever domains you set in the root
-`.env` (`CLIENT_DOMAIN` / `ADMIN_DOMAIN` / `API_DOMAIN`) — see [`Caddyfile`](./Caddyfile)
-and the README's [Running with Docker](./README.md#running-with-docker) section.
-
-If you're deploying outside Docker (manual builds, a platform without a built-in
-proxy), put a reverse proxy (Nginx, Caddy, your platform's built-in load balancer,
-Cloudflare, ...) in front of all three and terminate HTTPS there. The server
-already sets `app.set('trust proxy', 1)` so `secure` cookies and rate-limiting
-work correctly behind a standard reverse proxy.
+Handled by the `caddy` service. Outside Docker, put Nginx/Caddy/your platform's
+load balancer in front of all three and terminate HTTPS there. The server sets
+`trust proxy` to 1 so `secure` cookies and per-IP rate limits work behind one proxy.
 
 ## 5. Database
 
-MongoDB Atlas is what this project was built against (`MONGO_URI` is a
-`mongodb+srv://...` connection string). Any MongoDB 6+ instance works —
-self-hosted or another managed provider — nothing in the code is
-Atlas-specific. There's no formal migration tooling; `server/scripts/`
-has one-off seed scripts (`seedAdmin.js`, `seedCategories.js`) — run once
-against a fresh database:
+MongoDB Atlas is what this project was built against (`mongodb+srv://…`); any
+MongoDB 6+ works. Indexes are built automatically on connect. Admin accounts
+already exist in the current database; for a fresh one:
 
 ```
 cd server
 ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='SomeStr0ng!Pass' npm run seed:admin
 ```
 
-`server/config/validateEnv.js` builds indexes automatically via Mongoose on
-connect (`autoIndex`, on by default outside a hand-tuned production setup) —
-no separate index-creation step needed.
-
 ## 6. Health checks / monitoring
 
-`GET /api/health` returns `{ ok, uptime, timestamp, db }` — `db` is
-`"connected"` or `"disconnected"`, so your uptime monitor / load balancer
-health check can distinguish "process up" from "process up but DB down."
-It's excluded from request logging (see `server/app.js`) to avoid flooding
-logs with health-check noise.
+`GET /api/health` returns `{ ok, uptime, timestamp, db }`; `db` is `"connected"` or
+`"disconnected"`, so a monitor can tell "process up" from "process up but DB down".
+Point an uptime monitor at it (and at the storefront URL).
 
-## 7. What's deliberately not here
+## 7. Dependencies and reproducible builds
 
-- **CI/CD pipeline** — not set up; `npm test` works cleanly in all three
-  apps from a fresh checkout (no external services required — the server
-  suite uses an in-memory MongoDB), so wiring it into GitHub Actions/GitLab
-  CI/etc. is a small, host-agnostic addition whenever you're ready.
-- **A committed lockfile** — `package-lock.json` is gitignored repo-wide
-  (pre-existing choice, not something introduced here). This means
-  `npm install` (not `npm ci`) is what the Dockerfiles use, and different
-  installs could theoretically resolve slightly different dependency
-  versions over time. If you want fully reproducible builds, committing the
-  lockfiles is the standard fix — that's a call for you to make, not
-  something changed here.
+- The three `package-lock.json` files are meant to be **committed** (`.gitignore`
+  now un-ignores them) so `npm ci` installs exactly what was tested. Add them with
+  your next commit.
+- ⚠ `vitest` is pinned to `~4.0.18` in `client` and `admin`. With npm 10, a
+  *fresh* install (no lockfile) of vitest 4.1.x fails with
+  `Cannot read properties of null (reading 'edgesOut')`, which would break every
+  Docker build. Revisit the pin when moving to npm 11 / a newer vitest, and
+  always re-check that a clean install works: copy the app to an empty folder and
+  run `npm ci && npm test && npm run build`.
+- Re-run `npm audit --omit=dev` in each app before a release (all three were at
+  0 vulnerabilities for production dependencies when this was written).
+- After changing dependencies, regenerate the lockfile
+  (`rm package-lock.json && npm install`) and commit it.
+
+## 8. What's deliberately not here
+
+- **CI/CD pipeline** — not set up. All suites run without external services
+  (`server` uses an in-memory MongoDB), so wiring them into GitHub Actions is small.
+- **Tested against real nginx / a live Docker build** — the QA environment had no
+  running Docker daemon, so images were verified step-by-step (clean install,
+  test, build, header emulation) rather than by `docker compose up`. The first
+  real deploy is the first real container run: use the smoke test above.

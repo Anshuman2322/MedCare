@@ -1,0 +1,17 @@
+# The host's node_modules would overwrite the ones installed inside the image
+# (wrong platform binaries for vite/esbuild/rollup), and .env holds local-only values.
+node_modules
+dist
+npm-debug.log*
+.env
+.env.*
+!.env.example
+
+# Not needed to build
+src/tests
+coverage
+*.log
+.git
+.gitignore
+.dockerignore
+Dockerfile

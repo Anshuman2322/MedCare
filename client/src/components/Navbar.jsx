@@ -3,6 +3,49 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useCurrency } from '../store/useStore.jsx';
 import { getAvailableCurrencies } from '../utils/currency';
 import { fetchMedicines } from '../api/medicines';
+import { useCartCount } from '../store/cartStore.js';
+import { useFavorites } from '../store/favoritesStore.js';
+
+function CartOutlineIcon() {
+  return (
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="9" cy="21" r="1" />
+      <circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+    </svg>
+  );
+}
+
+function HeartOutlineIcon() {
+  return (
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 10-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z" />
+    </svg>
+  );
+}
+
+// The badge counts distinct medicines, not units — "2" for two products is
+// clearer than "30" for their combined quantities.
+function HeaderIconLink({ to, label, count, icon }) {
+  return (
+    <NavLink
+      to={to}
+      aria-label={count ? `${label}, ${count} ${count === 1 ? 'item' : 'items'}` : `${label}, empty`}
+      className={({ isActive }) =>
+        `relative inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-emerald-50/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+          isActive ? 'text-emerald-600' : 'text-gray-600 hover:text-emerald-600'
+        }`
+      }
+    >
+      {icon}
+      {count > 0 && (
+        <span className="absolute -right-0.5 -top-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-white">
+          {count > 99 ? '99+' : count}
+        </span>
+      )}
+    </NavLink>
+  );
+}
 
 // Defined outside Navbar so it isn't recreated (and remounted) on every
 // render - that would reset the underline's CSS transition each time.
@@ -15,7 +58,7 @@ import { fetchMedicines } from '../api/medicines';
 function NavItem({ to, end, children, onClick, variant = 'desktop' }) {
   const isDesktop = variant === 'desktop';
   const shellClasses = isDesktop
-    ? 'relative grid px-3 py-2 rounded-md text-sm transition-colors duration-150 cursor-pointer hover:bg-emerald-50/60'
+    ? 'relative grid whitespace-nowrap px-3 py-2 rounded-md text-sm transition-colors duration-150 cursor-pointer hover:bg-emerald-50/60'
     : 'relative grid px-3 py-2 rounded-md text-base transition-colors duration-150';
 
   return (
@@ -47,6 +90,8 @@ const Navbar = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { currency, setCurrency } = useCurrency();
+  const cartCount = useCartCount();
+  const favoriteCount = useFavorites().length;
   const currencyRef = useRef(null);
   const searchRef = useRef(null);
   const [medicines, setMedicines] = useState([]);
@@ -147,7 +192,7 @@ const Navbar = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="hidden md:block flex-1 max-w-lg mx-8">
+          <div className="hidden lg:block flex-1 max-w-sm xl:max-w-lg mx-4 xl:mx-8">
             <form className="relative" ref={searchRef} onSubmit={handleSearchSubmit} role="search">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                 <svg
@@ -207,8 +252,8 @@ const Navbar = () => {
           </div>
 
           {/* Navigation Links */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
+          <div className="hidden lg:block">
+            <div className="ml-2 xl:ml-6 flex items-baseline space-x-1 xl:space-x-3">
               <NavItem to="/" end>Home</NavItem>
               <NavItem to="/shop" end>Shop by Category</NavItem>
               <NavItem to="/about" end>About Us</NavItem>
@@ -217,7 +262,9 @@ const Navbar = () => {
           </div>
 
           {/* Currency, Home Button and Cart - Desktop */}
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden lg:flex items-center space-x-1">
+            <HeaderIconLink to="/favorites" label="Favorites" count={favoriteCount} icon={<HeartOutlineIcon />} />
+            <HeaderIconLink to="/cart" label="Request list" count={cartCount} icon={<CartOutlineIcon />} />
             <div className="relative" ref={currencyRef}>
               <button 
                 onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
@@ -260,7 +307,9 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center space-x-2">
+          <div className="flex lg:hidden items-center space-x-1">
+            <HeaderIconLink to="/favorites" label="Favorites" count={favoriteCount} icon={<HeartOutlineIcon />} />
+            <HeaderIconLink to="/cart" label="Request list" count={cartCount} icon={<CartOutlineIcon />} />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
@@ -293,7 +342,7 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden" id="mobile-menu">
+        <div className="lg:hidden" id="mobile-menu">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-100">
             <div className="pb-3">
               <form className="relative" onSubmit={handleSearchSubmit} role="search">
@@ -360,7 +409,13 @@ const Navbar = () => {
             <NavItem to="/shop" end variant="mobile" onClick={() => setIsMenuOpen(false)}>Shop by Category</NavItem>
             <NavItem to="/about" end variant="mobile" onClick={() => setIsMenuOpen(false)}>About Us</NavItem>
             <NavItem to="/contact" end variant="mobile" onClick={() => setIsMenuOpen(false)}>Contact</NavItem>
-            
+            <NavItem to="/cart" end variant="mobile" onClick={() => setIsMenuOpen(false)}>
+              Request List{cartCount > 0 ? ` (${cartCount})` : ''}
+            </NavItem>
+            <NavItem to="/favorites" end variant="mobile" onClick={() => setIsMenuOpen(false)}>
+              Favorites{favoriteCount > 0 ? ` (${favoriteCount})` : ''}
+            </NavItem>
+
             {/* Mobile Currency Selector */}
             <div className="border-t border-gray-200 pt-3 mt-3">
               <div className="px-3 py-2">

@@ -174,3 +174,31 @@ export const GeneralHealthIllustration = () => (
     <path d="M32 22v20M22 32h20" stroke="#FFFFFF" strokeWidth="3.5" strokeLinecap="round" />
   </svg>
 );
+
+export const EyeCareIllustration = () => (
+  <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+    <circle cx="32" cy="32" r="30" fill="#E0F2FE" />
+    <path d="M11 33s7.5-13 21-13 21 13 21 13-7.5 13-21 13-21-13-21-13z" fill="#0284C7" />
+    <circle cx="32" cy="33" r="7.5" fill="#FFFFFF" />
+    <circle cx="32" cy="33" r="3.5" fill="#0C4A6E" />
+    <path d="M47 9s4.5 5 4.5 8a4.5 4.5 0 01-9 0c0-3 4.5-8 4.5-8z" fill="#38BDF8" />
+  </svg>
+);
+
+export const AntiParasiticIllustration = () => (
+  <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+    <circle cx="32" cy="32" r="30" fill="#ECFCCB" />
+    <circle cx="30" cy="34" r="15" fill="#65A30D" />
+    <path d="M19.5 44.5l21-21" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" />
+    <circle cx="47" cy="17" r="6" fill="#A3E635" />
+    <path d="M44.5 17h5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+export const AntiMalarialIllustration = () => (
+  <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+    <circle cx="32" cy="32" r="30" fill="#CCFBF1" />
+    <path d="M32 12l16 7v9c0 11-7 17-16 20-9-3-16-9-16-20v-9z" fill="#0D9488" />
+    <path d="M32 21s6.5 7 6.5 11.5a6.5 6.5 0 01-13 0C25.5 28 32 21 32 21z" fill="#FFFFFF" />
+  </svg>
+);

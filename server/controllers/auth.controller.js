@@ -29,7 +29,14 @@ function cookieOptions() {
   };
 }
 
-function handleValidation(req, res) {
+// maxAge is dropped because res.cookie would turn it into a future expiry,
+// leaving an empty cookie behind instead of deleting it.
+export function clearSessionCookie(res) {
+  const { maxAge: _maxAge, ...options } = cookieOptions();
+  res.clearCookie('token', options);
+}
+
+export function handleValidation(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: errors.array()[0]?.msg || 'Validation error' });
@@ -37,13 +44,13 @@ function handleValidation(req, res) {
   return null;
 }
 
-function signToken(id, role) {
+function signToken(id, role, tokenVersion = 0) {
   const secret = process.env.JWT_SECRET;
   const expiresIn = process.env.JWT_EXPIRES || '1d';
   if (!secret) {
     throw new Error('JWT_SECRET missing in environment');
   }
-  return jwt.sign({ id, role }, secret, { expiresIn });
+  return jwt.sign({ id, role, tv: tokenVersion }, secret, { expiresIn });
 }
 
 function getFallbackAdmin() {
@@ -84,7 +91,8 @@ export async function registerAdmin(req, res, next) {
     if (token) {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        requester = await Admin.findById(decoded.id).select('-password');
+        const candidate = await Admin.findById(decoded.id).select('-password');
+        requester = candidate?.isTokenCurrent(decoded) ? candidate : null;
       } catch (_err) {
         requester = null;
       }
@@ -165,7 +173,7 @@ export async function loginAdmin(req, res, next) {
 
     await admin.registerSuccessfulLogin();
 
-    const token = signToken(admin.id, admin.role);
+    const token = signToken(admin.id, admin.role, admin.tokenVersion);
     res.cookie('token', token, cookieOptions());
 
     res.json({
@@ -182,7 +190,7 @@ export async function loginAdmin(req, res, next) {
 }
 
 export function logoutAdmin(_req, res) {
-  res.clearCookie('token', cookieOptions());
+  clearSessionCookie(res);
   res.json({ success: true, message: 'Logged out successfully' });
 }
 

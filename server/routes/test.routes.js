@@ -36,7 +36,7 @@ router.get('/email', testEmailLimiter, protectAdmin, async (_req, res) => {
     `;
 
     const { error } = await resend.emails.send({
-      from: 'CureNeed <onboarding@resend.dev>',
+      from: process.env.RESEND_FROM || 'CureNeed <onboarding@resend.dev>',
       to: ADMIN_EMAIL,
       subject: 'Resend Working - CureNeed',
       html,

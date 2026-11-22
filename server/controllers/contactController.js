@@ -12,7 +12,7 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;');
 }
 
-async function sendContactNotification(contactMessage) {
+export async function sendContactNotification(contactMessage) {
   try {
     const html = `
       <h2>New contact message — CureNeed</h2>

@@ -1,8 +1,12 @@
 # ---- build ----
-FROM node:20-alpine AS build
+# With a package-lock.json the install is exactly what was tested (`npm ci`);
+# without one it falls back to `npm install`. Commit the lockfile for
+# reproducible deploys (see DEPLOYMENT.md).
+# Node 22: Node 20 reached end-of-life in April 2026 and no longer gets security fixes.
+FROM node:22-alpine AS build
 WORKDIR /app
-COPY package.json ./
-RUN npm install
+COPY package.json package-lock.json* ./
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 COPY . .
 
 # Vite inlines VITE_* vars at build time, so this has to be a build ARG, not a

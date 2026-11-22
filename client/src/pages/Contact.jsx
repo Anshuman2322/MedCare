@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import SEO from '../components/SEO.jsx';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
+import { CONTACT } from '../config/contact.js';
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 
@@ -32,7 +33,7 @@ export default function Contact() {
 
       setForm({ name: '', email: '', message: '' });
       setStatus('success');
-    } catch (err) {
+    } catch {
       setErrorMessage('Unable to reach the server. Please try again later.');
       setStatus('error');
     }
@@ -165,8 +166,7 @@ export default function Contact() {
                 <div>
                   <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Email</div>
                   <div className="text-gray-700 text-xs sm:text-sm">
-                    <a href="mailto:support@cureneed.com" className="hover:text-emerald-600 transition-colors">support@cureneed.com</a><br />
-                    <a href="mailto:orders@cureneed.com" className="hover:text-emerald-600 transition-colors">orders@cureneed.com</a>
+                    <a href={`mailto:${CONTACT.email}`} className="hover:text-emerald-600 transition-colors break-all">{CONTACT.email}</a>
                   </div>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export default function Contact() {
                 <div>
                   <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Phone</div>
                   <div className="text-gray-700 text-xs sm:text-sm">
-                    <a href="tel:07949282406" className="hover:text-emerald-600 transition-colors">07949282406</a>
+                    <a href={CONTACT.phoneHref} className="hover:text-emerald-600 transition-colors">{CONTACT.phone}</a>
                   </div>
                 </div>
               </div>
@@ -193,15 +193,14 @@ export default function Contact() {
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Address</div>
-                  <div className="text-gray-700 text-xs sm:text-sm">
-                    Cureera Solution<br />
-                    00, Belwani, OD 660343, Mathela,<br />
-                    Common Service Centre, Sakaldiha,<br />
-                    Chandauli-232109, Uttar Pradesh, India
-                  </div>
-                  <div className="mt-2">
-                    {/* Removed Get Directions feature as requested */}
-                  </div>
+                  <address className="text-gray-700 text-xs sm:text-sm not-italic">
+                    {CONTACT.address.map((line, i) => (
+                      <React.Fragment key={line}>
+                        {i > 0 && <br />}
+                        {line}
+                      </React.Fragment>
+                    ))}
+                  </address>
                 </div>
               </div>
               <div className="flex items-start gap-3 sm:gap-4">
@@ -212,26 +211,13 @@ export default function Contact() {
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Contact Person</div>
-                  <div className="text-gray-700 text-xs sm:text-sm">Kanhaiya Pal (CEO)</div>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3 sm:gap-4">
-                <div className="bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 8v4l3 3"/>
-                  </svg>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Business Hours</div>
                   <div className="text-gray-700 text-xs sm:text-sm">
-                    Monday - Friday: 9:00 AM - 6:00 PM EST<br />
-                    Saturday: 10:00 AM - 4:00 PM EST<br />
-                    Sunday: Closed
+                    {CONTACT.person}
+                    {CONTACT.role ? ` (${CONTACT.role})` : ''}
                   </div>
                 </div>
               </div>
+              
             </div>
             
             <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 mt-6 text-center">

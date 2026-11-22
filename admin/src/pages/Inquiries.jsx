@@ -14,10 +14,35 @@ const statusOptions = [
   { label: 'Closed', value: 'closed' },
 ];
 
+const requestTypeOptions = [
+  { label: 'Any type', value: '' },
+  { label: '🟢 Inquiry', value: 'inquiry' },
+  { label: '🟠 Best Price', value: 'best_price' },
+];
+
 function StatusBadge({ status }) {
   const key = (status || 'new').toLowerCase();
   const label = key === 'contacted' ? 'Contacted' : key === 'closed' ? 'Closed' : 'New';
   return <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[key] || statusStyles.new}`}>{label}</span>;
+}
+
+// Inquiries created before best-price requests existed carry no requestType.
+const isBestPrice = (inquiry) => inquiry?.requestType === 'best_price';
+
+function RequestTypeBadge({ inquiry }) {
+  const bestPrice = isBestPrice(inquiry);
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+        bestPrice
+          ? 'bg-orange-50 text-orange-700 border border-orange-100'
+          : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+      }`}
+    >
+      <span aria-hidden>{bestPrice ? '🟠' : '🟢'}</span>
+      {bestPrice ? 'Best Price' : 'Inquiry'}
+    </span>
+  );
 }
 
 export default function Inquiries() {
@@ -30,6 +55,7 @@ export default function Inquiries() {
   const [searchName, setSearchName] = useState('');
   const [searchEmail, setSearchEmail] = useState('');
   const [status, setStatus] = useState('');
+  const [requestType, setRequestType] = useState('');
   const [sort, setSort] = useState('desc');
   const [selected, setSelected] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -37,7 +63,7 @@ export default function Inquiries() {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit, status, sort, searchName, searchEmail]);
+  }, [page, limit, status, requestType, sort, searchName, searchEmail]);
 
   async function load() {
     try {
@@ -46,6 +72,7 @@ export default function Inquiries() {
         page,
         limit,
         status,
+        requestType,
         sort,
         name: searchName,
         email: searchEmail,
@@ -106,24 +133,46 @@ export default function Inquiries() {
 
       <div className="card p-4 space-y-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-wrap gap-2">
-            {statusOptions.map((opt) => (
-              <button
-                key={opt.value || 'all'}
-                type="button"
-                onClick={() => {
-                  setStatus(opt.value);
-                  setPage(1);
-                }}
-                className={`rounded-full px-3 py-1.5 text-xs font-semibold border ${
-                  status === opt.value
-                    ? 'bg-emerald-600 text-white border-emerald-600'
-                    : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-50'
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
+          <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-2">
+              {statusOptions.map((opt) => (
+                <button
+                  key={opt.value || 'all'}
+                  type="button"
+                  onClick={() => {
+                    setStatus(opt.value);
+                    setPage(1);
+                  }}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold border ${
+                    status === opt.value
+                      ? 'bg-emerald-600 text-white border-emerald-600'
+                      : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-50'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-2 border-l border-slate-200 pl-4">
+              {requestTypeOptions.map((opt) => (
+                <button
+                  key={opt.value || 'any'}
+                  type="button"
+                  onClick={() => {
+                    setRequestType(opt.value);
+                    setPage(1);
+                  }}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold border ${
+                    requestType === opt.value
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-50'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <form onSubmit={handleFiltersSubmit} className="flex flex-wrap gap-2">
@@ -142,6 +191,7 @@ export default function Inquiries() {
               className="w-48 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
             />
             <select
+              aria-label="Sort inquiries"
               value={sort}
               onChange={(e) => setSort(e.target.value)}
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white"
@@ -174,6 +224,7 @@ export default function Inquiries() {
               <thead className="sticky top-0 bg-white shadow-[0_1px_0_rgba(0,0,0,0.04)]">
                 <tr className="text-left text-slate-600">
                   <th className="pb-3 pr-4 font-semibold">Ref</th>
+                  <th className="pb-3 pr-4 font-semibold">Type</th>
                   <th className="pb-3 pr-4 font-semibold">Customer</th>
                   <th className="pb-3 pr-4 font-semibold">City</th>
                   <th className="pb-3 pr-4 font-semibold">Medicine</th>
@@ -187,7 +238,7 @@ export default function Inquiries() {
               <tbody className="divide-y divide-slate-100">
                 {loading && (
                   <tr>
-                    <td colSpan="9" className="py-6 text-center text-slate-500">Loading...</td>
+                    <td colSpan="10" className="py-6 text-center text-slate-500">Loading...</td>
                   </tr>
                 )}
                 {!loading &&
@@ -199,14 +250,21 @@ export default function Inquiries() {
                     return (
                       <tr key={inq._id} className="align-middle hover:bg-slate-50/50">
                         <td className="py-3 pr-4 font-semibold text-slate-900">{inq.referenceId || '—'}</td>
+                        <td className="py-3 pr-4"><RequestTypeBadge inquiry={inq} /></td>
                         <td className="py-3 pr-4 text-slate-800">{displayName}</td>
                         <td className="py-3 pr-4 text-slate-700">{inq.city || '—'}</td>
-                        <td className="py-3 pr-4 text-slate-800">{inq.medicineName || '—'}</td>
+                        <td className="py-3 pr-4 text-slate-800">
+                          {inq.medicineName || '—'}
+                          {inq.items?.length > 1 && (
+                            <div className="text-xs font-semibold text-slate-500">{inq.items.length} items</div>
+                          )}
+                        </td>
                         <td className="py-3 pr-4 text-slate-700">{variantLabel || '—'}</td>
                         <td className="py-3 pr-4 text-slate-700">{`${inq.quantity || 1} · ${packaging || '—'}`}</td>
                         <td className="py-3 pr-4 space-y-1">
                           <StatusBadge status={inq.status} />
                           <select
+                            aria-label={`Status of inquiry ${inq.referenceId || inq.customerName || ''}`.trim()}
                             value={inq.status}
                             onChange={(e) => handleStatusChange(inq._id, e.target.value)}
                             className="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1 text-xs bg-white"
@@ -266,11 +324,16 @@ export default function Inquiries() {
           <div className="flex flex-col h-full">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <div className="text-xs uppercase tracking-[0.12em] text-slate-500 font-semibold">Inquiry</div>
+                <div className="text-xs uppercase tracking-[0.12em] text-slate-500 font-semibold">
+                  {isBestPrice(selected) ? 'Best Price Request' : 'Inquiry'}
+                </div>
                 <div className="text-xl font-semibold text-slate-900">{selected.referenceId || 'No reference'}</div>
                 <div className="text-sm text-slate-600">{new Date(selected.createdAt).toLocaleString()}</div>
               </div>
-              <StatusBadge status={selected.status} />
+              <div className="flex flex-col items-end gap-2">
+                <RequestTypeBadge inquiry={selected} />
+                <StatusBadge status={selected.status} />
+              </div>
             </div>
 
             <div className="space-y-4 overflow-y-auto pr-1">
@@ -281,7 +344,49 @@ export default function Inquiries() {
                 <Info label="Phone" value={selected.phone || '—'} />
               </Section>
 
-              <Section title="Product Info">
+              {selected.items?.length > 0 && (
+                <div className="space-y-2">
+                  <div className="text-xs uppercase tracking-[0.12em] text-slate-500 font-semibold">
+                    Requested Products ({selected.items.length})
+                  </div>
+                  <div className="overflow-hidden rounded-lg border border-slate-200">
+                    <table className="min-w-full text-sm">
+                      <thead className="bg-slate-50 text-left text-xs text-slate-600">
+                        <tr>
+                          <th className="px-3 py-2 font-semibold">Medicine</th>
+                          <th className="px-3 py-2 text-right font-semibold">Qty</th>
+                          <th className="px-3 py-2 text-right font-semibold">Listed Price</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {selected.items.map((item, index) => {
+                          const label = [item.variant?.strength, item.variant?.form, item.variant?.packSize]
+                            .filter(Boolean)
+                            .join(' · ');
+                          return (
+                            <tr key={`${item.slug || item.medicineName}-${index}`}>
+                              <td className="px-3 py-2">
+                                <div className="font-semibold text-slate-900">{item.medicineName}</div>
+                                {label && <div className="text-xs text-slate-500">{label}</div>}
+                              </td>
+                              <td className="px-3 py-2 text-right font-semibold text-slate-900">{item.quantity}</td>
+                              <td className="px-3 py-2 text-right text-slate-700">
+                                {Number.isFinite(item.listedPrice) ? `$${item.listedPrice.toFixed(2)}` : '—'}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    Listed prices are what the catalogue showed when the request was submitted.
+                    {isBestPrice(selected) && ' Send the customer your quote by email or phone.'}
+                  </p>
+                </div>
+              )}
+
+              <Section title={selected.items?.length ? 'Summary' : 'Product Info'}>
                 <Info label="Medicine" value={selected.medicineName || '—'} />
                 <Info label="Strength" value={selected?.selectedVariant?.strength || '—'} />
                 <Info label="Brand" value={selected?.selectedVariant?.brand || selected.brandPreference || '—'} />
@@ -298,6 +403,7 @@ export default function Inquiries() {
               <Section title="Status">
                 <div className="flex items-center gap-2">
                   <select
+                    aria-label="Inquiry status"
                     value={selected.status}
                     onChange={(e) => setSelected((prev) => ({ ...prev, status: e.target.value }))}
                     className="rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white"

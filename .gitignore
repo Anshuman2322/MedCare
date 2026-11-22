@@ -115,6 +115,11 @@ Desktop.ini
 
 # Package manager
 package-lock.json
+# The three apps' lockfiles ARE committed: installs and Docker builds use `npm ci`,
+# so what was tested is exactly what gets deployed.
+!server/package-lock.json
+!client/package-lock.json
+!admin/package-lock.json
 yarn.lock
 pnpm-lock.yaml
 .yarn/
@@ -153,6 +158,10 @@ temp/
 
 # Runtime configuration files
 .dockerignore
+# ...but each app's .dockerignore is needed: it keeps node_modules and .env out of the images.
+!server/.dockerignore
+!client/.dockerignore
+!admin/.dockerignore
 
 # Database
 *.db

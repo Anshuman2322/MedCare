@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { registerAdmin, loginAdmin, logoutAdmin, getCurrentAdmin, bootstrapSuperAdmin } from '../controllers/auth.controller.js';
+import { forgotPassword, verifyResetOtp, resetPassword } from '../controllers/passwordReset.controller.js';
 import { protectAdmin } from '../middleware/auth.middleware.js';
 
 const router = Router();
@@ -30,6 +31,28 @@ const emailRules = body('email')
 
 router.post('/register', [emailRules, passwordRules], registerAdmin);
 router.post('/login', [emailRules, body('password').exists({ checkFalsy: true }).withMessage('Password is required')], loginAdmin);
+router.post('/forgot-password', [emailRules], forgotPassword);
+router.post(
+  '/verify-reset-otp',
+  [
+    emailRules,
+    body('otp').isString().matches(/^\d{6}$/).withMessage('Enter the 6-digit code from your email'),
+  ],
+  verifyResetOtp
+);
+router.post(
+  '/reset-password',
+  [
+    body('resetToken').isString().isHexadecimal().isLength({ min: 64, max: 64 }).withMessage('Invalid reset session'),
+    passwordRules,
+    // bcrypt silently ignores everything past 72 bytes.
+    body('password').isLength({ max: 72 }).withMessage('Password must be 72 characters or fewer'),
+    // The Admin pre-save hook stores anything shaped like a bcrypt hash as-is,
+    // which would keep this value in plain text.
+    body('password').not().matches(/^\$2[ab]\$/).withMessage('Password cannot start with that sequence'),
+  ],
+  resetPassword
+);
 router.post('/logout', logoutAdmin);
 router.get('/me', protectAdmin, getCurrentAdmin);
 router.post(

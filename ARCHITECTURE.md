@@ -12,7 +12,7 @@ This is a **three-application MERN monorepo** using a **layered REST API archite
 
 The API has explicit route, middleware, controller, model, configuration, and utility layers (`server/routes`, `middleware`, `controllers`, `models`, `config`, `utils`). Controllers call Mongoose models directly: there is **no service layer, repository layer, dependency-injection container, or ORM abstraction**. The frontend is mostly organized by page and reusable component, with small API/helper modules rather than feature modules.
 
-The system is a medicine **catalog and inquiry platform**, not a completed checkout system: public users browse the catalog and submit inquiries; admins manage catalog data and inbound messages. `POST/GET /api/orders` exists but no UI calls it.
+The system is a medicine **catalog and inquiry platform**, not a completed checkout system: public users browse the catalog and submit inquiries; admins manage catalog data and inbound messages. (The unused `/api/orders` endpoints were removed in the 2026-11-23 QA pass.)
 
 ## 2. High-level system diagram
 
@@ -45,7 +45,7 @@ flowchart LR
 
 ### Admin SPA (`admin/`)
 
-- **Entry/routing:** `src/main.jsx` wraps the app in `AuthProvider`. `src/App.jsx` uses React Router v6's data-router API (`createBrowserRouter`/`RouterProvider`). `AdminLayout` hosts nested routes: dashboard, medicines, create/edit medicine, categories, inquiries, messages, and super-admin-only admin management; `/login` is public.
+- **Entry/routing:** `src/main.jsx` wraps the app in `AuthProvider`. `src/App.jsx` uses React Router v6's data-router API (`createBrowserRouter`/`RouterProvider`). `AdminLayout` hosts nested routes: dashboard, medicines, create/edit medicine, categories, inquiries, messages, and super-admin-only admin management; `/login` and `/forgot-password` are public.
 - **Authentication and protected UI:** `context/AuthContext.jsx` calls `/api/auth/me` on startup, exposes `admin`, `loading`, `login`, and `logout`, and uses an Axios instance configured with `withCredentials: true`. `components/ProtectedRoute.jsx` blocks while authentication is checked, redirects unauthenticated users to `/login`, then enforces a super-admin role or named permission in the browser. Server middleware is the actual authorization boundary.
 - **API modules:** `src/api/axios.js` centralizes base URL and cookies. `categoryApi`, `inquiryApi`, `contactApi`, and `adminApi` group resource calls. Medicine CRUD is called directly from `pages/Medicines.jsx` and `pages/MedicineForm.jsx`; dashboard requests are likewise page-local.
 - **Components:** `components/layout` contains `AdminLayout`, `Sidebar`, and `Topbar`; `components/ui` has `Modal`, `Badge`, and `StatCard`; `ImageUploader` uploads/reorders Cloudinary image URLs. Pages own most form/table state.
@@ -71,7 +71,7 @@ flowchart LR
 | `server/models/` | Mongoose schemas, indexes, references, model methods/hooks. |
 | `server/middleware/` | JWT guard/role/permission checks, rate limiting, multer setup, and terminal error handlers. |
 | `server/config/` | Mongo connection, Pino logger, Cloudinary config, environment validation. |
-| `server/utils/` | Resend wrapper and regex escaping helper. |
+| `server/utils/` | Resend wrapper (`sendEmail.js`), inquiry email templates (`inquiryEmails.js`) and regex escaping helper. |
 | `server/scripts/` | One-off seeding/diagnostic utilities, not runtime services. |
 | `server/tests/` | Jest/Supertest tests with an in-memory MongoDB setup. |
 
@@ -79,13 +79,14 @@ flowchart LR
 
 | Endpoint group | Controller responsibility | Access |
 |---|---|---|
-| `/api/auth` | register, login, logout, current admin, one-time bootstrap | Login/register/bootstrap public with auth rate limit; `/me` protected |
+| `/api/auth` | register, login, logout, current admin, one-time bootstrap, password reset (forgot-password, verify-reset-otp, reset-password) | Login/register/bootstrap public with auth rate limit; password-reset routes public with their own limits; `/me` protected |
 | `/api/medicines` | catalog CRUD, filters/search/sort, fallback JSON handling | GET public; mutations require `medicines` permission |
 | `/api/categories` | list/create/delete categories | GET public; mutations require `categories` permission |
-| `/api/inquiries` and `/api/inquiry` | create inquiry | Public, inquiry-rate-limited; both aliases mount the same router |
+| `/api/inquiries` and `/api/inquiry` | create inquiry; `POST /bulk` creates one combined cart inquiry or best-price request across many medicines | Public, inquiry-rate-limited; both aliases mount the same router. `/bulk` re-reads every medicine's name and price from the catalogue and ignores the values the browser sent |
 | `/api/contact` | create contact message | Public, inquiry-rate-limited |
-| `/api/admin` | dashboard, admin users/roles, category counts, inquiry/message administration | JWT plus permission/role guards |
-| `/api/orders` | create/list orders | POST is public; GET requires an authenticated admin (no named permission check) |
+| `/api/chat` | support-chat session, messages, agent-reply polling, handoff, inquiry recording/status. Replies come from `services/chat/engine.js`: the medical-advice guardrail (`safety.js`, English + Hinglish) always runs first; then Claude (`ai.js`, when `ANTHROPIC_API_KEY` is set) with read-only catalogue tools and a `show_in_chat` tool for cards/forms/suggested replies; otherwise, or on any AI failure, the rule-based assistant (multi-intent detection in `intent.js`, typo-tolerant catalogue matching and brand-to-molecule mapping in `catalog.js`, conversation memory in `ChatConversation.context`). All facts come from the catalogue and `knowledgeBase.js` only. Live chat: `POST /handoff` queues the visitor for the team (one team email per conversation) and posts a waiting message built from the live-chat settings (online: "stay on this page, an expert joins within 5–10 minutes"; away: "we'll reply here and by email"); `GET /messages` also sends one "thanks for your patience" message after 10 minutes without a team reply. Team replies carry a display name (`agentName`), never an email; a reply to a visitor whose widget hasn't checked in for 2 minutes (`visitorSeenAt`) is also emailed to them (`utils/chatEmails.js`, reply-to `ADMIN_EMAIL`). The widget keeps checking for team replies while the panel is closed (`ChatWidget.jsx`: launcher badge, preview bubble, tab-title count, chime, browser notification) | Public, chat-rate-limited; authorised by an opaque per-visitor session token |
+| `/api/reviews` | `GET /` live reviews with summary (filter by `product`, `rating`; `sort` newest/highest/lowest; paged; without `product` it serves the `/reviews` page), `GET /featured` home-page reviews (every live review automatically, pinned ones first, then newest) plus the overall summary, `POST /` submit a review (with optional `topics`), `POST /suggest` drafts 4 reviews from a rating, topics and optional notes (`services/reviewDrafts.js`: Claude when `ANTHROPIC_API_KEY` is set, otherwise or on any failure a built-in writer; every draft passes the same link/contact checks; nothing is saved; 20 per IP per hour) | Public. Reviews go live as soon as they are posted (`approved`); reviews of unpublished products never appear publicly. Submissions are limited to 5 per IP per hour, reject links, phone numbers and email addresses in the text, use a honeypot field and allow one review per email per product. Emails are never returned publicly; author names are shortened to "First L." |
+| `/api/admin` | dashboard, admin users/roles, category counts, inquiry/message/support-chat administration (support chat also has `GET /chat/summary` for the sidebar badge and new-chat alerts, `GET/PUT /chat/settings` for online/away, the promised wait and the name shown to customers, and `GET/POST/PUT/DELETE /chat/quick-replies` for one-click saved replies with `{name}`/`{email}`/`{product}` placeholders; eight starter replies are added once), review management (`GET/PATCH/DELETE /reviews`: hide/show on the website, feature on home page, verified-buyer badge, public reply; `POST /reviews/mark-seen` clears the "new reviews" badge) | JWT plus permission/role guards; reviews use the `inquiries` permission |
 | `/api/upload` | Multer-memory upload streamed to Cloudinary | Authenticated admin |
 | `/api/test/email` | dev-only Resend diagnostic email | Mounted only outside production; rate-limited and authenticated |
 | `/api/health` | process/database health JSON | Public |
@@ -119,7 +120,7 @@ Mongoose connects using `MONGO_URI` and optional `MONGO_DB` (`config/db.js`). St
 - admin authentication has an optional `ADMIN_EMAIL`/`ADMIN_PASSWORD` fallback;
 - inquiries, contact messages, orders, and normal admin data require MongoDB and have no equivalent durable fallback.
 
-This fallback crosses the server/client boundary and writes a source data file. It is an implementation detail, not a database replacement, and requires `client/` to be present beside `server/`.
+This fallback crosses the server/client boundary and writes a source data file. It is an implementation detail, not a database replacement, and requires `client/` to be present beside `server/`. **It is development-only:** `middleware/requireDatabase.js` makes the medicine, category and admin routes answer `503` in production whenever MongoDB isn't connected, so the fallback JSON is never served or written there.
 
 ### File upload
 
@@ -135,12 +136,17 @@ MongoDB collections are generated by Mongoose models:
 
 | Collection/model | Key data and relationships | Explicit indexes/constraints |
 |---|---|---|
-| `Admin` | email, bcrypt password, role, permission flags, login-lockout state | unique `email`; timestamps |
+| `Admin` | email, bcrypt password, role, permission flags, login-lockout state, session `tokenVersion` | unique `email`; timestamps |
+| `PasswordReset` | in-flight admin reset: HMAC of the OTP, attempts, send throttling, hash of the one-time reset token | unique `email`; TTL on `purgeAt`; timestamps |
 | `Medicine` | catalog details, image URL(s), embedded variants/custom fields, category stored as a **string** | unique/indexed `slug`; indexed `category`, `createdAt DESC`, `variants.price` |
 | `Category` | name, slug, description, `isActive` | unique `name` and `slug`; indexed `isActive` |
-| `Inquiry` | customer/product snapshot; optional `medicineId` reference; reference ID/status | ref `Medicine`; unique/indexed `referenceId`; indexed status, `createdAt`, compound `{ status, createdAt: -1 }` |
+| `Inquiry` | customer/product snapshot; optional `medicineId` reference; reference ID/status. `requestType` separates a normal inquiry from a best-price request (references are `CN-` and `BP-` respectively); `items[]` holds the per-medicine lines of a cart request and is empty for single-medicine inquiries, whose flat fields are unchanged | ref `Medicine`; unique/indexed `referenceId`; indexed status, `requestType`, `createdAt`, compound `{ status, createdAt: -1 }` |
 | `ContactMessage` | name, email, message, `new`/`read` state | timestamps only |
 | `Order` | customer PII, `medicineId`, quantity, notes/status | required ref `Medicine`; no explicit index |
+| `ChatConversation` | support-chat thread: visitor contact, viewed-product context, linked inquiry references, queue status, live-chat timing (`handoffAt`, `firstAgentReplyAt`, `waitUpdateAt`), assistant memory (`context`: product under discussion, pending offer a bare "yes" accepts with any quantity mentioned, products last listed, miss streak, turn count) | unique/indexed `sessionToken` (never serialised); indexed status, `handoffRequested`, `lastMessageAt`, compound `{ status, lastMessageAt: -1 }` |
+| `ChatMessage` | one `user`/`assistant`/`agent` turn plus the cards/quick-actions/form the widget rendered; team replies also store `agentName` | ref `ChatConversation`; compound `{ conversationId, createdAt }` |
+| `SupportSettings` | live-chat settings: `available` (online/away), `waitText` (default "5–10 minutes"), `agentName`, starter-replies flag | unique `key` (single `live-chat` document) |
+| `QuickReply` | saved support-chat reply: title, text, order | `{ order, createdAt }` |
 
 `models/categoryModel.js` declares another `Category` Mongoose model with a different one-field schema, but it is not imported by runtime code. The effective category schema is `models/Category.js`.
 
@@ -191,14 +197,14 @@ sequenceDiagram
   API-->>A: JSON or 401/403
 ```
 
-- Token: JWT `{ id, role }`, signed with `JWT_SECRET`, expiry from `JWT_EXPIRES` (default `1d`), stored in an `httpOnly` cookie with `sameSite: 'lax'`, root path, and `secure` in production (`auth.controller.js`). The client never stores the JWT itself.
+- Token: JWT `{ id, role, tv }`, signed with `JWT_SECRET`, expiry from `JWT_EXPIRES` (default `1d`), stored in an `httpOnly` cookie with `sameSite: 'lax'`, root path, and `secure` in production (`auth.controller.js`). The client never stores the JWT itself.
 - Passwords: Admin schema hashes changed passwords with `bcryptjs`; default salt rounds are 12. Login uses bcrypt comparison. Bootstrap manually hashes with 10 rounds before a model save hook recognizes it as already hashed.
 - Brute force controls: schema tracks failed attempts and locks accounts after configurable 5 failures for 15 minutes; auth endpoints also receive a 20-failure/15-minute IP limit (successful calls skipped).
+- Password reset (`passwordReset.controller.js`): `forgot-password` answers identically for every email and does its account-dependent work after responding; the emailed 6-digit OTP is stored as an HMAC keyed by `JWT_SECRET`, lives 10 minutes and allows 5 attempts, claimed atomically. `verify-reset-otp` exchanges it for a single-use 256-bit token (stored hashed, 10 minutes). `reset-password` sets the password, clears lockout, increments `tokenVersion` and emails a notice. Per-account send limits (60-second cooldown, 5/hour) sit on top of per-IP limits.
 - Authorization: `protectAdmin` verifies the cookie, loads the Admin excluding password, and places it in `req.admin`. `requireRole` checks `admin`/`super_admin`; `requirePermission` grants every permission to `super_admin` and checks named flags for other admins.
-- Refresh tokens/token revocation: **Not implemented.** Logout only clears the cookie; a copied token remains usable until expiry.
+- Refresh tokens: **Not implemented.** Token revocation exists only through a password reset, which invalidates every session via `tokenVersion`. Logout only clears the cookie; a copied token otherwise remains usable until expiry.
 - CSRF tokens: **Not implemented.** SameSite=Lax gives baseline browser CSRF mitigation, but no separate CSRF middleware/token exists.
 - Customer authentication/accounts: **Not implemented.**
-- Authorization for order creation: **Not implemented.** `POST /api/orders` accepts customer/order data publicly.
 
 ### Other implemented security controls
 
@@ -237,7 +243,7 @@ Build-time browser variables are `VITE_API_URL` for both SPAs and `VITE_CLOUDINA
 |---|---|---|
 | MongoDB / Mongoose | `server/config/db.js`, `server/models/` | Primary persistence and schema/index management. |
 | Cloudinary | `server/config/cloudinary.js`, `routes/uploadRoute.js`, `admin/src/utils/uploadImage.js` | Server-authenticated upload and admin direct unsigned upload. |
-| Resend | `server/utils/sendEmail.js`, `inquiryController.js` | Admin email notification on inquiry; dev-only diagnostic route. |
+| Resend | `server/utils/sendEmail.js`, `server/utils/inquiryEmails.js`, `inquiryController.js`, `contactController.js` | Every visitor action the team hears about (inquiry, best-price request, contact message, support-chat handoff) is emailed to `ADMIN_EMAIL` only, never copied elsewhere. Customers who leave an email get a "thank you" confirmation of their inquiry with its details (replies go to `ADMIN_EMAIL`), and a support-chat reply by email if they left the site before the team answered. Password-reset codes go to the account's own address. Dev-only diagnostic route. |
 | Twilio | `server/controllers/inquiryController.js` | Optional WhatsApp admin notification on inquiry. |
 | Google Fonts | both frontend `index.css` files | Remote Inter/Manrope web-font import. |
 | IndiaMART assets | `client/public/indiamart-*`, `About.jsx` | Static branding/trust-seal images; no IndiaMART API integration. |
@@ -273,8 +279,7 @@ Repository, factory, dependency injection, event bus/observer, CQRS, and microse
 - No API versioning, OpenAPI contract, consistent response envelope, pagination for medicines/orders/admins, or standardized error serialization.
 - The public inquiry flows are not fully consistent: wizard request shape does not match the controller’s expected nested shape; modal does.
 - Permission-management endpoint and UI are inconsistent, and `/me` omits permission data needed by non-super-admin client route guards.
-- Public `POST /api/orders` has no validation/auth/rate-limit specific to orders and has no frontend caller; it accepts PII and is a dormant surface.
-- The fallback catalog permits authenticated medicine mutations by writing `client/src/data/medicines.json`; it is unsuitable as concurrent production persistence and breaks if the server artifact lacks the sibling `client` directory.
+- The development fallback catalog permits authenticated medicine mutations by writing `client/src/data/medicines.json`; it is unsuitable as persistence and is blocked in production (`503`).
 - Direct unsigned browser Cloudinary upload makes the configured preset/cloud name public by design; proper restrictions must be configured in Cloudinary, not enforced by this repository.
 - Browser content-protection code is not meaningful security and may reduce accessibility/usability (copy, selection, context menu blocked).
 - No refresh-token rotation/revocation/CSRF middleware; JWT logout is not server-side revocation.

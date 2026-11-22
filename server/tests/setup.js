@@ -27,6 +27,8 @@ process.env.MONGOMS_MD5_CHECK = process.env.MONGOMS_MD5_CHECK || 'false';
 // before anything else is imported, keeps every external integration a no-op.
 process.env.RESEND_API_KEY = '';
 process.env.ADMIN_EMAIL = '';
+process.env.BUSINESS_EMAIL = '';
+process.env.CRM_EMAIL = '';
 process.env.TWILIO_ACCOUNT_SID = '';
 process.env.TWILIO_AUTH_TOKEN = '';
 process.env.TWILIO_WHATSAPP_FROM = '';

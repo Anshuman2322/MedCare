@@ -42,7 +42,7 @@ const FeaturedMedicines = () => {
         >
           <div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Featured Medicines</h2>
-            <p className="mt-2 text-gray-600">Popular and trusted products</p>
+            <p className="mt-2 text-gray-600">A selection from our catalogue</p>
           </div>
           <div className="hidden sm:block">
             <Link to="/shop" className="inline-flex items-center h-10 rounded-lg border border-gray-300 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-emerald-400 transition-colors">View More</Link>

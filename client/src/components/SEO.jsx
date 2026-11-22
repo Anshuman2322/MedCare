@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
 const SITE_NAME = 'CureNeed';
-const DEFAULT_DESCRIPTION = 'Browse verified pharmaceutical products, trusted suppliers and transparent healthcare procurement — submit an inquiry and our team will follow up directly.';
+const DEFAULT_DESCRIPTION = 'Browse branded generic medicines from established Indian manufacturers and send a free request. Our team replies with a clear quote.';
 
 // Note: this app has no server-side rendering, so these tags land in the DOM
 // after JS runs. That's enough for Google (Googlebot executes JS), but
