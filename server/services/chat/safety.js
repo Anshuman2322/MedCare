@@ -72,3 +72,19 @@ export function needsMedicalRefusal(text) {
   if (BODY_COMPLAINT.test(value)) return true;
   return ADVICE_PATTERNS.some((pattern) => pattern.test(value));
 }
+
+// Emergencies are answered before anything else, and never with a product
+// search or a sales prompt: send the person to local emergency services.
+const EMERGENCY_PATTERNS = [
+  /\b(?:medical\s+)?emergency\b/i,
+  /\b(?:over\s*dose|overdosed|poison(?:ed|ing)?)\b/i,
+  /\b(?:chest\s+pain|heart\s+attack|stroke|seizure|unconscious|not\s+breathing|cant\s+breathe|can'?t\s+breathe|difficulty\s+breathing|severe\s+bleeding|bleeding\s+heavily)\b/i,
+  /\b(?:suicid\w*|kill\s+myself|end\s+my\s+life|self[-\s]?harm)\b/i,
+  /\b(?:anaphyla\w*|swollen\s+(?:face|throat|tongue))\b/i,
+  /\b(?:ambulance|saans\s+nahi|behosh)\b/i,
+];
+
+export function isEmergency(text) {
+  const value = String(text || '');
+  return value.trim() !== '' && EMERGENCY_PATTERNS.some((pattern) => pattern.test(value));
+}

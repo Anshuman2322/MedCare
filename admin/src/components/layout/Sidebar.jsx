@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getReviews, REVIEWS_CHANGED } from '../../api/reviewsApi.js';
+import { getFaqSummary, FAQ_CHANGED } from '../../api/faqApi.js';
 import useSupportChatAlerts from '../../hooks/useSupportChatAlerts.js';
 
 const PENDING_REFRESH_MS = 60000;
@@ -28,12 +29,35 @@ function useNewReviews(enabled) {
   return count;
 }
 
+// Questions visitors asked that the FAQ could not answer (or only half answered).
+function useFaqNeedsAnswer(enabled) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!enabled) return undefined;
+    let live = true;
+    const refresh = () =>
+      getFaqSummary()
+        .then(({ data }) => live && setCount(Number(data?.needsAnswer) || 0))
+        .catch(() => {});
+    refresh();
+    const timer = setInterval(refresh, 60_000);
+    window.addEventListener(FAQ_CHANGED, refresh);
+    return () => {
+      live = false;
+      clearInterval(timer);
+      window.removeEventListener(FAQ_CHANGED, refresh);
+    };
+  }, [enabled]);
+  return count;
+}
+
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const { admin } = useAuth();
   const canReviews = admin?.role === 'super_admin' || admin?.permissions?.inquiries === true;
   const newReviews = useNewReviews(canReviews);
   const chat = useSupportChatAlerts(canReviews);
+  const faqNeeds = useFaqNeedsAnswer(canReviews);
 
   const navItems = useMemo(() => {
     const perms = admin?.permissions || {};
@@ -53,6 +77,7 @@ export default function Sidebar() {
     if (can('inquiries')) base.push({ to: '/inquiries', label: 'Inquiries' });
     if (can('inquiries')) base.push({ to: '/messages', label: 'Messages' });
     if (can('inquiries')) base.push({ to: '/support-chat', label: 'Support Chat', badge: 'supportChat' });
+    if (can('inquiries')) base.push({ to: '/faq', label: 'FAQ & Chat Answers', badge: 'faq' });
     if (can('inquiries')) base.push({ to: '/reviews', label: 'Reviews', badge: 'newReviews' });
     if (isSuper) base.push({ to: '/manage-admins', label: 'Admin Management' });
     return base;
@@ -109,6 +134,12 @@ export default function Sidebar() {
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" aria-hidden />
                     {chat.needsReply}
                     <span className="sr-only"> customers waiting for a reply</span>
+                  </span>
+                )}
+                {item.badge === 'faq' && faqNeeds > 0 && (
+                  <span className="ml-auto rounded-full bg-rose-600 px-2 py-0.5 text-[11px] font-bold text-white" title={`${faqNeeds} visitor question${faqNeeds === 1 ? '' : 's'} without an answer`}>
+                    {faqNeeds}
+                    <span className="sr-only"> questions need an answer</span>
                   </span>
                 )}
                 {item.badge === 'newReviews' && newReviews > 0 && (

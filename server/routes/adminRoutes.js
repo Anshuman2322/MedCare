@@ -27,6 +27,17 @@ import {
 	adminDeleteReview,
 	adminMarkReviewsSeen,
 } from '../controllers/review.controller.js';
+import {
+  faqFeedbackSummary,
+  adminListEntries,
+  adminCreateEntry,
+  adminUpdateEntry,
+  adminDeleteEntry,
+  adminListQuestions,
+  adminUpdateQuestion,
+  adminDeleteQuestion,
+  adminFaqSummary,
+} from '../controllers/faq.controller.js';
 import { protectAdmin, requireRole, requirePermission } from '../middleware/auth.middleware.js';
 
 const router = Router();
@@ -89,6 +100,17 @@ router.get('/chat/quick-replies', chatGuards, listQuickReplies);
 router.post('/chat/quick-replies', chatGuards, createQuickReply);
 router.put('/chat/quick-replies/:id', chatGuards, updateQuickReply);
 router.delete('/chat/quick-replies/:id', chatGuards, deleteQuickReply);
+
+// FAQ: the answers visitors see, what they asked, and which answers helped. Same permission as the support chat.
+router.get('/faq-feedback', chatGuards, faqFeedbackSummary);
+router.get('/faq/summary', chatGuards, adminFaqSummary);
+router.get('/faq/entries', chatGuards, adminListEntries);
+router.post('/faq/entries', chatGuards, adminCreateEntry);
+router.put('/faq/entries/:id', chatGuards, adminUpdateEntry);
+router.delete('/faq/entries/:id', chatGuards, adminDeleteEntry);
+router.get('/faq/questions', chatGuards, adminListQuestions);
+router.patch('/faq/questions/:id', chatGuards, adminUpdateQuestion);
+router.delete('/faq/questions/:id', chatGuards, adminDeleteQuestion);
 
 // Customer reviews are customer communication, so they share the inquiries permission.
 router.get('/reviews', chatGuards, adminListRules, adminListReviews);

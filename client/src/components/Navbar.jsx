@@ -257,6 +257,7 @@ const Navbar = () => {
               <NavItem to="/" end>Home</NavItem>
               <NavItem to="/shop" end>Shop by Category</NavItem>
               <NavItem to="/about" end>About Us</NavItem>
+              <NavItem to="/faq" end>FAQ</NavItem>
               <NavItem to="/contact" end>Contact</NavItem>
             </div>
           </div>
@@ -408,6 +409,7 @@ const Navbar = () => {
             <NavItem to="/" end variant="mobile" onClick={() => setIsMenuOpen(false)}>Home</NavItem>
             <NavItem to="/shop" end variant="mobile" onClick={() => setIsMenuOpen(false)}>Shop by Category</NavItem>
             <NavItem to="/about" end variant="mobile" onClick={() => setIsMenuOpen(false)}>About Us</NavItem>
+            <NavItem to="/faq" end variant="mobile" onClick={() => setIsMenuOpen(false)}>FAQ</NavItem>
             <NavItem to="/contact" end variant="mobile" onClick={() => setIsMenuOpen(false)}>Contact</NavItem>
             <NavItem to="/cart" end variant="mobile" onClick={() => setIsMenuOpen(false)}>
               Request List{cartCount > 0 ? ` (${cartCount})` : ''}

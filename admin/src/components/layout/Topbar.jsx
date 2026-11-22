@@ -11,6 +11,7 @@ function usePageTitle() {
   if (pathname.startsWith('/inquiries')) return 'Inquiries';
   if (pathname.startsWith('/messages')) return 'Messages';
   if (pathname.startsWith('/support-chat')) return 'Support Chat';
+  if (pathname.startsWith('/faq')) return 'FAQ & Chat Answers';
   if (pathname.startsWith('/reviews')) return 'Reviews';
   if (pathname.startsWith('/manage-admins')) return 'Admin Management';
   return 'Dashboard';

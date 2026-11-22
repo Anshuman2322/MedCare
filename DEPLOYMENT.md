@@ -91,6 +91,7 @@ curl -s https://api.cureneed.com/api/health          # {"ok":true,...,"db":"conn
 curl -sI https://www.cureneed.com | grep -iE "content-security-policy|x-frame-options|strict-transport"
 curl -s -o /dev/null -w "%{http_code}\n" https://www.cureneed.com/shop        # 200 (SPA fallback)
 curl -s -o /dev/null -w "%{http_code}\n" https://api.cureneed.com/api/orders  # 404 (endpoint removed)
+curl -s https://api.cureneed.com/api/faq | head -c 120                           # FAQ knowledge base (JSON)
 ```
 
 Then, in a browser: browse a product, send an inquiry (check `ADMIN_EMAIL` receives it

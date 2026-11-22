@@ -76,6 +76,12 @@ export default function ChatWidget() {
 
   useReplyWatcher({ open, onOpen: openPanel });
 
+  // Other parts of the site (the FAQ page) can open the chat.
+  useEffect(() => {
+    window.addEventListener('cureneed:open-chat', openPanel);
+    return () => window.removeEventListener('cureneed:open-chat', openPanel);
+  }, [openPanel]);
+
   useEffect(() => {
     if (!open) return undefined;
     const onKeyDown = (event) => {

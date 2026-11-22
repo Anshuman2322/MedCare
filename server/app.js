@@ -18,6 +18,7 @@ import inquiryRoutes from './routes/inquiryRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
+import faqRoutes from './routes/faqRoutes.js';
 import testRoutes from './routes/test.routes.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import { requireDatabase } from './middleware/requireDatabase.js';
@@ -106,6 +107,7 @@ app.use('/api/inquiry', inquiryRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/faq', faqRoutes);
 // Internal diagnostic route (sends a real email via a paid provider on every
 // hit) — never mounted in production, so a hit against it there 404s before
 // any auth/rate-limit middleware even runs.

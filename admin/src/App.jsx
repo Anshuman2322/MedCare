@@ -9,6 +9,7 @@ import Inquiries from './pages/Inquiries.jsx';
 import Messages from './pages/Messages.jsx';
 import SupportChat from './pages/SupportChat.jsx';
 import Reviews from './pages/Reviews.jsx';
+import Faq from './pages/Faq.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Login from './pages/Login.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
@@ -87,6 +88,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredPermission="inquiries">
             <SupportChat />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'faq',
+        element: (
+          <ProtectedRoute requiredPermission="inquiries">
+            <Faq />
           </ProtectedRoute>
         ),
       },

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO.jsx';
+import OrderSteps from '../components/OrderSteps.jsx';
+import TopFaqs from '../components/faq/TopFaqs.jsx';
 import useCatalogue from '../hooks/useCatalogue';
 import useOverallRating from '../hooks/useOverallRating';
 import { catalogueStats } from '../utils/catalogue';
@@ -668,6 +670,25 @@ export default function About() {
 
       {/* Why trust section */}
       <TrustSection />
+
+      {/* How ordering works + where we supply */}
+      <section className="py-12 sm:py-16">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          <OrderSteps />
+          <div className="rounded-2xl border border-gray-100 bg-sky-50/60 p-6 sm:p-8 text-center">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Buyers we supply</h2>
+            <p className="text-gray-600 text-sm sm:text-base mb-4">
+              We regularly supply buyers in these countries. For any other destination, send an inquiry and our team will confirm whether we can deliver there.
+            </p>
+            <ul className="flex flex-wrap justify-center gap-2">
+              {countries.map((country) => (
+                <li key={country} className="rounded-full bg-white border border-emerald-100 px-3 py-1 text-sm text-gray-700">{country}</li>
+              ))}
+            </ul>
+          </div>
+          <TopFaqs heading="Questions buyers ask us" />
+        </div>
+      </section>
 
       {/* CTA */}
       <section className="py-16">

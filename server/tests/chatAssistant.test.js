@@ -109,7 +109,7 @@ describe('conversation basics', () => {
 
   it('stops asking to rephrase after two misses and offers the team', async () => {
     const token = await openSession();
-    expect((await say(token, 'what is the meaning of all this then')).text).toMatch(/not sure|didn't quite|make sure/i);
+    expect((await say(token, 'what is the meaning of all this then')).text).toMatch(/verified information|not sure|didn't quite|make sure/i);
     const second = await say(token, 'and why would anyone do that at all');
     expect(second.text).toMatch(/talk to someone from our team/i);
     expect(ids(second)).toContain('human');

@@ -5,7 +5,7 @@ import { withCloudinaryTransform } from '../../utils/medicineDisplay';
 
 // Site paths, emails and phone numbers in a reply become links. Only known
 // storefront paths are linked, so a reply can never point anywhere else.
-const SITE_PATHS = /^\/(?:about|contact|reviews|shop|shipping-policy|privacy-policy|terms-of-service|cart|medicine\/[a-z0-9-]+)(?:\?[^\s]*)?$/i;
+const SITE_PATHS = /^\/(?:about|contact|faq|reviews|shop|shipping-policy|privacy-policy|terms-of-service|cart|medicine\/[a-z0-9-]+)(?:\?[^\s]*)?$/i;
 const TOKEN = /(\/[a-z][a-z0-9/?=&%.-]*[a-z0-9]|[^\s@]+@[^\s@]+\.[a-z]{2,}|\+\d[\d ]{8,}\d)/gi;
 
 function RichText({ text, onNavigate }) {

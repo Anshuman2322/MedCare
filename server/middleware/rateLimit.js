@@ -96,3 +96,12 @@ export const testEmailLimiter = rateLimit({
   legacyHeaders: false,
   handler: jsonRateLimitHandler,
 });
+
+// FAQ "was this helpful?" votes: anonymous, so keep one visitor from stuffing the counters.
+export const faqVoteLimiter = rateLimit({
+  windowMs,
+  limit: Number(process.env.FAQ_VOTE_RATE_LIMIT_MAX) || 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: jsonRateLimitHandler,
+});

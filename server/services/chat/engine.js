@@ -1,5 +1,8 @@
 import { detect, looksLikeMedicineName } from './intent.js';
-import { needsMedicalRefusal } from './safety.js';
+import { needsMedicalRefusal, isEmergency } from './safety.js';
+import { searchFaq, faqById } from './faq.js';
+import { FAQ_FALLBACK, EMERGENCY_ANSWER } from '../../data/faq.js';
+import { loadFaqs } from '../faqStore.js';
 import * as catalog from './catalog.js';
 import * as kb from './knowledgeBase.js';
 import { firstName, words } from './text.js';
@@ -13,8 +16,9 @@ import { aiEnabled, aiRespond } from './ai.js';
 //   4. otherwise, or whenever the AI call fails, the rule-based assistant below.
 // Both answer only from the catalogue and knowledgeBase.js, never from guesses.
 
-const reply = ({ text, cards, quickActions, form, awaiting = '' }) => ({
+const reply = ({ text, cards, quickActions, form, awaiting = '', faqMeta }) => ({
   text,
+  faqMeta: faqMeta || undefined,
   cards: cards?.length ? cards : undefined,
   quickActions: quickActions?.length ? quickActions : undefined,
   form: form || undefined,
@@ -52,6 +56,47 @@ const visitorName = (conversation) => firstName(conversation?.visitor?.name);
 
 const contextActions = (conversation) =>
   conversation?.productContext?.slug ? kb.PRODUCT_ACTIONS : kb.HOME_ACTIONS;
+
+// ------------------------------------------------------------------ FAQ
+
+// Answers straight from the shared FAQ knowledge base (the same entries the
+// /faq page shows). Entries that need a person also offer one.
+function faqReply(conversation, entry, faqs) {
+  const links = (entry.links || []).slice(0, 2).map((link) => ({ id: 'link', label: link.label, icon: '🔗', href: link.to }));
+  const related = (entry.related || [])
+    .map((id) => faqById(id, faqs))
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((item) => ({ id: `say:${item.question}`, label: item.question.length > 38 ? `${item.question.slice(0, 36).trim()}…` : item.question }));
+  remember(conversation, { misses: 0, offer: entry.escalate ? { type: 'handoff', slug: '' } : null });
+  const quickActions = [...links, ...(entry.escalate ? [kb.QUICK_ACTIONS.human] : []), ...related].slice(0, 4);
+  return reply({
+    text: entry.answer,
+    quickActions: quickActions.length ? quickActions : kb.FOLLOW_UP_ACTIONS,
+    faqMeta: { outcome: entry.escalate ? 'escalated' : 'answered', faqId: entry.id, faqQuestion: entry.question },
+  });
+}
+
+// "Did you mean...?" when nothing is an exact fit but a few entries are close.
+function faqSuggestions(conversation, suggestions, misses = 0) {
+  remember(conversation, { misses, offer: null });
+  return reply({
+    text: `I'm not sure I have that exactly. Did you mean one of these?`,
+    quickActions: suggestions.slice(0, 3).map((item) => ({ id: `say:${item.question}`, label: item.question.length > 38 ? `${item.question.slice(0, 36).trim()}…` : item.question })),
+    faqMeta: { outcome: 'suggested', faqId: suggestions[0]?.id || '', faqQuestion: suggestions[0]?.question || '' },
+  });
+}
+
+const QUESTION_START = /^(?:what|why|how|when|where|who|which|can|could|do|does|is|are|will|should|kya|kaise|kab|kyun)\b/i;
+const POPULAR_FAQ = ['how-to-order', 'ship-countries', 'payment-methods', 'prescription-needed', 'bulk-orders', 'track-inquiry'];
+function faqMenu(conversation, faqs) {
+  remember(conversation, { misses: 0, offer: null });
+  const chips = POPULAR_FAQ.map((id) => faqById(id, faqs)).filter(Boolean).map((item) => ({ id: `say:${item.question}`, label: item.question.length > 38 ? `${item.question.slice(0, 36).trim()}…` : item.question }));
+  return reply({
+    text: `Here are the questions people ask most. Tap one, or just type yours. You can also browse every answer at /faq`,
+    quickActions: [...chips, { id: 'link', label: 'All FAQs', icon: '❓', href: '/faq' }],
+  });
+}
 
 const shippingChips = () => kb.SHIPPING_TOPICS.map((topic) => ({ id: topic.id, label: topic.label }));
 
@@ -363,6 +408,8 @@ async function handleAction(actionId, conversation, history) {
       return reply({ text: kb.INQUIRY_EXPLAINER, quickActions: [kb.QUICK_ACTIONS.find_medicine, kb.QUICK_ACTIONS.submit_inquiry] });
     case 'contact':
       return reply({ text: kb.contactAnswer(), quickActions: kb.SUPPORT_ONLY });
+    case 'faq':
+      return faqMenu(conversation, await loadFaqs());
     case 'shipping':
       return reply({ text: `Happy to help with shipping and delivery. What would you like to know?`, quickActions: shippingChips() });
     case 'prescription':
@@ -454,6 +501,22 @@ async function respondToText(message, conversation) {
   }
 
   if (intents.has('human')) return handoffReply(conversation);
+  // The FAQ comes first: a question that matches a verified answer gets it. A message
+  // that names a product only yields to a near-exact match, and looking up a real
+  // inquiry (reference given, or "check my inquiry") keeps its own flow.
+  const faqs = await loadFaqs();
+  const faq = searchFaq(message, { entries: faqs });
+  // Identity and "what do you sell" keep their richer live answers (real catalogue counts).
+  // Product questions in the middle of a product conversation ("how much is it?"), country
+  // questions and live answers stay with the rules that know the visitor's context.
+  const productContext = Boolean(state.lastMedicineSlug || state.options.length || conversation?.productContext?.slug || conversation?.awaiting);
+  const contextual = intents.has('identity') || intents.has('browse') || Boolean(country)
+    || (productContext && ['price', 'availability', 'product_info', 'alternatives', 'find'].some((id) => intents.has(id)));
+  if (faq.match && !contextual && (!mentioned.length || faq.match.score >= 1)) {
+    const lookup = intents.has('check_inquiry') && (referenceId || !['tracking', 'payments'].includes(faq.match.entry.category));
+    if (!lookup) return faqReply(conversation, faq.match.entry, faqs);
+  }
+
   if (intents.has('check_inquiry') && !intents.has('submit_inquiry')) return statusReply(conversation, referenceId);
 
   if (intents.has('frustration')) {
@@ -608,19 +671,30 @@ async function respondToText(message, conversation) {
     return searchReply(conversation, message, search, catalogue, { purpose });
   }
 
-  if (intents.has('find') || looksLikeMedicineName(message)) {
+  // A general question ("what is your loyalty programme?") is not a medicine name: only search
+  // the catalogue for it when the visitor asked to find something or the catalogue knows the words.
+  const questionLike = message.trim().endsWith('?') || QUESTION_START.test(message.trim());
+  const generalQuestion = questionLike && !intents.has('find') && !search.results.length;
+  if (!generalQuestion && (intents.has('find') || looksLikeMedicineName(message))) {
     return searchReply(conversation, message, search, catalogue);
   }
 
-  // Nothing matched. After two misses in a row, offer a person instead of
-  // asking the visitor to rephrase yet again.
+  // Nothing matched. A close FAQ entry is offered on the first miss; after two
+  // misses in a row a person is offered instead of asking to rephrase again.
   const misses = state.misses + 1;
   if (misses >= 2) {
     remember(conversation, { misses: 0, offer: { type: 'handoff', slug: '' } });
-    return reply({ text: kb.stillStuckText(), quickActions: [kb.QUICK_ACTIONS.human, kb.QUICK_ACTIONS.find_medicine] });
+    return reply({ text: kb.stillStuckText(), quickActions: [kb.QUICK_ACTIONS.human, kb.QUICK_ACTIONS.find_medicine], faqMeta: { outcome: 'unanswered' } });
+  }
+  const strong = faq.ranked.filter((result) => result.score >= 0.5).map((result) => result.entry);
+  if (strong.length && words(message).length >= 2) return faqSuggestions(conversation, strong, misses);
+  // A real question we have no verified answer for: say so, never guess.
+  if (questionLike && words(message).length >= 3) {
+    remember(conversation, { misses, offer: { type: 'handoff', slug: '' } });
+    return reply({ text: FAQ_FALLBACK, quickActions: [kb.QUICK_ACTIONS.human, kb.QUICK_ACTIONS.faq, kb.QUICK_ACTIONS.find_medicine], faqMeta: { outcome: 'unanswered' } });
   }
   remember(conversation, { misses, offer: null });
-  return reply({ text: kb.fallbackText(seed), quickActions: contextActions(conversation) });
+  return reply({ text: kb.fallbackText(seed), quickActions: contextActions(conversation), faqMeta: { outcome: 'unanswered' } });
 }
 
 // ------------------------------------------------------------------ entry
@@ -633,6 +707,11 @@ export async function respond({ text = '', actionId = '', conversation, history 
 
   const state = stateOf(conversation);
   remember(conversation, { turns: state.turns + 1 });
+
+  if (isEmergency(message)) {
+    remember(conversation, { offer: null });
+    return reply({ text: EMERGENCY_ANSWER, quickActions: [kb.QUICK_ACTIONS.human] });
+  }
 
   if (needsMedicalRefusal(message)) {
     remember(conversation, { offer: null });

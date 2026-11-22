@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import SEO from '../components/SEO.jsx';
 import { useScrollAnimation, animationClasses } from '../utils/animations.jsx';
 import { CONTACT } from '../config/contact.js';
+import HelpOptions from '../components/HelpOptions.jsx';
+import OrderSteps from '../components/OrderSteps.jsx';
+import TopFaqs from '../components/faq/TopFaqs.jsx';
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 
 export default function Contact() {
   const [, setFormHover] = useState(false);
-  const [, setFaqHover] = useState([false, false, false]);
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('idle'); // idle | submitting | success | error
   const [errorMessage, setErrorMessage] = useState('');
@@ -43,10 +45,6 @@ export default function Contact() {
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
   const [formRef, formVisible] = useScrollAnimation(0.1, 200);
   const [contactInfoRef, contactInfoVisible] = useScrollAnimation(0.1, 300);
-  const [faqHeaderRef, faqHeaderVisible] = useScrollAnimation(0.1, 100);
-  const [faq1Ref, faq1Visible] = useScrollAnimation(0.1, 200);
-  const [faq2Ref, faq2Visible] = useScrollAnimation(0.1, 300);
-  const [faq3Ref, faq3Visible] = useScrollAnimation(0.1, 400);
 
 
 
@@ -66,7 +64,7 @@ export default function Contact() {
           >
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">Contact Us</h1>
             <p className="text-gray-600 text-base sm:text-lg mb-8 sm:mb-10 font-normal">
-              Have questions? We're here to help. Reach out to our team anytime.
+              Questions about a medicine, a quote or your delivery? Send us a message, chat with us, or call.
             </p>
           </div>
         </div>
@@ -220,80 +218,33 @@ export default function Contact() {
               
             </div>
             
-            <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 mt-6 text-center">
-              <svg className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-              </svg>
-              <div className="text-gray-600 text-sm sm:text-base">Map Location</div>
+            <div className="bg-sky-50/60 rounded-xl border border-sky-100 p-5 sm:p-6 mt-6">
+              <h3 className="font-semibold text-gray-900 mb-2">To help us reply faster, include</h3>
+              <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                <li>The medicine name, strength and quantity you need</li>
+                <li>Your country or delivery location</li>
+                <li>Your inquiry reference, if you already sent one (like CN-2026-0018)</li>
+              </ul>
+              <p className="mt-3 text-sm text-gray-600">
+                We reply by email. We haven't published fixed support hours, so we don't promise a reply time, but every message reaches our team.
+                Please don't send card numbers or passwords.
+              </p>
             </div>
           </div>
         </div>
       </div>
-      {/* FAQ Section */}
-      <div className="bg-sky-50/60 py-12 sm:py-16 lg:py-20 mt-8 sm:mt-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Business Details section moved back to About page */}
-          <div 
-            ref={faqHeaderRef}
-            className={`text-center mb-8 sm:mb-12 ${animationClasses.fadeUp(faqHeaderVisible)}`}
-          >
-            <h2 className="font-extrabold text-2xl sm:text-3xl lg:text-4xl text-gray-900 tracking-tight">
-              Frequently Asked Questions
-            </h2>
-          </div>
-          <div className="space-y-4 sm:space-y-6">
-            <div
-              ref={faq1Ref}
-              className={`${animationClasses.fadeUp(faq1Visible)}`}
-            >
-              <div
-                onMouseEnter={() => setFaqHover(([, b, c]) => [true, b, c])}
-                onMouseLeave={() => setFaqHover(([, b, c]) => [false, b, c])}
-                className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-7 shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-sky-200"
-              >
-              <div className="font-semibold text-gray-900 mb-2 text-sm sm:text-base lg:text-lg">How does ordering work?</div>
-              <div className="text-gray-600 text-xs sm:text-sm lg:text-base leading-relaxed">
-                CureNeed works on an inquiry basis rather than instant checkout. Submit an inquiry for the medicine you need from its product page, and our team will follow up directly by email or phone to confirm availability, pricing, and delivery details.
-              </div>
-            </div>
-            </div>
-            
-            <div
-              ref={faq2Ref}
-              className={`${animationClasses.fadeUp(faq2Visible)}`}
-            >
-              <div
-                onMouseEnter={() => setFaqHover(([a, , c]) => [a, true, c])}
-                onMouseLeave={() => setFaqHover(([a, , c]) => [a, false, c])}
-                className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-7 shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-sky-200"
-              >
-                <div className="font-semibold text-gray-900 mb-2 text-sm sm:text-base lg:text-lg">Do you ship to my location?</div>
-                <div className="text-gray-600 text-xs sm:text-sm lg:text-base leading-relaxed">
-                  Delivery availability depends on the medicine and your location. Submit an inquiry and our team will confirm delivery options for you before your order is finalized.
-                </div>
-              </div>
-            </div>
-            
-            <div
-              ref={faq3Ref}
-              className={`${animationClasses.fadeUp(faq3Visible)}`}
-            >
-              <div
-                onMouseEnter={() => setFaqHover(([a, b]) => [a, b, true])}
-                onMouseLeave={() => setFaqHover(([a, b]) => [a, b, false])}
-                className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 lg:p-7 shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-sky-200"
-              >
-                <div className="font-semibold text-gray-900 mb-2 text-sm sm:text-base lg:text-lg">Are prescriptions required?</div>
-                <div className="text-gray-600 text-xs sm:text-sm lg:text-base leading-relaxed">
-                  Some medications require a valid prescription. When you submit an inquiry for one of these, our team will follow up to arrange how to verify it — you can also have your doctor send it directly to us.
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Other ways to get help */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10">
+        <h2 className="font-extrabold text-2xl sm:text-3xl text-gray-900 tracking-tight text-center mb-6">Other ways to get help</h2>
+        <HelpOptions />
+      </div>
+      <div className="bg-sky-50/60 py-12 sm:py-16 mt-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          <OrderSteps />
+          <TopFaqs heading="Frequently asked questions" intro="Quick answers to what buyers ask us most." />
         </div>
       </div>
-      
+
       {/* Footer is rendered globally in App.jsx */}
     </div>
   );

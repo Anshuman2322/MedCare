@@ -12,6 +12,8 @@ import { logger } from '../../config/logger.js';
 import * as catalog from './catalog.js';
 import { businessFacts, BRAND } from './knowledgeBase.js';
 import { firstName } from './text.js';
+import { FAQ_FALLBACK, EMERGENCY_ANSWER } from '../../data/faq.js';
+import { loadFaqs } from '../faqStore.js';
 
 const MODEL = 'claude-opus-5-5';
 const MAX_TOOL_ROUNDS = 5;
@@ -54,6 +56,13 @@ Using the tools:
   - "inquiry_status" when they want to check an existing inquiry or order; "talk_to_team" when they ask for a person or a callback, or have a problem only the team can solve (returns, damaged or missing items, complaints).
 - Your text appears above the cards or form, so refer to them naturally ("Here it is", "Just fill in the short form below").`;
 
+// The verified FAQ answers, the same entries the /faq page shows.
+function faqKnowledge(faqs) {
+  return faqs
+    .map((item) => `Q: ${item.question}\nA: ${item.answer.replace(/\n+/g, ' ')}`)
+    .join('\n');
+}
+
 function catalogueIndex(catalogue) {
   return catalogue
     .map((medicine) => {
@@ -65,11 +74,16 @@ function catalogueIndex(catalogue) {
     .join('\n');
 }
 
-function systemPrompt(catalogue) {
+function systemPrompt(catalogue, faqs) {
   return `${INSTRUCTIONS}
 
 Business facts:
 ${businessFacts()}
+
+Verified FAQ answers (use these first for policy questions, paraphrase naturally, never contradict them):
+${faqKnowledge(faqs)}
+
+If a question is not covered by the facts or the FAQ, say exactly: "${FAQ_FALLBACK}" and offer talk_to_team. In a medical emergency, say: "${EMERGENCY_ANSWER}" and nothing else. Never pretend to check an order, payment, tracking or stock; you cannot see them. Offer a person (talk_to_team) for refunds, cancellations, legal threats, complaints, damaged or missing items, payment problems and anything urgent.
 
 Catalogue (slug | name | category | listed price | stock):
 ${catalogueIndex(catalogue)}`;
@@ -253,7 +267,7 @@ export async function aiRespond({ message, conversation, history = [] }) {
     const session = { catalogue, display: null };
     const messages = [...toApiHistory(history), { role: 'user', content: message }];
     const system = [
-      { type: 'text', text: systemPrompt(catalogue), cache_control: { type: 'ephemeral' } },
+      { type: 'text', text: systemPrompt(catalogue, await loadFaqs()), cache_control: { type: 'ephemeral' } },
       { type: 'text', text: situation(conversation, catalogue) },
     ];
 

@@ -7,6 +7,7 @@ import Inquiry from '../models/Inquiry.js';
 import { sendContactNotification } from './contactController.js';
 import { respond, greeting, STATUS_LABELS, inquiryConfirmationText } from '../services/chat/engine.js';
 import { aiEnabled } from '../services/chat/ai.js';
+import { logFaqEvent } from '../services/faqInsights.js';
 import { findMedicineBySlug } from '../services/chat/catalog.js';
 import {
   SUPPORT_ONLY,
@@ -248,6 +249,8 @@ export async function postMessage(req, res, next) {
 
     const answer = await respond({ text, actionId, conversation, history });
     conversation.awaiting = answer.awaiting || '';
+    // What the visitor asked and how the FAQ handled it, for the admin panel (never blocks the reply).
+    if (text && answer.faqMeta) logFaqEvent({ text, ...answer.faqMeta, conversation });
 
     const assistantMessage = await appendMessage(conversation, {
       role: 'assistant',

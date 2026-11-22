@@ -3,6 +3,8 @@
 // a product), so detect() returns all of them and the engine decides which one
 // leads. Patterns cover English and common Hinglish.
 
+import { wordSimilarity } from './text.js';
+
 const INTENTS = {
   restart: [
     /^(?:new|new chat|new conversation|start (?:a )?new(?: chat| conversation)?|start over|start again|restart|reset|clear(?: chat)?|begin again|fresh start|naya chat|new topic)[\s.!]*$/i,
@@ -133,6 +135,15 @@ export function detectCountry(text) {
     }
   }
   const named = value.match(/\b(?:ship|deliver|send|export|supply)\w*\s+(?:\w+\s+)?(?:to|in)\s+([a-z]{3,}(?:\s+[a-z]{3,})?)\b/);
+  // A misspelt supplied country ("canda", "austrlia") is still that country.
+  if (named) {
+    const typed = named[1].split(' ')[0];
+    for (const [key, aliases] of Object.entries(COUNTRIES)) {
+      if (aliases.some((alias) => alias.length >= 5 && !alias.includes(' ') && wordSimilarity(typed, alias) >= 0.8)) {
+        return { known: true, label: COUNTRY_LABELS[key] || key.replace(/\b\w/g, (c) => c.toUpperCase()) };
+      }
+    }
+  }
   if (named && !/^(?:my|me|you|your|us|the|our|which|what|this|that|home|india)\b/.test(named[1])) {
     return { known: false, label: named[1].replace(/\b\w/g, (c) => c.toUpperCase()) };
   }

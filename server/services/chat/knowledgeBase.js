@@ -24,6 +24,7 @@ export const QUICK_ACTIONS = {
   how_it_works: { id: 'how_it_works', label: 'How Ordering Works', icon: '🧭' },
   shipping: { id: 'shipping', label: 'Shipping & Delivery', icon: '🚚' },
   prescription: { id: 'prescription', label: 'Prescription Help', icon: '📋' },
+  faq: { id: 'faq', label: 'FAQs', icon: '❓' },
   human: { id: 'human', label: 'Talk to Our Team', icon: '👩‍💼' },
   product_info: { id: 'product_info', label: 'Product Details', icon: 'ℹ️' },
   check_availability: { id: 'check_availability', label: 'Check Availability', icon: '✅' },
@@ -34,7 +35,7 @@ export const QUICK_ACTIONS = {
 
 const pick = (...ids) => ids.map((id) => QUICK_ACTIONS[id]).filter(Boolean);
 
-export const HOME_ACTIONS = pick('find_medicine', 'browse', 'submit_inquiry', 'check_inquiry', 'shipping', 'human');
+export const HOME_ACTIONS = pick('find_medicine', 'browse', 'submit_inquiry', 'check_inquiry', 'shipping', 'faq', 'human');
 export const PRODUCT_ACTIONS = pick('price', 'product_info', 'check_availability', 'submit_inquiry', 'prescription', 'human');
 export const FOLLOW_UP_ACTIONS = pick('find_medicine', 'submit_inquiry', 'human');
 export const SUPPORT_ONLY = pick('human');
