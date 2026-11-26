@@ -17,6 +17,8 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+# Public production API URL for `vite build` (no secrets): must be committed.
+!.env.production
 
 # Editor/OS
 .DS_Store
