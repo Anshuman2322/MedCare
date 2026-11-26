@@ -257,4 +257,6 @@ coverage.xml
 !admin/.env.example
 # The storefront's public production API URL (no secrets), see client/.env.production.
 !client/.env.production
+# The admin panel's production API setting (no secrets), see admin/.env.production.
+!admin/.env.production
 e2e/.auth/
