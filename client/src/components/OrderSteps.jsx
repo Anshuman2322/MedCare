@@ -10,11 +10,11 @@ const STEPS = [
 export default function OrderSteps({ heading = 'How ordering works' }) {
   return (
     <section aria-labelledby="order-steps-heading">
-      <h2 id="order-steps-heading" className="mb-6 text-center text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">{heading}</h2>
+      <h2 id="order-steps-heading" className="cn-reveal mb-6 text-center text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">{heading}<span className="cn-title-rule" aria-hidden="true" /></h2>
       <ol className="grid gap-4 sm:grid-cols-3">
-        {STEPS.map((step) => (
-          <li key={step.n} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 font-bold text-white" aria-hidden="true">{step.n}</span>
+        {STEPS.map((step, index) => (
+          <li key={step.n} className="cn-glow-card cn-reveal rounded-xl border border-gray-200 bg-white p-5 shadow-sm" style={{ '--cn-d': `${index * 110}ms` }}>
+            <span className="cn-icon-glow mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 font-bold text-white" aria-hidden="true">{step.n}</span>
             <h3 className="mb-1 font-semibold text-gray-900">{step.title}</h3>
             <p className="text-sm leading-relaxed text-gray-600">{step.text}</p>
           </li>

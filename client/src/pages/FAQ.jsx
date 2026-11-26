@@ -81,7 +81,7 @@ function Item({ item, open, onToggle, byId, onOpenRelated, categoryLabel }) {
   const panelId = `faq-panel-${item.id}`;
   const related = (item.related || []).map((id) => byId.get(id)).filter(Boolean);
   return (
-    <li id={`faq-${item.id}`} className="rounded-xl border border-gray-200 bg-white shadow-sm scroll-mt-28">
+    <li id={`faq-${item.id}`} data-open={open ? 'true' : 'false'} className="cn-glow-soft rounded-xl border border-gray-200 bg-white shadow-sm scroll-mt-28">
       <h3>
         <button
           type="button"
@@ -246,9 +246,11 @@ export default function FAQ() {
         </Helmet>
       )}
 
-      <div className="w-full bg-sky-50/60">
+      <div className="cn-hero w-full bg-sky-50/60">
+        <span className="cn-hero-grid" aria-hidden="true" />
         <div className="mx-auto max-w-4xl px-4 pb-8 pt-8 text-center sm:px-6 sm:pt-12 lg:px-8">
-          <h1 className="mb-2 text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">Frequently asked questions</h1>
+          <span className="cn-eyebrow">Help centre</span>
+          <h1 className="mb-2 mt-4 text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">Frequently asked <span className="cn-accent">questions</span></h1>
           <p className="mb-6 text-sm text-gray-600 sm:text-base">Quick answers about ordering, prices, prescriptions, shipping and support.</p>
           <div className="mx-auto max-w-xl">
             <label htmlFor="faq-search" className="sr-only">
@@ -261,7 +263,7 @@ export default function FAQ() {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search, e.g. “shipping to Canada” or “refund”"
-                className="w-full rounded-full border border-gray-200 bg-white py-3 pl-5 pr-12 text-base shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                className="w-full rounded-full border border-gray-200 bg-white py-3 pl-5 pr-12 text-base shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:shadow-[0_0_32px_-10px_rgba(16,185,129,0.55)] transition-shadow"
                 autoComplete="off"
               />
               {query && (
@@ -302,7 +304,7 @@ export default function FAQ() {
                     aria-pressed={category === item.id}
                     onClick={() => setCategory(item.id)}
                     className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                      category === item.id ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-emerald-400'
+                      category === item.id ? 'border-emerald-600 bg-emerald-600 text-white shadow-[0_0_18px_-4px_rgba(16,185,129,0.65)]' : 'border-gray-200 bg-white text-gray-700 hover:border-emerald-400'
                     }`}
                   >
                     <span aria-hidden="true">{item.icon}</span> {item.label}
@@ -371,13 +373,13 @@ export default function FAQ() {
               <Link to="/about" className="text-emerald-700 hover:underline">About CureNeed</Link>
             </nav>
 
-            <section aria-labelledby="faq-support" className="rounded-2xl bg-emerald-50 p-6 text-center sm:p-8">
+            <section aria-labelledby="faq-support" className="cn-hero cn-reveal rounded-2xl bg-emerald-50 p-6 text-center sm:p-8">
               <h2 id="faq-support" className="mb-1 text-xl font-bold text-gray-900">
                 Still need help?
               </h2>
               <p className="mb-4 text-sm text-gray-600 sm:text-base">Our team will answer anything that is not covered here.</p>
               <div className="flex flex-wrap items-center justify-center gap-3">
-                <button type="button" onClick={openChat} className="rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">
+                <button type="button" onClick={openChat} className="cn-btn-glow rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">
                   💬 Chat with us
                 </button>
                 <a href={`mailto:${support.email}`} className="rounded-full border border-emerald-600 px-5 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-white">

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const openChat = () => window.dispatchEvent(new Event('cureneed:open-chat'));
-const card = 'flex h-full flex-col rounded-xl border border-gray-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md';
+const card = 'cn-glow-card cn-reveal flex h-full flex-col rounded-xl border border-gray-200 bg-white p-5 text-left shadow-sm';
 
 /** Ways to get help besides the form: live chat, the FAQ, the shipping policy and the shop. */
 export default function HelpOptions() {

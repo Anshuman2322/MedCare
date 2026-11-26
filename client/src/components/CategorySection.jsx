@@ -15,13 +15,15 @@ const CategorySection = () => {
   );
 
   return (
-    <section className="w-full bg-[#F8FAFC]">
+    <section className="cn-hero w-full bg-[#F8FAFC]">
+      <span className="cn-hero-grid" aria-hidden="true" />
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-16 sm:py-20">
         <div
           ref={headerRef}
           className={`text-center mb-12 sm:mb-14 ${animationClasses.fadeUp(headerVisible)}`}
         >
-          <h2 className="text-[32px] font-bold text-[#0F172A] tracking-tight">Shop by Category</h2>
+          <span className="cn-eyebrow">Therapy areas</span>
+          <h2 className="mt-4 text-[32px] font-bold text-[#0F172A] tracking-tight">Shop by <span className="cn-accent">Category</span><span className="cn-title-rule" aria-hidden="true" /></h2>
           <p className="mt-3 text-base font-medium text-[#64748B]">
             Browse our catalogue by therapy area.
           </p>

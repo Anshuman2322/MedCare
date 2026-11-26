@@ -17,7 +17,7 @@ const MAX_SITE_CARDS = 4;
 // Takes the shared review shape from reviews/combined.js.
 function ReviewCard({ review }) {
   return (
-    <figure className="flex h-full flex-col rounded-2xl border border-slate-100 bg-white p-6 shadow-[0_4px_20px_rgba(15,23,42,0.05)] transition-shadow duration-300 hover:shadow-[0_14px_32px_rgba(16,185,129,0.14)]">
+    <figure className="cn-glow-card flex h-full flex-col rounded-2xl border border-slate-100 bg-white p-6 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
       {/* Fixed height so stars and the quote mark line up across cards */}
       <div className="flex h-7 items-center justify-between gap-3">
         {review.rating != null ? (
@@ -79,7 +79,7 @@ export default function Testimonials() {
             Buyer reviews
           </div>
           <h2 id="testimonials-title" className="mt-4 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            What our buyers say
+            What our <span className="cn-accent">buyers</span> say
           </h2>
           <p className="mt-3 text-gray-600">Real reviews from our buyers, wherever they shop with us.</p>
           <button

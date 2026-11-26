@@ -56,13 +56,15 @@ export default function Contact() {
         path="/contact"
       />
       {/* Top Section */}
-      <div className="w-full bg-sky-50/60 pb-2">
+      <div className="cn-hero w-full bg-sky-50/60 pb-2">
+        <span className="cn-hero-grid" aria-hidden="true" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12">
           <div 
             ref={headerRef}
             className={`text-center ${animationClasses.fadeUp(headerVisible)}`}
           >
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">Contact Us</h1>
+            <span className="cn-eyebrow">Our team replies by email</span>
+            <h1 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">Contact <span className="cn-accent">Us</span></h1>
             <p className="text-gray-600 text-base sm:text-lg mb-8 sm:mb-10 font-normal">
               Questions about a medicine, a quote or your delivery? Send us a message, chat with us, or call.
             </p>
@@ -80,7 +82,7 @@ export default function Contact() {
             <div
               onMouseEnter={() => setFormHover(true)}
               onMouseLeave={() => setFormHover(false)}
-              className="bg-white rounded-xl border border-gray-200 shadow-lg p-6 sm:p-8 lg:p-10 transition-all duration-200 hover:shadow-xl hover:-translate-y-1 hover:border-sky-200"
+              className="cn-glow-soft bg-white rounded-xl border border-gray-200 shadow-lg p-6 sm:p-8 lg:p-10"
             >
               <form onSubmit={handleSubmit}>
                 <h2 className="font-bold text-xl sm:text-2xl text-gray-900 mb-6">Send us a message</h2>
@@ -135,7 +137,7 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
-                  className="w-full bg-emerald-500 text-white font-semibold text-sm sm:text-base rounded-lg py-3 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors disabled:opacity-60"
+                  className="cn-btn-glow w-full bg-emerald-500 text-white font-semibold text-sm sm:text-base rounded-lg py-3 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-60"
                 >
                   {status === 'submitting' ? 'Sending...' : 'Send Message'}
                 </button>
@@ -155,7 +157,7 @@ export default function Contact() {
             
             <div className="space-y-4 sm:space-y-5">
               <div className="flex items-start gap-3 sm:gap-4">
-                <div className="bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
+                <div className="cn-icon-glow bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="5" width="18" height="14" rx="3"/>
                     <path d="M3 7l9 6 9-6"/>
@@ -169,7 +171,7 @@ export default function Contact() {
                 </div>
               </div>
               <div className="flex items-start gap-3 sm:gap-4">
-                <div className="bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
+                <div className="cn-icon-glow bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                   </svg>
@@ -183,7 +185,7 @@ export default function Contact() {
               </div>
               
               <div className="flex items-start gap-3 sm:gap-4">
-                <div className="bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
+                <div className="cn-icon-glow bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -202,7 +204,7 @@ export default function Contact() {
                 </div>
               </div>
               <div className="flex items-start gap-3 sm:gap-4">
-                <div className="bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
+                <div className="cn-icon-glow bg-emerald-50 text-emerald-600 rounded-lg p-2 sm:p-2.5 flex items-center justify-center mt-0.5">
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/><path d="M6 22v-2a6 6 0 0112 0v2"/>
                   </svg>

@@ -103,7 +103,7 @@ export default function ShopByCategory() {
 
   // Animation refs
   const [headerRef, headerVisible] = useScrollAnimation(0.1);
-  const [filtersRef, filtersVisible] = useScrollAnimation(0.1, 200);
+  const [filtersRef] = useScrollAnimation(0.1, 200);
   const [productsRef] = useScrollAnimation(0.1, 400);
 
   // Derive filter values dynamically from data
@@ -193,10 +193,12 @@ export default function ShopByCategory() {
         {/* page header moved above the content so it appears under the logo/nav */}
         <div 
           ref={headerRef}
-          className={`page-header ${animationClasses.fadeUp(headerVisible)}`}
+          className={`page-header cn-hero shop-hero ${animationClasses.fadeUp(headerVisible)}`}
         >
+          <span className="cn-hero-grid" aria-hidden="true" />
           <div className="left">
-            <h1>Shop Medicines</h1>
+            <span className="cn-eyebrow shop-eyebrow">Branded generics from Indian manufacturers</span>
+            <h1>Shop <span className="cn-accent">Medicines</span></h1>
             <p className="muted">Browse our complete range of healthcare products</p>
           </div>
 
@@ -305,7 +307,7 @@ export default function ShopByCategory() {
         <div className="content">
           <aside 
             ref={filtersRef}
-            className={`filters-card ${showFilters ? 'filters-card-mobile-open' : ''} ${animationClasses.fadeLeft(filtersVisible)}`}
+            className={`filters-card ${showFilters ? 'filters-card-mobile-open' : ''}`}
             onClick={(e) => {
               // Close when clicking backdrop on mobile
               if (e.target === e.currentTarget && window.innerWidth <= 768) {

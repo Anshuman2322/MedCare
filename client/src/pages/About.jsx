@@ -23,12 +23,14 @@ const HeaderHero = () => {
   const overall = useOverallRating();
 
   return (
-    <section className="bg-sky-50 border-b border-gray-100">
+    <section className="cn-hero bg-sky-50 border-b border-gray-100">
+      <span className="cn-hero-grid" aria-hidden="true" />
       <div 
         ref={ref}
         className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-20 sm:py-24 text-center ${animationClasses.fadeUp(isVisible)}`}
       >
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900">About CureNeed</h1>
+        <span className="cn-eyebrow">IndiaMART TrustSEAL verified</span>
+        <h1 className="mt-5 text-4xl sm:text-5xl font-extrabold text-gray-900">About <span className="cn-accent">CureNeed</span></h1>
         <p className="mt-4 max-w-3xl mx-auto text-gray-600 text-base sm:text-lg leading-7">
           Supplying branded generic medicines to buyers across the USA, UK, Canada,
           <br className="hidden sm:block" />
@@ -95,7 +97,7 @@ const FeatureCard = ({ icon, label, index }) => (
     viewport={{ once: true, amount: 0.4 }}
     transition={{ duration: 0.5, delay: 0.15 + index * 0.1, ease: 'easeOut' }}
     whileHover={{ y: -4 }}
-    className="flex h-full items-center gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.06)] transition-shadow duration-300 hover:shadow-[0_14px_32px_rgba(16,185,129,0.16)] cursor-pointer"
+    className="cn-glow-soft flex h-full items-center gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.06)] transition-shadow duration-300 hover:shadow-[0_14px_32px_rgba(16,185,129,0.16)] cursor-pointer"
   >
     <motion.div
       whileHover={{ scale: 1.12 }}
@@ -204,13 +206,13 @@ const ValuesSection = () => {
             headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Core Values</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Core <span className="cn-accent">Values</span><span className="cn-title-rule" aria-hidden="true" /></h2>
           <p className="text-gray-600 max-w-2xl mx-auto">These principles guide everything we do</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           <div 
             ref={card1Ref}
-            className={`bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 text-center sm:text-left hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`cn-glow-soft bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 text-center sm:text-left hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card1Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
@@ -226,7 +228,7 @@ const ValuesSection = () => {
           </div>
           <div 
             ref={card2Ref}
-            className={`bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 text-center sm:text-left hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`cn-glow-soft bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 text-center sm:text-left hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card2Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
@@ -241,7 +243,7 @@ const ValuesSection = () => {
           </div>
           <div 
             ref={card3Ref}
-            className={`bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 text-center sm:text-left hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`cn-glow-soft bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 text-center sm:text-left hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card3Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
@@ -296,7 +298,7 @@ const BusinessDetailsSection = () => {
           {details.map((d) => (
             <div
               key={d.label}
-              className={`bg-white rounded-xl border p-4 shadow-sm ${
+              className={`cn-glow-soft bg-white rounded-xl border p-4 shadow-sm ${
                 d.highlight ? 'border-emerald-300 ring-2 ring-emerald-400 bg-emerald-50/40 sm:col-span-2' : 'border-gray-200'
               }`}
             >
@@ -439,18 +441,18 @@ const TrustSection = () => {
             headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Trust CureNeed</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Trust <span className="cn-accent">CureNeed</span><span className="cn-title-rule" aria-hidden="true" /></h2>
           <p className="text-gray-600 max-w-2xl mx-auto">Facts you can check for yourself</p>
         </div>
         {/* Standard Trust Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-items-center gap-6 mb-16">
           <div 
             ref={card1Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`cn-glow-soft bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card1Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <div className="mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
+            <div className="cn-icon-glow mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
               <svg className="w-8 h-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V7l-8-5-8 5v5c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">TrustSEAL Verified</h3>
@@ -458,11 +460,11 @@ const TrustSection = () => {
           </div>
           <div 
             ref={card2Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`cn-glow-soft bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card2Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <div className="mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
+            <div className="cn-icon-glow mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
               <svg className="w-8 h-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 010 18a14 14 0 010-18z"/></svg>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Registered Exporter</h3>
@@ -470,11 +472,11 @@ const TrustSection = () => {
           </div>
           <div 
             ref={card3Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`cn-glow-soft bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card3Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <div className="mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
+            <div className="cn-icon-glow mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
               <svg className="w-8 h-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.9 6.4 20l1.4-6.2L3 9.5l6.4-.6z"/></svg>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Rated {overall.average.toFixed(1)} / 5</h3>
@@ -487,11 +489,11 @@ const TrustSection = () => {
           </div>
           <div 
             ref={card4Ref}
-            className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
+            className={`cn-glow-soft bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center w-full max-w-xs hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer ${
               card4Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <div className="mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
+            <div className="cn-icon-glow mx-auto h-16 w-16 rounded-full bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center mb-6">
               <svg className="w-8 h-8 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><path d="M16 4.5a3.5 3.5 0 010 7"/><path d="M18.5 14.5a6.5 6.5 0 013 5.5"/></svg>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Buyers in {countries.length}+ Countries</h3>
@@ -520,7 +522,7 @@ const CTASection = () => {
             <p className="mt-2 text-gray-600">Questions about products or orders? Our team is ready to assist.</p>
           </div>
           <div className="flex gap-3">
-            <a href="/contact" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow hover:bg-emerald-700 transition-colors">Contact Support</a>
+            <a href="/contact" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow hover:bg-emerald-700 cn-btn-glow">Contact Support</a>
             <a href="/shop" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-emerald-200 bg-white text-emerald-700 text-sm font-medium hover:bg-emerald-50 hover:border-emerald-400 transition-colors">Shop Now</a>
           </div>
         </div>
@@ -639,7 +641,7 @@ const Stat = ({ value, decimals = 0, suffix = '', text, label }) => {
 };
 
 const ValueCard = ({ icon, title, desc }) => (
-  <div className="rounded-xl border border-gray-100 bg-white p-6 hover:shadow-md transition-shadow">
+  <div className="cn-glow-card rounded-xl border border-gray-100 bg-white p-6">
     <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-50 ring-1 ring-emerald-100 text-emerald-600">
       {icon}
     </div>
@@ -699,7 +701,7 @@ export default function About() {
               <p className="mt-2 text-gray-600">Questions about products or orders? Our team is ready to assist.</p>
             </div>
             <div className="flex gap-3">
-              <a href="/contact" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow hover:bg-emerald-700 transition-colors">Contact Support</a>
+              <a href="/contact" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow hover:bg-emerald-700 cn-btn-glow">Contact Support</a>
               <a href="/shop" className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-emerald-200 bg-white text-emerald-700 text-sm font-medium hover:bg-emerald-50 hover:border-emerald-400 transition-colors">Shop Now</a>
             </div>
           </div>

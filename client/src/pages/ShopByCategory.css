@@ -147,3 +147,15 @@
   .product-summary-section .sort-section label { white-space: nowrap; }
   .product-summary-section .sort-section select { flex: 1 1 auto; min-width: 0; }
 }
+/* Header banner: soft emerald/sky light (cn-hero in styles/effects.css). */
+.page-header.shop-hero {
+  padding: 28px 32px;
+  border-radius: 20px;
+  border: 1px solid #e3f2ec;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 45%, #f0f9ff 100%);
+  box-shadow: 0 18px 40px -28px rgba(5, 150, 105, 0.35);
+}
+.page-header.shop-hero .shop-eyebrow { align-self: flex-start; margin-bottom: 12px; }
+@media (max-width: 1024px) {
+  .page-header.shop-hero { margin-left: 16px; margin-right: 16px; padding: 20px; }
+}

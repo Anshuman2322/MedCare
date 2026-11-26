@@ -41,7 +41,7 @@ const FeaturedMedicines = () => {
           className={`flex items-start justify-between mb-8 md:mb-10 ${animationClasses.fadeUp(headerVisible)}`}
         >
           <div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Featured Medicines</h2>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Featured <span className="cn-accent">Medicines</span></h2>
             <p className="mt-2 text-gray-600">A selection from our catalogue</p>
           </div>
           <div className="hidden sm:block">

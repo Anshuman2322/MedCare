@@ -19,7 +19,7 @@ export default function CategoryCard({ name, description, Illustration, href, ta
         to={href}
         tabIndex={tabIndex}
         aria-label={`Browse ${name} category`}
-        className="flex h-full w-full flex-col rounded-[24px] border border-[#E5E7EB] bg-white p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-all duration-300 ease-out group-hover:border-[#16A34A] group-hover:shadow-[0_20px_40px_-14px_rgba(16,163,74,0.28)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2"
+        className="cn-glow-soft flex h-full w-full flex-col rounded-[24px] border border-[#E5E7EB] bg-white p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-all duration-300 ease-out group-hover:border-[#16A34A] group-hover:shadow-[0_20px_40px_-14px_rgba(16,163,74,0.28)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2"
       >
         <div className="mb-5 h-20 w-20 shrink-0 transition-transform duration-300 ease-out group-hover:scale-105">
           <Illustration />

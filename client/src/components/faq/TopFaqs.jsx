@@ -30,13 +30,13 @@ export default function TopFaqs({ heading = 'Quick answers', intro = '' }) {
 
   return (
     <div>
-      <div className="mb-6 text-center">
+      <div className="cn-reveal mb-6 text-center">
         <h2 className="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">{heading}</h2>
         {intro && <p className="mt-2 text-sm text-gray-600 sm:text-base">{intro}</p>}
       </div>
       <div className="space-y-3">
         {items.map((item) => (
-          <details key={item.id} className="group rounded-xl border border-gray-200 bg-white shadow-sm">
+          <details key={item.id} className="cn-glow-soft group rounded-xl border border-gray-200 bg-white shadow-sm">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 font-semibold text-gray-900 sm:px-5">
               {item.question}
               <span aria-hidden="true" className="text-emerald-600 transition-transform group-open:rotate-180">▾</span>
