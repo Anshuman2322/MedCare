@@ -85,7 +85,7 @@ export default function Categories() {
           {!loading && categories.length === 0 && <div className="text-sm text-slate-500">No categories yet.</div>}
           {!loading && categories.length > 0 && (
             <div className="overflow-x-auto mt-2">
-              <table className="min-w-full text-sm">
+              <table className="cn-stack min-w-full text-sm">
                 <thead>
                   <tr className="text-left text-slate-600">
                     <th className="pb-3 pr-4">Category</th>

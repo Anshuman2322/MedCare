@@ -35,3 +35,9 @@
 @keyframes cn-nudge { 0%,88%,100% { transform: none; } 92% { transform: translateX(-5px); } 96% { transform: translateX(0); } }
 @keyframes cn-wave { 0%,60%,100% { transform: rotate(0); } 10%,30% { transform: rotate(16deg); } 20%,40% { transform: rotate(-10deg); } 50% { transform: rotate(8deg); } }
 @media (prefers-reduced-motion: reduce) { .cn-fab, .cn-ring, .cn-shine::after, .cn-dots i, .cn-online, .cn-label, .cn-wave { animation: none !important; } .cn-ring { display: none; } }
+
+/* Phones: a slightly smaller launcher so it covers less of the page. */
+@media (max-width: 639px) {
+  .cn-launcher { right: 1rem; bottom: 4.5rem; }
+  .cn-fab { height: 3.5rem; width: 3.5rem; }
+}

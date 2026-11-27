@@ -65,6 +65,11 @@ export default function BrandMarquee() {
         </h2>
       </div>
       <div className="brand-marquee" style={{ '--marquee-duration': duration }}>
+        {!brands && (
+          <div className="brand-marquee-skeleton" aria-hidden="true">
+            {Array.from({ length: 8 }, (_, i) => <span key={i} />)}
+          </div>
+        )}
         {brands && (
           <div className="brand-marquee-track">
             <ul className="brand-marquee-list">

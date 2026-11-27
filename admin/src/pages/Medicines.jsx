@@ -85,6 +85,11 @@ export default function Medicines() {
     );
   }, [medicines, search]);
 
+  // Long catalogues are shown 30 at a time (search still covers everything).
+  const PAGE_SIZE = 30;
+  const [visible, setVisible] = useState(PAGE_SIZE);
+  useEffect(() => setVisible(PAGE_SIZE), [search]);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -119,14 +124,14 @@ export default function Medicines() {
             className="w-full sm:w-80 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
           />
           <div className="text-sm text-slate-500">
-            Showing {filtered.length} of {medicines.length} items
+            Showing {Math.min(visible, filtered.length)} of {filtered.length}{filtered.length !== medicines.length ? ` (${medicines.length} in total)` : ''} items
           </div>
         </div>
 
         {error && <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700">{error}</div>}
 
         <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
+          <table className="cn-stack min-w-full text-sm">
             <thead>
               <tr className="text-left text-slate-600">
                 <th className="pb-3 pr-4">Image</th>
@@ -150,7 +155,7 @@ export default function Medicines() {
                 </tr>
               )}
               {!loading &&
-                filtered.map((med) => {
+                filtered.slice(0, visible).map((med) => {
                   const id = med._id || med.id;
                   const variantPrice = med?.variants?.[0]?.price ?? med.price;
                   const isLive = med.isPublished !== false;
@@ -215,6 +220,17 @@ export default function Medicines() {
             </tbody>
           </table>
         </div>
+        {!loading && filtered.length > visible && (
+          <div className="mt-4 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setVisible((count) => count + PAGE_SIZE)}
+              className="rounded-lg border border-emerald-200 bg-white px-5 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
+            >
+              Show {Math.min(PAGE_SIZE, filtered.length - visible)} more
+            </button>
+          </div>
+        )}
       </div>
 
       <Modal

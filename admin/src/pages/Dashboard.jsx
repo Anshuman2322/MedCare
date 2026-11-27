@@ -104,7 +104,7 @@ export default function Dashboard() {
 
         {!error && (
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
+            <table className="cn-stack min-w-full text-sm">
               <thead>
                 <tr className="text-left text-slate-600">
                   <th className="pb-3 pr-4">Name</th>

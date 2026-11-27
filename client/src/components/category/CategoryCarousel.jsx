@@ -68,13 +68,14 @@ export default function CategoryCarousel({ categories }) {
     }
   };
 
-  const loopedSlides = useMemo(
-    () => [
-      ...categories.map((c) => ({ ...c, key: `${c.name}-a`, hidden: false })),
-      ...categories.map((c) => ({ ...c, key: `${c.name}-b`, hidden: true })),
-    ],
-    [categories]
-  );
+  // At least two copies, and enough of them that the row (274px per card)
+  // is over ~3,200px wide, so a short list never leaves an empty gap.
+  const loopedSlides = useMemo(() => {
+    const copies = Math.max(2, Math.ceil(3200 / Math.max(1, categories.length * 274)));
+    return Array.from({ length: copies }, (_, copy) =>
+      categories.map((c) => ({ ...c, key: `${c.name}-${copy}`, hidden: copy > 0 }))
+    ).flat();
+  }, [categories]);
 
   return (
     <div>

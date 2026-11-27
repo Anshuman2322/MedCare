@@ -220,7 +220,7 @@ export default function Inquiries() {
 
         {!empty && (
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
+            <table className="cn-stack min-w-full text-sm">
               <thead className="sticky top-0 bg-white shadow-[0_1px_0_rgba(0,0,0,0.04)]">
                 <tr className="text-left text-slate-600">
                   <th className="pb-3 pr-4 font-semibold">Ref</th>

@@ -159,3 +159,24 @@
 @media (max-width: 1024px) {
   .page-header.shop-hero { margin-left: 16px; margin-right: 16px; padding: 20px; }
 }
+
+/* Grid / list switch: proper 36px buttons. */
+.view-toggle { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid #e6edf2; border-radius: 10px; background: #fff; }
+.view-toggle-btn { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent; color: #64748b; cursor: pointer; transition: background-color .2s, color .2s; }
+.view-toggle-btn:hover { color: #047857; }
+.view-toggle-btn.is-active { background: #ecfdf5; color: #047857; box-shadow: inset 0 0 0 1px #a7f3d0; }
+.view-toggle-btn:focus-visible { outline: 2px solid #10b981; outline-offset: 2px; }
+
+/* Phones: two products per row (one card used to fill the whole screen). */
+@media (max-width: 640px) {
+  .shop-grid:not(.shop-grid--list) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .shop-grid:not(.shop-grid--list) .card-image { padding: 10px; }
+  .shop-grid:not(.shop-grid--list) .card-body { padding: 10px 10px 12px; gap: 4px; }
+  .shop-grid:not(.shop-grid--list) .card-title { font-size: 14px; }
+  .shop-grid:not(.shop-grid--list) .card-pack { font-size: 12px; }
+  .shop-grid:not(.shop-grid--list) .card-actions { gap: 6px; padding-top: 8px; }
+  .shop-grid:not(.shop-grid--list) .card-btn { padding: 9px 6px; font-size: 12.5px; min-height: 40px; }
+  .shop-grid:not(.shop-grid--list) .card-btn-cart { padding: 9px 10px; }
+  .shop-grid:not(.shop-grid--list) .card-btn-cart span { display: none; }
+  .shop-grid:not(.shop-grid--list) .card-favorite { top: 6px; right: 6px; }
+}

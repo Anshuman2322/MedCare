@@ -31,3 +31,9 @@
 }
 @media(max-width:640px){.brand-marquee-section{padding:26px 0 24px}.brand-marquee-list{gap:30px;padding-right:30px}.brand-logo span{font-size:13px}}
 @media(max-width:640px) and (prefers-reduced-motion:reduce){.brand-marquee-list{column-gap:24px;padding-right:0}}
+
+/* Loading placeholders (same height as the brand row). */
+.brand-marquee-skeleton{display:flex;justify-content:center;gap:28px;overflow:hidden;padding:4px 0}
+.brand-marquee-skeleton span{flex:0 0 auto;width:118px;height:26px;border-radius:999px;background:linear-gradient(90deg,#eef4f1 0%,#f8fbfa 50%,#eef4f1 100%);background-size:200% 100%;animation:brand-skeleton 1.4s ease-in-out infinite}
+@keyframes brand-skeleton{0%{background-position:100% 0}100%{background-position:-100% 0}}
+@media (prefers-reduced-motion:reduce){.brand-marquee-skeleton span{animation:none}}

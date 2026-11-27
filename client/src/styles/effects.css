@@ -275,3 +275,14 @@ html.cn-reveal-on .cn-reveal-zoom[data-in='anim'] { animation-name: cn-rise-zoom
     transform: none;
   }
 }
+
+/* ------------------------------------------------------------- tall screens */
+/* Phones in "desktop site" mode report a ~980 x 2100px viewport, so full-height
+   page wrappers (min-h-screen / 100vh) left most of a screen empty under short
+   pages. Cap them there; normal phones, tablets and computers are unchanged. */
+@media (max-aspect-ratio: 3/4) and (min-width: 700px) {
+  .min-h-screen,
+  .root-bg {
+    min-height: min(100vh, 1100px);
+  }
+}

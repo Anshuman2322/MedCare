@@ -384,7 +384,7 @@ export default function MedicineDetails() {
                 <div className="text-sm text-gray-600">Stock: {selectedVariant?.stock ?? 'N/A'}</div>
               </div>
 
-              <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8 pt-6 text-sm">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-6 sm:gap-x-8 pt-6 text-sm">
                 {medicine?.manufacturer && (
                   <div>
                     <div className="text-xs text-gray-500 uppercase tracking-wide">Manufacturer</div>

@@ -166,7 +166,7 @@ export default function Contact() {
                 <div>
                   <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Email</div>
                   <div className="text-gray-700 text-xs sm:text-sm">
-                    <a href={`mailto:${CONTACT.email}`} className="hover:text-emerald-600 transition-colors break-all">{CONTACT.email}</a>
+                    <a href={`mailto:${CONTACT.email}`} className="inline-block py-1.5 text-sm hover:text-emerald-600 transition-colors break-all">{CONTACT.email}</a>
                   </div>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export default function Contact() {
                 <div>
                   <div className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Phone</div>
                   <div className="text-gray-700 text-xs sm:text-sm">
-                    <a href={CONTACT.phoneHref} className="hover:text-emerald-600 transition-colors">{CONTACT.phone}</a>
+                    <a href={CONTACT.phoneHref} className="inline-block py-1.5 text-sm hover:text-emerald-600 transition-colors">{CONTACT.phone}</a>
                   </div>
                 </div>
               </div>

@@ -89,27 +89,27 @@ const Footer = () => {
             </div>
             <div>
               <h4 className="text-sm font-semibold tracking-wide text-gray-900">Quick Links</h4>
-              <ul className="mt-1.5 space-y-3 text-base">
-                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/shop">Shop</Link></li>
-                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/about">About Us</Link></li>
-                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/reviews">Customer Reviews</Link></li>
-                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/contact">Contact</Link></li>
+              <ul className="mt-1.5 space-y-1 text-base">
+                <li><Link className="inline-block py-1.5 text-gray-600 hover:text-emerald-600 transition-colors" to="/shop">Shop</Link></li>
+                <li><Link className="inline-block py-1.5 text-gray-600 hover:text-emerald-600 transition-colors" to="/about">About Us</Link></li>
+                <li><Link className="inline-block py-1.5 text-gray-600 hover:text-emerald-600 transition-colors" to="/reviews">Customer Reviews</Link></li>
+                <li><Link className="inline-block py-1.5 text-gray-600 hover:text-emerald-600 transition-colors" to="/contact">Contact</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-semibold tracking-wide text-gray-900">Policies</h4>
-              <ul className="mt-1.5 space-y-3 text-base">
-                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/privacy-policy">Privacy Policy</Link></li>
-                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/terms-of-service">Terms of Service</Link></li>
-                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/shipping-policy">Shipping Policy</Link></li>
-                <li><Link className="text-gray-600 hover:text-emerald-600 transition-colors" to="/faq">FAQ</Link></li>
+              <ul className="mt-1.5 space-y-1 text-base">
+                <li><Link className="inline-block py-1.5 text-gray-600 hover:text-emerald-600 transition-colors" to="/privacy-policy">Privacy Policy</Link></li>
+                <li><Link className="inline-block py-1.5 text-gray-600 hover:text-emerald-600 transition-colors" to="/terms-of-service">Terms of Service</Link></li>
+                <li><Link className="inline-block py-1.5 text-gray-600 hover:text-emerald-600 transition-colors" to="/shipping-policy">Shipping Policy</Link></li>
+                <li><Link className="inline-block py-1.5 text-gray-600 hover:text-emerald-600 transition-colors" to="/faq">FAQ</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-semibold tracking-wide text-gray-900">Contact</h4>
-              <ul className="mt-1.5 space-y-3 text-base text-gray-600">
-                <li>Email: <a className="hover:text-emerald-600 transition-colors break-all" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
-                <li>Phone: <a className="hover:text-emerald-600 transition-colors" href={CONTACT.phoneHref}>{CONTACT.phone}</a></li>
+              <ul className="mt-1.5 space-y-2 text-base text-gray-600">
+                <li>Email: <a className="inline-block py-1 hover:text-emerald-600 transition-colors break-all" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
+                <li>Phone: <a className="inline-block py-1 hover:text-emerald-600 transition-colors" href={CONTACT.phoneHref}>{CONTACT.phone}</a></li>
                 <li>{CONTACT.address.join(', ')}</li>
               </ul>
             </div>

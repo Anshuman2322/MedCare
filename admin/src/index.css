@@ -23,3 +23,76 @@ body {
 .section-title {
 	@apply text-sm font-semibold uppercase tracking-wide text-emerald-700;
 }
+
+/* ------------------------------------------------------------------
+ * Phone-friendly tables (utils/stackTables.js adds data-label to cells).
+ * Below 1024px (phones, portrait tablets) each row of a table.cn-stack
+ * becomes a card: label on the left, value on the right, actions at the end.
+ * Larger screens keep the normal table.
+ * ------------------------------------------------------------------ */
+@media (max-width: 1023px) {
+	table.cn-stack,
+	table.cn-stack > tbody {
+		display: block;
+		width: 100%;
+	}
+	table.cn-stack > thead {
+		display: none;
+	}
+	table.cn-stack > tbody {
+		border: 0 !important;
+	}
+	table.cn-stack > tbody > tr {
+		display: block;
+		margin-bottom: 12px;
+		padding: 6px 14px;
+		border: 1px solid #e2e8f0 !important;
+		border-radius: 14px;
+		background: #fff;
+		box-shadow: 0 6px 18px -14px rgba(15, 23, 42, 0.35);
+	}
+	table.cn-stack > tbody > tr > td {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 6px 12px;
+		min-height: 40px;
+		padding: 8px 0 !important;
+		border: 0 !important;
+		text-align: right;
+		overflow-wrap: anywhere;
+	}
+	table.cn-stack > tbody > tr > td + td {
+		border-top: 1px dashed #edf2f7 !important;
+	}
+	table.cn-stack > tbody > tr > td::before {
+		content: attr(data-label);
+		flex-shrink: 0;
+		margin-right: auto;
+		text-align: left;
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: #64748b;
+	}
+	table.cn-stack > tbody > tr > td[data-label='']::before,
+	table.cn-stack > tbody > tr > td[colspan]::before {
+		content: none;
+	}
+	/* Loading / empty rows and other full-width cells. */
+	table.cn-stack > tbody > tr > td[colspan] {
+		display: block;
+		text-align: center;
+	}
+	/* The actions cell: buttons side by side, easy to tap. */
+	table.cn-stack > tbody > tr > td:last-child:not([colspan]) {
+		justify-content: flex-end;
+	}
+	table.cn-stack > tbody > tr > td button,
+	table.cn-stack > tbody > tr > td a,
+	table.cn-stack > tbody > tr > td select {
+		min-height: 36px;
+	}
+}

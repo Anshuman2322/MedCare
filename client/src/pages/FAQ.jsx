@@ -366,11 +366,11 @@ export default function FAQ() {
             <OrderSteps heading="New here? How ordering works" />
 
             <nav aria-label="Related pages" className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
-              <Link to="/shipping-policy" className="text-emerald-700 hover:underline">Shipping Policy</Link>
-              <Link to="/privacy-policy" className="text-emerald-700 hover:underline">Privacy Policy</Link>
-              <Link to="/terms-of-service" className="text-emerald-700 hover:underline">Terms of Service</Link>
-              <Link to="/reviews" className="text-emerald-700 hover:underline">Customer reviews</Link>
-              <Link to="/about" className="text-emerald-700 hover:underline">About CureNeed</Link>
+              <Link to="/shipping-policy" className="inline-block py-1.5 text-emerald-700 hover:underline">Shipping Policy</Link>
+              <Link to="/privacy-policy" className="inline-block py-1.5 text-emerald-700 hover:underline">Privacy Policy</Link>
+              <Link to="/terms-of-service" className="inline-block py-1.5 text-emerald-700 hover:underline">Terms of Service</Link>
+              <Link to="/reviews" className="inline-block py-1.5 text-emerald-700 hover:underline">Customer reviews</Link>
+              <Link to="/about" className="inline-block py-1.5 text-emerald-700 hover:underline">About CureNeed</Link>
             </nav>
 
             <section aria-labelledby="faq-support" className="cn-hero cn-reveal rounded-2xl bg-emerald-50 p-6 text-center sm:p-8">

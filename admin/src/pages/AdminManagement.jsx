@@ -221,7 +221,7 @@ export default function AdminManagement() {
 
       <div className="card p-4">
         <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
+          <table className="cn-stack min-w-full text-sm">
             <thead className="text-left text-slate-600">
               <tr>
                 <th className="pb-3 pr-4">Email</th>
