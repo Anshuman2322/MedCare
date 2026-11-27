@@ -44,7 +44,7 @@ function usePageSize(viewMode) {
 }
 
 export default function ShopByCategory() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [medicines, setMedicines] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -65,9 +65,21 @@ export default function ShopByCategory() {
   }, [medicines]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(() => maxPriceInData);
-  // Preselect from ?search= too, so the navbar search box's "view all
-  // results" submission lands here pre-filtered, same as ?category= above.
-  const [search, setSearch] = useState(() => searchParams.get('search') || '');
+  // The search text lives in the URL (?search=), so the page's own search box,
+  // the navbar search ("view all results") and shared links always agree,
+  // including a new search made while already on this page.
+  const search = searchParams.get('search') || '';
+  const setSearch = (value) => {
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        if (value) next.set('search', value);
+        else next.delete('search');
+        return next;
+      },
+      { replace: true }
+    );
+  };
   const [sort, setSort] = useState('Featured');
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('grid');
@@ -200,6 +212,18 @@ export default function ShopByCategory() {
             <span className="cn-eyebrow shop-eyebrow">Branded generics from Indian manufacturers</span>
             <h1>Shop <span className="cn-accent">Medicines</span></h1>
             <p className="muted">Browse our complete range of healthcare products</p>
+            <form className="shop-search" role="search" onSubmit={(event) => event.preventDefault()}>
+              <svg className="shop-search-icon" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="search"
+                aria-label="Search medicines on this page"
+                placeholder="Search by medicine, brand or ingredient"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+              />
+            </form>
           </div>
 
           <div className="controls">

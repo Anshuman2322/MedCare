@@ -9,7 +9,6 @@ import CategorySection from "./components/CategorySection";
 import FeaturedMedicines from "./components/FeaturedMedicines";
 import Testimonials from "./components/Testimonials";
 import Footer from "./components/Footer";
-import FloatingHomeButton from "./components/FloatingHomeButton";
 import SEO from "./components/SEO.jsx";
 import ChatWidget from "./components/chat/ChatWidget.jsx";
 import ToastViewport from "./components/common/Toast.jsx";
@@ -87,7 +86,6 @@ function App() {
             </Routes>
           </Suspense>
           <Footer />
-          <FloatingHomeButton />
           <ChatWidget />
           <ToastViewport />
         </div>
